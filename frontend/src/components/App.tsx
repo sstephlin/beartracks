@@ -1,5 +1,5 @@
 // import { initializeApp } from "firebase/app";
-// import "../styles/App.css";
+import "../styles/App.css";
 // import MapsGearup from "./Maps";
 import {
   SignedIn,
@@ -27,32 +27,29 @@ import {
 function App() {
   return (
     <div className="App">
-      <SignedOut>
-        <SignInButton />
-      </SignedOut>
-      <SignedIn>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-              alignContent: "center",
-              padding: "10px",
-              gap: "10px",
-            }}
-          >
-            <SignOutButton />
-            <UserButton />
+      <div className="header-container">
+        <header className="App-header">
+          <div className="logo">
+            <a href="index.html" className="logo">
+              BearTracks
+            </a>
           </div>
-          {/* <MapsGearup /> */}
-        </div>
-      </SignedIn>
+        </header>
+      </div>
+      <div>
+        <SignedOut>
+          <SignInButton />
+        </SignedOut>
+        <SignedIn>
+          <div className="signed-in-button-container">
+            <div className="signed-in-button">
+              <SignOutButton />
+              <UserButton />
+            </div>
+            {/* <MapsGearup /> */}
+          </div>
+        </SignedIn>
+      </div>
     </div>
   );
 }
