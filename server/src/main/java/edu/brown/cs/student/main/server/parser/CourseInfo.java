@@ -1,23 +1,13 @@
+package edu.brown.cs.student.main.server.parser;
+import java.util.HashMap;
 import java.util.Map;
 
 public class CourseInfo {
-  private String courseName;
-  private Map<String, CourseSemesterInfo> semesterToTreeMap; // semester → tree ID or null
+  public String courseName;
+  public Map<String, String> semesterToTreeId;
 
-  public CourseInfo(String courseName, Map<String, CourseSemesterInfo> semesterToTreeMap) {
+  public CourseInfo(String courseName) {
     this.courseName = courseName;
-    this.semesterToTreeMap = semesterToTreeMap;
-  }
-
-  public String getCourseName() {
-    return courseName;
-  }
-
-  public Map<String, CourseSemesterInfo> getSemesterToTreeMap() {
-    return semesterToTreeMap;
-  }
-
-  public CourseSemesterInfo getSemesterInfo(String semester) {
-    return semesterToTreeMap.get(semester);
+    this.semesterToTreeId = new HashMap<>();
   }
 }

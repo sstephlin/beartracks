@@ -1,32 +1,43 @@
-import java.util.*;
+package edu.brown.cs.student.main.server.parser;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PrereqTreeNode {
-  public enum NodeType {
-    AND, OR, COURSE
-  }
+  public enum Type { AND, OR, COURSE }
 
-  private NodeType type;
-  private List<PrereqTreeNode> children;
-  private String course; // only used if type == COURSE
+  public Type type;
+  public List<PrereqTreeNode> children;
+  public String courseCode;
 
-  public PrereqTreeNode(NodeType type) {
+  public PrereqTreeNode(Type type) {
     this.type = type;
     this.children = new ArrayList<>();
   }
 
-  public PrereqTreeNode(String course) {
-    this.type = NodeType.COURSE;
-    this.course = course;
-    this.children = new ArrayList<>();
+  public PrereqTreeNode(String courseCode) {
+    this.type = Type.COURSE;
+    this.courseCode = courseCode;
   }
 
-  public void addChild(PrereqTreeNode child) {
-    if (type != NodeType.COURSE) {
-      children.add(child);
+  @Override
+  public String toString() {
+    if (type == Type.COURSE) return courseCode;
+    String joiner = type == Type.AND ? " AND " : " OR ";
+    StringBuilder sb = new StringBuilder("(");
+    for (int i = 0; i < children.size(); i++) {
+      sb.append(children.get(i));
+      if (i < children.size() - 1) sb.append(joiner);
     }
+    sb.append(")");
+    return sb.toString();
   }
 
-  public NodeType getType() { return type; }
-  public List<PrereqTreeNode> getChildren() { return children; }
-  public String getCourse() { return course; }
+  public String toPrettyString(String indent) {
+    if (type == Type.COURSE) return indent + "- " + courseCode + "\n";
+    StringBuilder sb = new StringBuilder(indent + "- " + type.name() + "\n");
+    for (PrereqTreeNode child : children) {
+      sb.append(child.toPrettyString(indent + "  "));
+    }
+    return sb.toString();
+  }
 }
