@@ -1,0 +1,8 @@
+.search-bar-input {
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 50px;
+  border: 1px solid #213333;
+  width: 30vw;
+  background-color: #d6dadd;
+}

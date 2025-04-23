@@ -1,5 +1,6 @@
 // import { initializeApp } from "firebase/app";
 import "../styles/App.css";
+import BearTracks from "./BearTracks";
 // import MapsGearup from "./Maps";
 import {
   SignedIn,
@@ -49,7 +50,9 @@ function App() {
           </div>
         </header>
       </div>
-      <div></div>
+      <div>
+        <BearTracks />
+      </div>
     </div>
   );
 }
