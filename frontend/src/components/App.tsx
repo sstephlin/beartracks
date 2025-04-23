@@ -1,6 +1,7 @@
 // import { initializeApp } from "firebase/app";
 import "../styles/App.css";
 import BearTracks from "./BearTracks";
+import { Trash2, HelpCircle } from "lucide-react";
 // import MapsGearup from "./Maps";
 import {
   SignedIn,
@@ -31,9 +32,13 @@ function App() {
       <div className="header-container">
         <header className="App-header">
           <div className="logo">
-            <a href="index.html" className="logo">
-              BearTracks
-            </a>
+            <div className="logo-title">
+              <a href="index.html" className="logo-link">
+                <img src="/BearTracks.png" alt="Bear Logo" className="logo-image" />
+                BearTracks
+              </a>
+            </div>  
+            <progress className="logo-progress" value={40} max={100}></progress>
           </div>
           <div className="Sign-in-out-container">
             <SignedOut>
@@ -53,6 +58,16 @@ function App() {
       <div>
         <BearTracks />
       </div>
+      {/* Trash icon globally positioned */}
+      <button className="trash-global-icon" onClick={() => console.log("Trash clicked")}>
+        <Trash2 />
+      </button>
+
+      {/* Question mark icon */}
+      <button className="floating-icon help-icon" onClick={() => console.log("Help clicked")}>
+        <HelpCircle />
+      </button>
+
     </div>
   );
 }
