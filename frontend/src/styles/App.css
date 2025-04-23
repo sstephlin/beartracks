@@ -15,6 +15,7 @@ body {
   height: 75vh;
   width: 100vw;
   overflow-x: hidden;
+  color: black;
   /* padding-top: 8vh; */
 }
 
