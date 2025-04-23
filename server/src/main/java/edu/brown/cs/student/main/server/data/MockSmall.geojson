@@ -1,0 +1,61 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [-71.1, 42.3],
+              [-71.1, 42.4],
+              [-71.0, 42.4],
+              [-71.0, 42.3],
+              [-71.1, 42.3]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "state": "RI",
+        "city": "Providence",
+        "name": "Test Area 1",
+        "holc_id": "A1",
+        "holc_grade": "A",
+        "area_description_data": {
+          "1": "This area has strong sales potential and is considered very desirable.",
+          "2": "Sales and rental activity is high in this neighborhood."
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [-71.2, 42.2],
+              [-71.2, 42.3],
+              [-71.1, 42.3],
+              [-71.1, 42.2],
+              [-71.2, 42.2]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "state": "RI",
+        "city": "Cranston",
+        "name": "Test Area 2",
+        "holc_id": "B2",
+        "holc_grade": "B",
+        "area_description_data": {
+          "1": "This area has moderate housing demand and low turnover.",
+          "2": "Schools are decent, and infrastructure is average."
+        }
+      }
+    }
+  ]
+}
