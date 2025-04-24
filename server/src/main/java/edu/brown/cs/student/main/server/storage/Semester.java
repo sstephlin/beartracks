@@ -31,5 +31,3 @@ public class Semester {
     return name + " - " + courses;
   }
 }
-
-

@@ -1,4 +1,5 @@
 package edu.brown.cs.student.main.server.storage;
+
 import java.util.*;
 
 public class SemesterKey implements Comparable<SemesterKey> {
@@ -15,8 +16,13 @@ public class SemesterKey implements Comparable<SemesterKey> {
     this.year = year;
   }
 
-  public String getTerm() { return term; }
-  public int getYear() { return year; }
+  public String getTerm() {
+    return term;
+  }
+
+  public int getYear() {
+    return year;
+  }
 
   @Override
   public int compareTo(SemesterKey other) {
