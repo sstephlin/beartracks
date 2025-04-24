@@ -8,7 +8,10 @@ public class CourseCSVParser {
     CourseCatalog catalog = new CourseCatalog();
     Map<String, String> prereqStringToTreeId = new HashMap<>();
 
-    BufferedReader br = new BufferedReader(new FileReader("server/src/main/java/edu/brown/cs/student/main/server/data/mockCourse.csv"));
+    BufferedReader br =
+        new BufferedReader(
+            new FileReader(
+                "server/src/main/java/edu/brown/cs/student/main/server/data/mockCourse.csv"));
     String header = br.readLine();
     String[] columns = header.split(",");
     String[] semesters = Arrays.copyOfRange(columns, 2, columns.length - 1);
@@ -27,7 +30,7 @@ public class CourseCSVParser {
         if (cell.equals("[]")) {
           info.semesterToTreeId.put(semester, null);
         } else if (!cell.isEmpty()) {
-          String normalized = cell.replaceAll("\\s+", "");  // normalize spacing
+          String normalized = cell.replaceAll("\\s+", ""); // normalize spacing
           if (!prereqStringToTreeId.containsKey(normalized)) {
             String treeId = UUID.randomUUID().toString();
             PrereqTreeNode tree = parseTree(cell);
@@ -44,19 +47,19 @@ public class CourseCSVParser {
     }
     br.close();
     // PRINTING PREREQ
-//    for (String code : catalog.courseMap.keySet()) {
-//      CourseInfo info = catalog.courseMap.get(code);
-//      System.out.println(code + ": " + info.courseName);
-//      for (String sem : info.semesterToTreeId.keySet()) {
-//        String treeId = info.semesterToTreeId.get(sem);
-//        System.out.print("  " + sem + ": ");
-//        if (treeId == null) {
-//          System.out.println("No prerequisites");
-//        } else {
-//          System.out.println(catalog.treeMap.get(treeId));
-//        }
-//      }
-//    }
+    //    for (String code : catalog.courseMap.keySet()) {
+    //      CourseInfo info = catalog.courseMap.get(code);
+    //      System.out.println(code + ": " + info.courseName);
+    //      for (String sem : info.semesterToTreeId.keySet()) {
+    //        String treeId = info.semesterToTreeId.get(sem);
+    //        System.out.print("  " + sem + ": ");
+    //        if (treeId == null) {
+    //          System.out.println("No prerequisites");
+    //        } else {
+    //          System.out.println(catalog.treeMap.get(treeId));
+    //        }
+    //      }
+    //    }
 
     // PRINTING TREE
     for (String code : catalog.courseMap.keySet()) {
@@ -73,7 +76,6 @@ public class CourseCSVParser {
         }
       }
     }
-
   }
 
   private static PrereqTreeNode parseTree(String str) {
