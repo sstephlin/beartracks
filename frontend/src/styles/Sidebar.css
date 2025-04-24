@@ -1,14 +1,14 @@
 .sidebar {
-  height: 100vh; /* h-screen */
-  width: 20vw; /* w-64 => 64 * 0.25rem = 16rem */
-  background-color: white; /* bg-aqua */
+  height: 100vh;
+  width: 20vw;
+  background-color: white;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   border-right: 5px solid rgba(0, 0, 0, 0.1);
 }
 
 .header-row {
-  padding: 1rem; /* equivalent to p-4 */
-  padding-bottom: 0.5rem; /* equivalent to pb-2 */
+  padding: 1rem;
+  padding-bottom: 0.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -27,11 +27,11 @@ button {
 }
 
 .sidebar-expanded {
-  width: 20vw; /* 64 in Tailwind = 16rem */
+  width: 20vw;
 }
 
 .sidebar-collapsed {
-  width: 6vw; /* just enough to show icon/buttons */
+  width: 6vw;
   border-right: 1px black solid;
 }
 

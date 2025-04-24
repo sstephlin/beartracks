@@ -1,76 +1,3 @@
-// import "../styles/App.css";
-// import Sidebar from "./Sidebar";
-// import BearTracks from "./BearTracks";
-// import { Trash2, HelpCircle } from "lucide-react";
-// import {
-//   SignedIn,
-//   SignedOut,
-//   SignInButton,
-//   SignOutButton,
-//   UserButton,
-// } from "@clerk/clerk-react";
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <div className="layout-container">
-//         <Sidebar />
-//         <div className="main-content-wrapper">
-//           <header className="App-header">
-//             <div className="logo">
-//               <div className="logo-title">
-//                 <a href="index.html" className="logo-link">
-//                   <img
-//                     src="/BearTracks.png"
-//                     alt="Bear Logo"
-//                     className="logo-image"
-//                   />
-//                   BearTracks
-//                 </a>
-//               </div>
-//               <progress
-//                 className="logo-progress"
-//                 value={40}
-//                 max={100}
-//               ></progress>
-//             </div>
-//             <div className="Sign-in-out-container">
-//               <SignedOut>
-//                 <SignInButton />
-//               </SignedOut>
-//               <SignedIn>
-//                 <div className="signed-in-buttons">
-//                   <h3>Welcome!</h3>
-//                   <UserButton />
-//                 </div>
-//               </SignedIn>
-//             </div>
-//           </header>
-//           <main className="main-content">
-//             <BearTracks />
-//           </main>
-//         </div>
-//       </div>
-
-//       {/* Floating action buttons */}
-//       <button
-//         className="trash-global-icon"
-//         onClick={() => console.log("Trash clicked")}
-//       >
-//         <Trash2 />
-//       </button>
-
-//       <button
-//         className="floating-icon help-icon"
-//         onClick={() => console.log("Help clicked")}
-//       >
-//         <HelpCircle />
-//       </button>
-//     </div>
-//   );
-// }
-
-// export default App;
 import "../styles/App.css";
 import Sidebar from "./Sidebar";
 import BearTracks from "./BearTracks";
@@ -81,7 +8,6 @@ import {
   SignedIn,
   SignedOut,
   SignInButton,
-  SignOutButton,
   UserButton,
 } from "@clerk/clerk-react";
 

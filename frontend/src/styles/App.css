@@ -37,7 +37,7 @@ body {
 
 .layout-container {
   display: flex;
-  flex-direction: row; /* <- CRUCIAL */
+  flex-direction: row;
   height: 100vh;
 }
 .header-sidebar-expanded {
@@ -52,7 +52,6 @@ body {
 .logo {
   font-size: 24px;
   font-style: italic;
-  /* color: rgb(88, 68, 58); */
   color: #ffffff;
   font-weight: 600;
   text-decoration: none;
@@ -60,7 +59,6 @@ body {
 }
 
 .logo:visited {
-  /* color: rgb(88, 68, 58); */
   color: #ffffff;
 }
 
@@ -78,7 +76,7 @@ body {
 
 .signed-in-buttons {
   display: flex;
-  gap: 20px; /* adjust spacing here */
+  gap: 20px;
   align-items: center;
 }
 /* Responsive tweaks */
@@ -213,7 +211,7 @@ body {
 
 .trash-global-icon {
   position: fixed;
-  right: 80px; /* or 100px */
+  right: 80px;
   bottom: 30px;
 }
 
@@ -224,7 +222,7 @@ body {
 }
 .button-container {
   display: flex;
-  flex-direction: row; /* default, but explicit */
-  gap: 112px; /* adds space between the buttons */
-  align-items: center; /* vertically center buttons if they're different heights */
+  flex-direction: row;
+  gap: 112px;
+  align-items: center;
 }
