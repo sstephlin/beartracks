@@ -1,6 +1,13 @@
 /* Import your font */
 @import url("https://fonts.googleapis.com/css2?family=Angkor&display=swap");
 
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 body {
   margin: 0;
   font-family: "Angkor", sans-serif;
@@ -12,30 +19,33 @@ body {
 .App {
   text-align: center;
   background-color: #ffffff;
-  height: 75vh;
-  width: 100vw;
   overflow-x: hidden;
   color: black;
-  /* padding-top: 8vh; */
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
 }
 
-/* Header container */
 .App-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 10vh;
-  background-color: #213333;
-  color: black;
-  padding: 10px 5%;
-  padding-top: 0;
-  padding-bottom: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-sizing: border-box;
-  flex-wrap: wrap;
+  padding: 1rem;
+  background-color: #213333;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.layout-container {
+  display: flex;
+  flex-direction: row; /* <- CRUCIAL */
+  height: 100vh;
+}
+.header-sidebar-expanded {
+  width: 78vw;
+}
+
+.header-sidebar-collapsed {
+  width: 92vw;
 }
 
 /* Logo styling */
@@ -138,9 +148,11 @@ body {
 }
 
 .logo-title {
+  font-weight: bold;
+  font-size: 1.25rem;
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: 0.5rem;
 }
 
 .logo-link {
@@ -154,8 +166,8 @@ body {
 }
 
 .logo-image {
-  width: 75px;
-  height: 75px;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
   margin-right: 10px;
 }
@@ -177,4 +189,42 @@ body {
 .logo-progress::-webkit-progress-value {
   background-color: #5cb85c;
   border-radius: 10px;
+}
+
+.main-content {
+  padding: 1rem;
+  overflow-y: auto;
+  flex-grow: 1;
+  height: 72vh;
+}
+
+/* Floating buttons */
+.trash-global-icon,
+.floating-icon.help-icon {
+  position: fixed;
+  bottom: 1.5rem;
+  background: white;
+  border: 1px solid black;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.trash-global-icon {
+  position: fixed;
+  right: 80px; /* or 100px */
+  bottom: 30px;
+}
+
+.floating-icon.help-icon {
+  position: fixed;
+  right: 20px;
+  bottom: 30px;
+}
+.button-container {
+  display: flex;
+  flex-direction: row; /* default, but explicit */
+  gap: 112px; /* adds space between the buttons */
+  align-items: center; /* vertically center buttons if they're different heights */
 }

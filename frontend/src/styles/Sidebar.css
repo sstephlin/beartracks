@@ -1,0 +1,56 @@
+.sidebar {
+  height: 100vh; /* h-screen */
+  width: 20vw; /* w-64 => 64 * 0.25rem = 16rem */
+  background-color: white; /* bg-aqua */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border-right: 5px solid rgba(0, 0, 0, 0.1);
+}
+
+.header-row {
+  padding: 1rem; /* equivalent to p-4 */
+  padding-bottom: 0.5rem; /* equivalent to pb-2 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button {
+  background-color: white;
+  color: black;
+  border: 1px black solid;
+}
+
+.sidebar {
+  height: 100vh;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+.sidebar-expanded {
+  width: 20vw; /* 64 in Tailwind = 16rem */
+}
+
+.sidebar-collapsed {
+  width: 6vw; /* just enough to show icon/buttons */
+  border-right: 1px black solid;
+}
+
+.nav-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-right: 5px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.logo-title {
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+}
+
+.logo-title.collapsed {
+  opacity: 0;
+  pointer-events: none;
+}
