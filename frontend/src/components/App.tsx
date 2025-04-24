@@ -13,10 +13,17 @@ import {
 
 function App() {
   const [expanded, setExpanded] = useState<boolean>(true);
+  const [degree, setDegree] = useState<string>("");
+
   return (
     <div className="App">
       <div className="layout-container">
-        <Sidebar expanded={expanded} setExpanded={setExpanded} />
+        <Sidebar
+          expanded={expanded}
+          setExpanded={setExpanded}
+          degree={degree}
+          setDegree={setDegree}
+        />
         <div className="header-and-content">
           <header
             className={`App-header ${
