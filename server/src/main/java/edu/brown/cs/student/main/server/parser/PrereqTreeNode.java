@@ -1,9 +1,14 @@
 package edu.brown.cs.student.main.server.parser;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class PrereqTreeNode {
-  public enum Type { AND, OR, COURSE }
+  public enum Type {
+    AND,
+    OR,
+    COURSE
+  }
 
   public Type type;
   public List<PrereqTreeNode> children;
