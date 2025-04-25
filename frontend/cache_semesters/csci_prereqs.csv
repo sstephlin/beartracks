@@ -1,0 +1,152 @@
+Course Code,Course Name,Fall 21,Winter 21,Spring 22,Summer 22,Fall 22,Winter 22,Spring 23,Summer 23,Fall 23,Winter 23,Spring 24,Summer 24,Fall 24,Winter 24,Spring 25,Summer 25,Fall 25,Winter 25,Spring 26
+CSCI 0020,The Digital World,[],,,,[],,,,[],,,,[],,,,,,
+CSCI 0081,TA Apprenticeship: Full Credit,[],,[],[],[],,[],,[],,[],,[],,[],,[],,[]
+CSCI 0100,Data Fluency for All,[],,,,[],,,,,,,,,,,,,,
+CSCI 0111,Computing Foundations: Data,[],,[],,[],,[],,[],,[],,[],,[],,[],,[]
+CSCI 0112,Computing Foundations: Program Organization,[{'CSCI 0111'}],,,,[{'CSCI 0111'}],,,,[{'CSCI 0111'}],,,,[{'CSCI 0111'}],,,,,,
+CSCI 0150,Introduction to Object-Oriented Programming and Computer Science,[],,,,[],,,,[],,,,[],,,,[],,
+CSCI 0170,Computer Science: An Integrated Introduction,[],,,,[],,,,[],,,,[],,,,[],,
+CSCI 0190,Accelerated Introduction to Computer Science,[],,,,[],,,,[],,,,[],,,,[],,
+CSCI 0320,Introduction to Software Engineering,"[{'CSCI 0180', 'CSCI 0190', 'CSCI 0160'}]",,"[{'CSCI 0180', 'CSCI 0190', 'CSCI 0160'}]",,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,[],,[],,[],,[],,[],,
+CSCI 0330,Introduction to Computer Systems,"[{'CSCI 0180', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,[],,,,[],,,,,,
+CSCI 1010,Theory of Computation,"[{'CSCI 0450', 'CSCI 1450', 'CSCI 1570', 'APMA 1655', 'CSCI 0220', 'APMA 1650', 'CSCI 1550'}]",,,,"[{'CSCI 0450', 'CSCI 1450', 'CSCI 1570', 'APMA 1655', 'CSCI 0220', 'APMA 1650', 'CSCI 1550'}]",,,,[],,,,[],,,,"[{'CSCI 0450', 'CSCI 1450', 'CSCI 1570', 'APMA 1655', 'CSCI 0220', 'APMA 1650', 'CSCI 1550'}]",,
+CSCI 1230,Introduction to Computer Graphics,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,[],,,,[],,,,[],,
+CSCI 1234,Computer Graphics Lab,[],,,,[],,,,[],,,,[],,,,[],,
+CSCI 1250,Introduction to Computer Animation,[],,,,[],,,,,,,,[],,,,[],,
+CSCI 1270,Database Management Systems,"[{'CSCI 0180', 'CSCI 0190', 'CSCI 0160'}]",,,,,,,,[],,,,[],,,,[],,
+CSCI 1330,Computer Systems,[],,,,[],,,,[],,,,[],,,,,,
+CSCI 1360,Human Factors in Cybersecurity,[],,[],,[],,[],,[],,,,[],,,,[],,
+CSCI 1410,Artificial Intelligence,"[{'CSCI 0450', 'CSCI 1450', 'CSCI 0190', 'APMA 1655', 'CSCI 0160', 'CSCI 0220', 'CSCI 0180', 'APMA 1650'}]",,,,"[{'CSCI 0450', 'CSCI 1450', 'CSCI 0190', 'CSCI 0200', 'APMA 1655', 'CSCI 0160', 'CSCI 0220', 'CSCI 0180', 'APMA 1650'}]",,,,"[{'CSCI 0450', 'CSCI 1450', 'CSCI 0190', 'CSCI 0200', 'APMA 1655', 'CSCI 0160', 'CSCI 0220', 'CSCI 0180', 'APMA 1650'}]",,,,,,,,,,
+CSCI 1430,Computer Vision,"[{'CSCI 0180', 'CSCI 0190', 'CSCI 0160'}]",,"[{'CSCI 0180', 'CSCI 0190', 'CSCI 0160'}]",,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'MATH 0520', 'CSCI 0190', 'CSCI 0530', 'MATH 0530', 'CSCI 0200', 'MATH 0540', 'CSCI 0160', 'CSCI 0180'}]",,"[{'MATH 0520', 'CSCI 0190', 'CSCI 0530', 'MATH 0530', 'CSCI 0200', 'MATH 0540', 'CSCI 0160', 'CSCI 0180'}]",,[],,,,"[{'MATH 0520', 'CSCI 0190', 'CSCI 0530', 'MATH 0530', 'CSCI 0200', 'MATH 0540', 'CSCI 0160', 'CSCI 0180'}]"
+CSCI 1450,Advanced Introduction to Probability for Computing and Data Science,"[{'MATH 0170*', 'MATH 0100*', 'MATH 0190*'}]",,,,,,,,"[{'MATH 0170*', 'MATH 0100*', 'MATH 0190*'}]",,,,,,,,,,
+CSCI 1470,Deep Learning,"[{'CSCI 0450', 'MATH 0520', 'CSCI 1450', 'CSCI 0530', 'CSCI 0190', 'CSCI 0170', 'CSCI 0150', 'MATH 1610', 'MATH 0540', 'APMA 1655', 'CSCI 0220', 'APMA 1650'}]",,"[{'CSCI 0450', 'MATH 0520', 'CSCI 1450', 'CSCI 0530', 'CSCI 0190', 'CSCI 0170', 'CSCI 0150', 'MATH 1610', 'MATH 0540', 'APMA 1655', 'CSCI 0220', 'APMA 1650'}]",,"[{'CSCI 0450', 'MATH 0520', 'CSCI 1450', 'CSCI 0530', 'CSCI 0190', 'CSCI 0170', 'CSCI 0150', 'MATH 1610', 'CSCI 0200', 'MATH 0540', 'APMA 1655', 'CSCI 0220', 'APMA 1650'}]",,"[{'CSCI 0450', 'MATH 0520', 'CSCI 1450', 'CSCI 0530', 'CSCI 0190', 'CSCI 0170', 'CSCI 0150', 'MATH 1610', 'CSCI 0200', 'MATH 0540', 'APMA 1655', 'CSCI 0220', 'APMA 1650'}]",,,,"[{'CSCI 0450', 'MATH 0520', 'CSCI 1450', 'CSCI 0530', 'CSCI 0190', 'CSCI 0170', 'CSCI 0150', 'MATH 1610', 'CSCI 0200', 'MATH 0540', 'APMA 1655', 'CSCI 0220', 'APMA 1650'}]",,,,[],,"[{'CSCI 0450', 'MATH 0520', 'CSCI 1450', 'CSCI 0530', 'CSCI 0190', 'CSCI 0170', 'CSCI 0150', 'MATH 1610', 'CSCI 0200', 'MATH 0540', 'APMA 1655', 'CSCI 0220', 'APMA 1650', 'MATH 1210'}]",,"[{'CSCI 0450', 'MATH 0520', 'CSCI 1450', 'CSCI 0530', 'CSCI 0190', 'CSCI 0170', 'CSCI 0150', 'MATH 1610', 'CSCI 0200', 'MATH 0540', 'APMA 1655', 'CSCI 0220', 'APMA 1650', 'MATH 1210'}]"
+CSCI 1510,Introduction to Cryptography and Computer Security,"[{'CSCI 0220', 'CSCI 1010', 'CSCI 0510'}]",,,,"[{'CSCI 0220', 'CSCI 1010', 'CSCI 0510'}]",,,,"[{'CSCI 0220', 'CSCI 1010', 'CSCI 0510'}]",,,,"[{'CSCI 0220', 'CSCI 1010', 'CSCI 0510'}]",,,,"[{'CSCI 0220', 'CSCI 1010', 'CSCI 0510'}]",,
+CSCI 1570,Design and Analysis of Algorithms,"[{'CSCI 0450', 'CSCI 1450', 'MATH 0520', 'CSCI 0190', 'MATH 1530', 'MATH 0540', 'CSCI 0160', 'CSCI 0220', 'MATH 1010', 'MATH 0750', 'CSCI 1010', 'CSCI 0180', 'CSCI 0510'}]",,,,"[{'CSCI 0450', 'CSCI 1450', 'MATH 0520', 'CSCI 0190', 'CSCI 0200', 'MATH 1530', 'MATH 0540', 'CSCI 0160', 'CSCI 0220', 'MATH 1010', 'MATH 0750', 'CSCI 1010', 'CSCI 0180', 'CSCI 0510'}]",,,,"[{'CSCI 0450', 'CSCI 1450', 'MATH 0520', 'CSCI 0190', 'CSCI 0200', 'MATH 1530', 'MATH 0540', 'CSCI 0160', 'CSCI 0220', 'MATH 1010', 'MATH 0750', 'CSCI 1010', 'CSCI 0180', 'CSCI 0510'}]",,,,"[{'CSCI 0450', 'CSCI 1450', 'MATH 0520', 'CSCI 0190', 'CSCI 0200', 'MATH 1530', 'MATH 0540', 'CSCI 0160', 'CSCI 0220', 'MATH 1010', 'MATH 0750', 'CSCI 1010', 'CSCI 0180', 'CSCI 0510'}]",,,,"[{'CSCI 0450', 'CSCI 1450', 'CSCI 0190', 'CSCI 0200', 'MATH 1530', 'MATH 0540', 'CSCI 0160', 'CSCI 0220', 'MATH 1010', 'MATH 0750', 'CSCI 1010', 'CSCI 0180', 'CSCI 0510'}]",,
+CSCI 1600,Real-Time and Embedded Software,[],,,,[],,,,[],,,,[],,,,[],,
+CSCI 1650,Software Security and Exploitation,"[{'CSCI 1310', 'CSCI 0300', 'CSCI 0330', 'CSCI 1670'}]",,,,"[{'CSCI 1310', 'CSCI 0300', 'CSCI 0330', 'CSCI 1670'}]",,,,"[{'CSCI 1310', 'CSCI 0300', 'CSCI 0330', 'CSCI 1670'}]",,,,"[{'CSCI 1310', 'CSCI 0300', 'CSCI 0330', 'CSCI 1670'}]",,,,"[{'CSCI 1310', 'CSCI 0300', 'CSCI 0330', 'CSCI 1670'}]",,
+CSCI 1730,Design and Implementation of Programming Languages,"[{'CSCI 0180', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,
+CSCI 1760,Multiprocessor Synchronization,[{'CSCI 0330'}],,,,[{'CSCI 0330'}],,,,[{'CSCI 0330'}],,,,[{'CSCI 0330'}],,,,,,
+CSCI 1805,"Computers, Freedom and Privacy",[],,,,[],,,,[],,,,[],,,,,,[]
+CSCI 1810,Computational Molecular Biology,"[{'CSCI 0180', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,
+CSCI 1860,Cybersecurity Law and Policy,[],,[],,[],,,,[],,,,[],,,,,,
+CSCI 1870,Cybersecurity Ethics,[],,,,[],,,[],[],,,[],[],,,[],[],,
+CSCI 1950N,2D Game Engines,"[{'CSCI 0180', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,
+CSCI 1951C,Designing Humanity Centered Robots,[],,,,[],,,,[],,,,[],,,,,,
+CSCI 1951V,Hypertext/Hypermedia: The Web Was Not the Beginning and the Web Is Not the End,[],,,,[],,,,[],,,,,,,,,,
+CSCI 1951X,Formal Proof and Verification,[],,,,[],,,,[],,,,[],,,,,,
+CSCI 1952V,Algorithms for the People,[],,,,,,,,,,,,,,,,,,
+CSCI 2000,Computer Science Research Methods,[],,,,,,,,,,,,,,,,,,
+CSCI 2370,Interdisciplinary Scientific Visualization,[],,,,[],,,,,,,,[],,,,[],,
+CSCI 2390,Privacy-Conscious Computer Systems,"[{'CSCI 1310', 'CSCI 1330', 'CSCI 1950S', 'CSCI 1380', 'CSCI 0330', 'CSCI 0300'}]",,,,,,,,"[{'CSCI 1310', 'CSCI 1330', 'CSCI 1950S', 'CSCI 1380', 'CSCI 0330', 'CSCI 0300'}]",,,,"[{'CSCI 1310', 'CSCI 1330', 'CSCI 1950S', 'CSCI 1380', 'CSCI 0330', 'CSCI 0300'}]",,,,,,
+CSCI 2470,Deep Learning,[],,[],,[],,[],,,,[],,"[{'CSCI 0450', 'CSCI 0111', 'MATH 0520', 'CSCI 1450', 'CSCI 0190', 'CSCI 0530', 'CSCI 0170', 'CSCI 0150', 'MATH 1610', 'CSCI 0200', 'CSCI 1420', 'MATH 0540', 'APMA 1655', 'CSCI 0220', 'APMA 1650', 'MATH 1210', 'CSCI 1950F'}]",,,,"[{'CSCI 0450', 'CSCI 0111', 'MATH 0520', 'CSCI 1450', 'CSCI 0190', 'CSCI 0530', 'CSCI 0170', 'CSCI 0150', 'MATH 1610', 'CSCI 0200', 'CSCI 1420', 'MATH 0540', 'APMA 0260', 'APMA 1655', 'CSCI 0220', 'APMA 1650', 'MATH 1210', 'CSCI 1950F'}]",,
+CSCI 2810,Advanced Computational Molecular Biology,"[{'CSCI 0150', 'CSCI 0190', 'CSCI 0180'}]",,,,"[{'CSCI 0150', 'CSCI 0190', 'CSCI 0180'}]",,,,"[{'CSCI 0150', 'CSCI 0190', 'CSCI 0180'}]",,,,"[{'CSCI 0150', 'CSCI 0190', 'CSCI 0180'}]",,,,"[{'CSCI 0150', 'CSCI 0190', 'CSCI 0180'}]",,
+CSCI 2890,Comprehensive Examination Preparation,[],,[],,[],,[],,[],,[],,[],,[],,[],,[]
+CSCI 2951F,Learning and Sequential Decision Making,"[{'CSCI 1950F', 'CSCI 1420'}]",,,,,,,,,,"[{'CSCI 1950F', 'CSCI 1420'}]",,,,,,"[{'CSCI 1950F', 'CSCI 1420'}]",,
+CSCI 2951X,Reintegrating AI,"[{'CSCI 1950F', 'CSCI 2951F', 'CSCI 1410', 'CSCI 1420'}]",,,,,,"[{'CSCI 1950F', 'CSCI 2951F', 'CSCI 1410', 'CSCI 1420'}]",,,,"[{'CSCI 1950F', 'CSCI 2951F', 'CSCI 1410', 'CSCI 1420'}]",,,,"[{'CSCI 1950F', 'CSCI 2951F', 'CSCI 1410', 'CSCI 1420'}]",,,,
+CSCI 2952F,Distributed Systems at Scale: Microservices Management,"[{'CSCI 1380', 'CSCI 1680', 'CSCI 1670'}]",,,,"[{'CSCI 1380', 'CSCI 1680', 'CSCI 1670'}]",,,,,,,,,,,,,,
+CSCI 2952G,Deep Learning in Genomics,[],,,,,,,,[],,,,,,"[{'CSCI 1470', 'CSCI 2470'}]",,"[{'CSCI 1470', 'CSCI 2470'}]",,
+CSCI 2952M,The Works that Made and Changed Machine Learning,[],,,,,,,,,,,,,,,,,,
+CSCI 2990,Thesis Preparation,[],,[],,[],,[],,[],,[],,[],,[],,[],,[]
+CSCI 0082,TA Apprenticeship: Half Credit,,,[],[],[],,[],,[],,[],,[],,[],,[],,[]
+CSCI 0200,Program Design with Data Structures and Algorithms,,,"[{'CSCI 0150', 'CSCI 0190', 'CSCI 0112', 'CSCI 0170'}]",,"[{'CSCI 0150', 'CSCI 0190', 'CSCI 0112', 'CSCI 0170'}]",,"[{'CSCI 0150', 'CSCI 0190', 'CSCI 0112', 'CSCI 0170'}]",,[],,[],,[],,[],,[],,"[{'CSCI 0150', 'CSCI 0190', 'CSCI 0112', 'CSCI 0170'}]"
+CSCI 0220,Introduction to Discrete Structures and Probability,,,[],[],,,[],,,,[],,,,[],,[],,[]
+CSCI 0300,Fundamentals of Computer Systems,,,"[{'CSCI 0180', 'CSCI 0190', 'CSCI 0160'}]",,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,[],,,,[],,[],,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]"
+CSCI 1040,The Basics of Cryptographic Systems,,,[],,,,[],,,,[],,,,[],,,,[]
+CSCI 1280,Intermediate 3D Computer Animation,,,[{'CSCI 1250'}],,,,[{'CSCI 1250'}],,,,,,,,[{'CSCI 1250'}],,,,
+CSCI 1310,Fundamentals of Computer Systems,,,[],,,,[],,,,[],,,,[],,[],,[]
+CSCI 1380,Distributed Computer Systems,,,"[{'CSCI 1310', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320'}]",,,,"[{'CSCI 1310', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]",,,,"[{'CSCI 1310', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]",,,,"[{'CSCI 1310', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]",,,,"[{'CSCI 1310', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]"
+CSCI 1420,Machine Learning,,,"[{'CSCI 0450', 'CSCI 1450', 'MATH 0520', 'MATH 0170', 'CSCI 0190', 'MATH 0100', 'CSCI 0530', 'MATH 0180', 'MATH 0190', 'APMA 1655', 'CSCI 0160', 'MATH 0540', 'CSCI 0180', 'MATH 0350', 'APMA 1650', 'MATH 0200'}]",,,,"[{'CSCI 0450', 'CSCI 1450', 'MATH 0520', 'CSCI 0190', 'CSCI 0530', 'CSCI 0200', 'APMA 1655', 'CSCI 0160', 'MATH 0540', 'CSCI 0180', 'APMA 1650'}]",,,,"[{'CSCI 0450', 'CSCI 1450', 'MATH 0520', 'CSCI 0190', 'CSCI 0530', 'CSCI 0200', 'APMA 1655', 'CSCI 0160', 'MATH 0540', 'CSCI 0180', 'APMA 1650'}]",,,,"[{'CSCI 0450', 'CSCI 1450', 'MATH 0520', 'CSCI 0190', 'CSCI 0530', 'CSCI 0200', 'APMA 1655', 'CSCI 0160', 'MATH 0540', 'CSCI 0180', 'APMA 1650'}]",,"[{'CSCI 0450', 'CSCI 1450', 'MATH 0520', 'CSCI 0190', 'CSCI 0530', 'CSCI 0200', 'APMA 1655', 'CSCI 0160', 'MATH 0540', 'APMA 0260', 'CSCI 0180', 'APMA 1650'}]",,"[{'CSCI 0450', 'CSCI 1450', 'MATH 0520', 'CSCI 0190', 'CSCI 0530', 'CSCI 0200', 'APMA 1655', 'CSCI 0160', 'MATH 0540', 'APMA 0260', 'CSCI 0180', 'APMA 1650'}]"
+CSCI 1440,Algorithmic Game Theory,,,"[{'CSCI 0190', 'MATH 0180', 'APMA 1655', 'CSCI 0220', 'MATH 0350', 'MATH 0200', 'CSCI 0111', 'CSCI 0170', 'CSCI 0040', 'CSCI 1010', 'MATH 1620', 'CSCI 0450', 'CSCI 0150', 'CSCI 0510', 'CSCI 1550', 'CSCI 1450', 'APMA 0350', 'APMA 0360', 'APMA 1650'}]",,,,"[{'CSCI 0190', 'MATH 0180', 'APMA 1655', 'CSCI 0220', 'MATH 0350', 'MATH 0200', 'CSCI 0111', 'CSCI 0170', 'CSCI 0040', 'CSCI 1010', 'MATH 1620', 'CSCI 0450', 'CSCI 0150', 'CSCI 0510', 'CSCI 1550', 'CSCI 1450', 'APMA 0350', 'APMA 0360', 'APMA 1650'}]",,,,"[{'CSCI 0190', 'MATH 0180', 'APMA 1655', 'CSCI 0220', 'MATH 0350', 'MATH 0200', 'CSCI 0111', 'CSCI 0170', 'CSCI 0040', 'CSCI 1010', 'MATH 1620', 'CSCI 0450', 'CSCI 0150', 'CSCI 0510', 'CSCI 1550', 'CSCI 1450', 'APMA 0350', 'APMA 0360', 'APMA 1650'}]",,,,"[{'CSCI 0190', 'MATH 0180', 'APMA 1655', 'CSCI 0220', 'MATH 0350', 'MATH 0200', 'CSCI 0111', 'CSCI 0170', 'CSCI 0040', 'CSCI 1010', 'MATH 1620', 'CSCI 0450', 'CSCI 0150', 'CSCI 0510', 'CSCI 1550', 'CSCI 1450', 'APMA 0350', 'APMA 0360', 'APMA 1650', 'MATH 1220'}]",,"[{'CSCI 0190', 'MATH 0180', 'APMA 1655', 'CSCI 0220', 'MATH 0350', 'MATH 0200', 'CSCI 0111', 'CSCI 0170', 'CSCI 0040', 'CSCI 1010', 'MATH 1620', 'CSCI 0450', 'CSCI 0150', 'CSCI 0510', 'CSCI 1550', 'CSCI 1450', 'APMA 0350', 'APMA 0360', 'APMA 1650', 'MATH 1220'}]",,
+CSCI 1550,Probabilistic Methods in Computer Science,,,[],,,,,,,,[],,,,[],,,,
+CSCI 1620,Computer Systems Security Lab,,,"[{'CSCI 1951E', 'CSCI 1660*'}]",,,,"[{'CSCI 1951E', 'CSCI 1660*'}]",,,,[],,,,[],,,,"[{'CSCI 1951E', 'CSCI 1660*'}]"
+CSCI 1660,Introduction to Computer Systems Security,,,"[{'CSCI 1310', 'CSCI 0190', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0330', 'CSCI 0160', 'CSCI 0300', 'CSCI 0180'}]",,,,"[{'CSCI 1310', 'CSCI 0190', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0200', 'CSCI 0330', 'CSCI 0160', 'CSCI 0300', 'CSCI 0180'}]",,,,[],,,,[],,,,"[{'CSCI 1310', 'CSCI 0190', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0200', 'CSCI 0330', 'CSCI 0160', 'CSCI 0300', 'CSCI 0180'}]"
+CSCI 1670,Operating Systems,,,"[{'CSCI 1310', 'CSCI 1330', 'CSCI 1950S', 'CSCI 0330', 'CSCI 0300'}]",,,,"[{'CSCI 1310', 'CSCI 1330', 'CSCI 1950S', 'CSCI 0330', 'CSCI 0300'}]",,,,[],,,,[],,,,
+CSCI 1680,Computer Networks,,,"[{'CSCI 1310', 'CSCI 1330', 'CSCI 1950S', 'CSCI 0330', 'CSCI 0300'}]",,"[{'CSCI 1310', 'CSCI 1330', 'CSCI 1950S', 'CSCI 0330', 'CSCI 0300'}]",,,,[],,,,[],,,,,,"[{'CSCI 1310', 'CSCI 1330', 'CSCI 1950S', 'CSCI 0330', 'CSCI 0300'}]"
+CSCI 1690,Operating Systems Laboratory,,,[],,,,[],,,,[],,,,[],,,,
+CSCI 1710,Logic for Systems,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,[],,,,[],,,,[],,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]"
+CSCI 1800,Cybersecurity and International Relations,,,[],,,,[],,,,[],,,,[],,,,[]
+CSCI 1820,Algorithmic Foundations of Computational Biology,,,[{'CSCI 1810'}],,,,,,,,[{'CSCI 1810'}],,,,,,,,
+CSCI 1880,Introduction to Computer Security,,,[],,,,[],,,,[],,,,[],,,,[]
+CSCI 1950U,Topics in 3D Game Engine Development,,,"[{'CSCI 0320', 'CSCI 1230', 'CSCI 0300', 'CSCI 0330'}]",,,,"[{'CSCI 1230', 'CSCI 1310', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]",,,,"[{'CSCI 1230', 'CSCI 1310', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]",,,,"[{'CSCI 1230', 'CSCI 1310', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]",,,,"[{'CSCI 1230', 'CSCI 1310', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]"
+CSCI 1951A,Data Science,,,"[{'CSCI 0180', 'CSCI 0190', 'CSCI 0160'}]","[{'CSCI 0180', 'CSCI 0190', 'CSCI 0160'}]",,,[],,,,[],,,,[],,,,
+CSCI 1951I,CS for Social Change,,,"[{'CSCI 0320', 'CSCI 1320', 'CSCI 0330'}]",,,,"[{'CSCI 1320', 'CSCI 1310', 'CSCI 1950S', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]",,,,,,,,,,,,
+CSCI 1951L,Blockchains and Cryptocurrencies,,,"[{'CSCI 1310', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320'}]","[{'CSCI 0150', 'CSCI 0111', 'CSCI 0190', 'CSCI 0170'}]",,,[],,,,[],,,,[],,[],,
+CSCI 1951T,Surveying VR Data Visualization Software for Research,,,[],,,,[],,,,,,,,[],,,,[]
+CSCI 2002,Privacy and Personal Data Protection,,,[],,,,[],,,,[],,[],,[],,,,[]
+CSCI 2240,Interactive Computer Graphics,,,"[{'CSCI 1230', 'MATH 0520', 'CSCI 0530', 'MATH 0540'}]",,,,"[{'CSCI 1230', 'MATH 0520', 'CSCI 0530', 'MATH 0540'}]",,,,"[{'CSCI 1230', 'MATH 0520', 'CSCI 0530', 'MATH 0540'}]",,,,"[{'CSCI 1230', 'MATH 0520', 'CSCI 0530', 'MATH 0540'}]",,,,"[{'CSCI 1230', 'MATH 0520', 'CSCI 0530', 'MATH 0540'}]"
+CSCI 2270,Topics in Database Management,,,[{'CSCI 1270'}],,,,[{'CSCI 1270'}],,,,[{'CSCI 1270'}],,,,[{'CSCI 1270'}],,,,
+CSCI 2440,Advanced Algorithmic Game Theory,,,[],,,,[],,,,[],,,,[],,[],,
+CSCI 2500A,Advanced Algorithms,,,[{'CSCI 1570'}],,,,,,,,,,,,,,,,
+CSCI 2540,Advanced Probabilistic Methods in Computer Science,,,"[{'CSCI 0450', 'CSCI 1450'}]",,,,,,,,"[{'CSCI 0450', 'CSCI 1450'}]",,,,"[{'CSCI 0450', 'CSCI 1450'}]",,,,
+CSCI 2670,Operating Systems,,,[],,,,[],,,,[],,,,[],,,,
+CSCI 2820,Algorithmic Foundations of Computational Biology,,,"[{'CSCI 0190', 'CSCI 0200', 'CSCI 0160', 'CSCI 0180', 'CSCI 1810'}]",,,,,,,,"[{'CSCI 0190', 'CSCI 0200', 'CSCI 0160', 'CSCI 0180', 'CSCI 1810'}]",,,,,,,,
+CSCI 2951O,Foundations of Prescriptive Analytics,,,"[{'CSCI 1310', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320'}]",,,,"[{'CSCI 1310', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]",,,,"[{'CSCI 1310', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]",,,,"[{'CSCI 1310', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]",,,,"[{'CSCI 1310', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]"
+CSCI 2952B,Topics in Computer Science Education Research,,,"[{'CSCI 1730', 'and 1950Y'}, {'CLPS 1951X'}]",,,,,,,,,,,,,,,,
+CSCI 2952N,Advanced Topics in Deep Learning,,,"[{'CSCI 1470', 'CSCI 1950F', 'CSCI 1430', 'CSCI 1420'}]",,,,"[{'CSCI 1470', 'CSCI 1950F', 'CSCI 1430', 'CSCI 1420'}]",,,,,,,,"[{'CSCI 1470', 'CSCI 1420', 'CSCI 2470', 'CSCI 1950F', 'CSCI 1430'}]",,,,
+CSCI 2952O,A Practical Introduction to Advanced 3D Robot Perception,,,[],,,,[],,,,,,,,,,,,
+CSCI 0160,Introduction to Algorithms and Data Structures,,,,[{'CSCI 0150'}],,,,,,,,,,,,,,,
+CSCI 0180,Computer Science: An Integrated Introduction,,,,"[{'CSCI 0190', 'CSCI 0112', 'CSCI 0170'}]",,,,,,,,,,,,,,,
+CSCI 1260,Compilers and Program Analysis,,,,,[],,,,[],,,,[],,,,"[{'CSCI 1310', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0330', 'CSCI 0220', 'CSCI 0300', 'CSCI 0320', 'CSCI 1340'}]",,
+CSCI 1300,User Interfaces and User Experience,,,,,"[{'CSCI 0180', 'CSCI 0200', 'CSCI 0190', 'CSCI 0160'}]",,,,,,"[{'CSCI 0190', 'CSCI 0200', 'CSCI 0160', 'CSCI 0180', 'CSCI 0320', 'CSCI 1340'}]",,,,[],,,,
+CSCI 1460,Computational Linguistics,,,,,[],,,,[],,,,[],,,,,,
+CSCI 1951R,Introduction to Robotics,,,,,"[{'CSCI 0450', 'CSCI 1450', 'CSCI 0190', 'CSCI 0200', 'CSCI 0160', 'CSCI 0220', 'CSCI 0180'}]",,,,"[{'CSCI 0450', 'CSCI 1450', 'CSCI 0190', 'CSCI 0200', 'CSCI 0160', 'CSCI 0220', 'CSCI 0180'}]",,,,,,,,,,
+CSCI 2230,Computer Graphics,,,,,[],,,,[],,,,[],,,,[],,
+CSCI 2951E,Topics in Computer Systems Security,,,,,[],,,,,,,,[{'CSCI 1660'}],,,,,,
+CSCI 2951I,Computer Vision for Graphics and Interaction,,,,,"[{'CLPS 1520', 'COGS 1200', 'CSCI 2240', 'ENGN 1610', 'CSCI 1430'}]",,,,,,,,"[{'CLPS 1520', 'COGS 1200', 'CSCI 2240', 'ENGN 1610', 'CSCI 1430'}]",,,,,,
+CSCI 2952C,Learning with Limited Labeled Data,,,,,[],,,,,,,,,,,,[],,
+CSCI 2952L,Special Topics in Secure Computation,,,,,[],,,,,,,,,,,,,,
+CSCI 2952Q,Robust Algorithms for Machine Learning,,,,,[],,,,"[{'CSCI 1950F', 'CSCI 1420'}]",,,,"[{'CSCI 1950F', 'CSCI 1420'}]",,,,,,
+CSCI 2952R,Systems Transforming Systems,,,,,[],,,,,,,,[],,,,[],,
+CSCI 0130,User Interfaces and User Experience,,,,,,,[],,,,,,,,,,,,
+CSCI 1340,Introduction to Software Engineering,,,,,,,[],,[],,[],,[],,[],,[],,
+CSCI 1515,Applied Cryptography,,,,,,,[],,,,"[{'CSCI 1310', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0200', 'CSCI 0330', 'CSCI 0220', 'CSCI 0300'}]",,,,[],,,,"[{'CSCI 1310', 'CSCI 0190', 'CSCI 1950S', 'CSCI 1330', 'CSCI 0200', 'CSCI 0330', 'CSCI 0220', 'CSCI 0300'}]"
+CSCI 1951Z,Fairness in Automated Decision Making,,,,,,,"[{'DATA 0200', 'CSCI 1950F', 'CSCI 1420'}]",,,,"[{'DATA 0200', 'CSCI 1950F', 'CSCI 1420'}]",,,,,,,,
+CSCI 1952B,Responsible Computer Science in Practice,,,,,,,[],,,,[],,,,,,,,[]
+CSCI 1952Q,Algorithmic Aspects of Machine Learning,,,,,,,"[{'CSCI 0450', 'CSCI 1450', 'MATH 0520', 'CSCI 0190', 'CSCI 0530', 'CSCI 0200', 'APMA 1655', 'CSCI 0160', 'MATH 0540', 'CSCI 0180', 'APMA 1650'}]",,,,"[{'CSCI 0450', 'CSCI 1450', 'MATH 0520', 'CSCI 0190', 'CSCI 0530', 'CSCI 0200', 'APMA 1655', 'CSCI 0160', 'MATH 0540', 'CSCI 0180', 'APMA 1650'}]",,,,,,,,
+CSCI 1952X,Contemporary Digital Policy and Politics,,,,,,,[],,,,[],,,,[],,,,
+CSCI 2300,Human-­Computer Interaction Seminar,,,,,,,[],,,,,,,,,,,,
+CSCI 2500C,Graph Theory and Algorithms,,,,,,,[],,,,,,,,,,,,
+CSCI 2660,Computer Systems Security,,,,,,,[],,,,[],,,,[],,,,[]
+CSCI 2951K,Topics in Collaborative Robotics,,,,,,,"[{'CSCI 1410', 'CSCI 1420', 'CSCI 1460', 'CSCI 1480', 'CSCI 1950F'}]",,,,,,,,,,,,
+CSCI 2952S,Topics in Cyber and Digital Policy,,,,,,,"[{'CSCI 1805', 'CSCI 1870', 'CSCI 1860', 'CSCI 1800'}]",,,,"[{'CSCI 1800', 'CSCI 1805', 'CSCI 1870', 'CSCI 1860', 'CSCI 1951F', 'CSCI 1950P'}]",,,,"[{'CSCI 1800', 'CSCI 1805', 'CSCI 1870', 'CSCI 1860', 'CSCI 1951F', 'CSCI 1950P'}]",,,,"[{'CSCI 1800', 'CSCI 1805', 'CSCI 1870', 'CSCI 1860', 'CSCI 1951F', 'CSCI 1950P'}]"
+CSCI 0535,Linear Algebra for Machine Learning,,,,,,,,[],,,,,,,,,,,
+CSCI 1290,Computational Photography,,,,,,,,,[],,,,,,,,[],,
+CSCI 1950T,Advanced Animation Production,,,,,,,,,[{'CSCI 1250'}],,,,,,,,,,
+CSCI 1952C,Frontiers of Graph Algorithms Seminar,,,,,,,,,"[{'CSCI 1570', 'CSCI 1550'}]",,,,,,,,,,
+CSCI 2590,Advanced Topics in Cryptography,,,,,,,,,[],,,,,,,,,,
+CSCI 0500,"Data Structures, Algorithms, and Intractability: An Introduction",,,,,,,,,,,[],,,,[],,"[{'CSCI 0190', 'CSCI 0200', 'MATH 0540', 'CSCI 0220', 'APMA 1650'}]",,"[{'MATH 0520', 'CSCI 0190', 'CSCI 0200', 'MATH 0540', 'CSCI 0220', 'APMA 1650'}]"
+CSCI 1952Y,Computer Architecture,,,,,,,,,,,"[{'CSCI 1310', 'CSCI 0300', 'CSCI 0330'}]",,,,"[{'CSCI 1310', 'CSCI 0300', 'CSCI 0330', 'CSCI 1950S'}]",,,,"[{'CSCI 1310', 'CSCI 0300', 'CSCI 0330', 'CSCI 1950S'}]"
+CSCI 1952Z,Robots as a Medium: Creating Art with Teams of Robots,,,,,,,,,,,[],,[],,,,,,[]
+CSCI 2340,Software Engineering,,,,,,,,,,,[],,[],,,,,,
+CSCI 2450,Exchange Scholar Program,,,,,,,,,,,[],,,,[],,,,
+CSCI 2500B,Optimization Algorithms for Planar Graphs,,,,,,,,,,,[{'CSCI 1570'}],,,,,,,,
+CSCI 2951U,Topics in Software Security,,,,,,,,,,,"[{'CSCI 1951H', 'CSCI 1650', 'CSCI 1670'}]",,,,"[{'CSCI 1951H', 'CSCI 1650', 'CSCI 1670'}]",,,,
+CSCI 2999A,"Cybersecurity Management Within Business, Government, and Non-Profit Organizations",,,,,,,,,,,[],,[],,,,[],,
+CSCI 0410,Foundations of AI,,,,,,,,,,,,,"[{'MATH 0520*', 'CSCI 0530*', 'CSCI 0200', 'CSCI 1410', 'APMA 1655', 'MATH 0540*', 'CSCI 0220', 'APMA 1650'}]",,[],,[],,"[{'CSCI 0450', 'CSCI 1450', 'CSCI 0190', 'MATH 0520*', 'CSCI 0530*', 'CSCI 0200', 'APMA 1655', 'APMA 0260*', 'MATH 0540*', 'CSCI 0220', 'APMA 1650'}]"
+CSCI 1411,Foundations in AI,,,,,,,,,,,,,"[{'MATH 0520*', 'CSCI 0530*', 'CSCI 0200', 'CSCI 1410', 'APMA 1655', 'MATH 0540*', 'CSCI 0220', 'APMA 1650'}]",,"[{'CSCI 0450', 'CSCI 1450', 'CSCI 0190', 'MATH 0520*', 'CSCI 0530*', 'CSCI 0200', 'APMA 1655', 'MATH 0540*', 'CSCI 0220', 'APMA 1650'}]",,"[{'CSCI 0450', 'CSCI 1450', 'CSCI 0190', 'MATH 0520*', 'CSCI 0530*', 'CSCI 0200', 'APMA 1655', 'APMA 0260*', 'MATH 0540*', 'CSCI 0220', 'APMA 1650'}]",,"[{'CSCI 0450', 'CSCI 1450', 'CSCI 0190', 'MATH 0520*', 'CSCI 0530*', 'CSCI 0200', 'APMA 1655', 'APMA 0260*', 'MATH 0540*', 'CSCI 0220', 'APMA 1650'}]"
+CSCI 1953A,Accessible and Inclusive Cybersecurity and Privacy,,,,,,,,,,,,,[],,,,[],,
+CSCI 2680,Computer Networks and the Internet,,,,,,,,,,,,,[{'CSCI 1680'}],,,,,,
+CSCI 2690,Datacenter and Cloud Operating Systems,,,,,,,,,,,,,"[{'CSCI 1690', 'CSCI 1670'}]",,,,"[{'CSCI 1690', 'CSCI 1670'}]",,
+CSCI 2952T,An Algorithmist's Toolkit,,,,,,,,,,,,,[{'CSCI 1570'}],,,,,,
+CSCI 2952U,Beyond Worst Case Analysis of Algorithms,,,,,,,,,,,,,"[{'CSCI 1570', 'CSCI 1550'}]",,,,,,
+CSCI 2952W,Critical Data and Machine Learning Studies,,,,,,,,,,,,,[],,,,,,
+CSCI 2952X,Research Topics in Self Supervised Learning,,,,,,,,,,,,,[],,,,[],,
+CSCI 1302,Intro to Sociotechnical Systems and HCI,,,,,,,,,,,,,,,[],,[],,[]
+CSCI 1385,Distributed Systems Laboratory,,,,,,,,,,,,,,,[{'CSCI 1380*'}],,,,
+CSCI 1390,Systems for Machine Learning,,,,,,,,,,,,,,,"[{'CSCI 1300', 'CSCI 1310', 'CSCI 1470', 'CSCI 1330', 'CSCI 1410', 'CSCI 0330', 'CSCI 0410', 'CSCI 1420', 'CSCI 0300', 'CSCI 2470', 'CSCI 1950F'}]",,,,
+CSCI 1491,Fairness in Automated Decision Making,,,,,,,,,,,,,,,"[{'DATA 0200', 'CSCI 1950F', 'CSCI 1420'}]",,,,"[{'DATA 0200', 'CSCI 1950F', 'CSCI 1420'}]"
+CSCI 1520,Algorithmic Aspects of Machine Learning,,,,,,,,,,,,,,,"[{'CSCI 0450', 'CSCI 1450', 'MATH 0520', 'CSCI 0190', 'CSCI 0530', 'CSCI 0200', 'APMA 1655', 'CSCI 0160', 'MATH 0540', 'CSCI 0180', 'APMA 1650'}]",,,,
+CSCI 1640,AI and Security,,,,,,,,,,,,,,,"[{'CSCI 1470', 'CSCI 1410', 'CSCI 1411', 'CSCI 1420', 'CSCI 0410', 'CSCI 1510', 'CSCI 1660', 'CSCI 2470', 'CSCI 1515', 'CSCI 1650', 'CSCI 2660'}]",,"[{'CSCI 1470', 'CSCI 1410', 'CSCI 1411', 'CSCI 1420', 'CSCI 0410', 'CSCI 1510', 'CSCI 1660', 'CSCI 2470', 'CSCI 1515', 'CSCI 1650', 'CSCI 2660', 'CSCI 1950F', 'CSCI 1951H'}]",,
+CSCI 1675,Designing High-Performance Network Systems,,,,,,,,,,,,,,,"[{'CSCI 1680', 'CSCI 1670'}]",,"[{'CSCI 1380', 'CSCI 1680', 'CSCI 2670', 'CSCI 2690', 'CSCI 2680', 'CSCI 1670'}]",,
+CSCI 2222,Interpretability of Language Models,,,,,,,,,,,,,,,"[{'CSCI 1950F', 'CSCI 1470', 'CSCI 2470', 'CSCI 1420'}]",,,,
+CSCI 2380,Distributed Systems With Laboratory,,,,,,,,,,,,,,,"[{'CSCI 1310', 'CSCI 1330', 'CSCI 0330', 'CSCI 0300', 'CSCI 0320'}]",,,,
+CSCI 2402C,Reading the Large Language Models,,,,,,,,,,,,,,,[],,,,
+CSCI 2840,Advanced Algorithms in Computational Biology and Medical Bioinformatics,,,,,,,,,,,,,,,[],,,,
+CSCI 2952K,Topics in 3D Computer Vision and Deep Learning,,,,,,,,,,,,,,,[],,,,
+CSCI 1715,Formal Proof and Verification,,,,,,,,,,,,,,,,,[],,
+CSCI 1951Q,Topics in Programming Languages,,,,,,,,,,,,,,,,,"[{'CSCI 1730', 'CSCI 1260'}]",,
+CSCI 1951Y,Using an Interactive Proof Assistant to do Mathematics,,,,,,,,,,,,,,,,,"[{'CSCI 0111', 'CSCI 0190', 'CSCI 0170', 'CSCI 0150', 'MATH 1530'}]",,
+CSCI 1952A,Human-AI Interaction,,,,,,,,,,,,,,,,,[],,
+CSCI 1952R,Systems Transforming Systems,,,,,,,,,,,,,,,,,[],,
+CSCI 2200,Cybersecurity Law and Policy,,,,,,,,,,,,,,,,,[],,[]
+CSCI 2952Y,Special Topics in Computational Design and Fabrication,,,,,,,,,,,,,,,,,[],,
