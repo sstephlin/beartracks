@@ -50,15 +50,11 @@ public class FirebaseUtilities implements StorageInterface {
     }
 
     // gets all documents in the collection 'collection_id' for user 'uid'
-
     Firestore db = FirestoreClient.getFirestore();
-    // 1: Make the data payload to add to your collection
     CollectionReference dataRef = db.collection("users").document(uid).collection(collection_id);
 
-    // 2: Get pin documents
     QuerySnapshot dataQuery = dataRef.get().get();
 
-    // 3: Get data from document queries
     List<Map<String, Object>> data = new ArrayList<>();
     for (QueryDocumentSnapshot doc : dataQuery.getDocuments()) {
       data.add(doc.getData());
@@ -74,12 +70,6 @@ public class FirebaseUtilities implements StorageInterface {
       throw new IllegalArgumentException(
           "addDocument: uid, collection_id, doc_id, or data cannot be null");
     }
-    // adds a new document 'doc_name' to colleciton 'collection_id' for user 'uid'
-    // with data payload 'data'.
-
-    // TODO: FIRESTORE PART 1:
-    // use the guide below to implement this handler
-    // - https://firebase.google.com/docs/firestore/quickstart#add_data
 
     Firestore db = FirestoreClient.getFirestore();
     // 1: Get a ref to the collection that you created
@@ -130,7 +120,7 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
-  private void deleteDocument(DocumentReference doc) {
+  public void deleteDocument(DocumentReference doc) {
     // for each subcollection, run deleteCollection()
     Iterable<CollectionReference> collections = doc.listCollections();
     for (CollectionReference collection : collections) {
@@ -161,30 +151,39 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
-  // retrieve a user's semester blocks and all courses within each semester --> Treemap
-  public Map<> getUserCourses()
-      throws InterruptedException, ExecutionException {
+  //  public List<String> getAllUserIds() throws InterruptedException, ExecutionException {
+  //    Firestore db = FirestoreClient.getFirestore();
+  //    List<String> userIds = new ArrayList<>();
+  //    ApiFuture<QuerySnapshot> usersSnapshot = db.collection("users").get();
+  //
+  //    System.out.println("Found " + usersSnapshot.get().getDocuments().size() + " user docs.");
+  //
+  //    for (DocumentSnapshot doc : usersSnapshot.get().getDocuments()) {
+  //      userIds.add(doc.getId());
+  //    }
+  //    return userIds;
+  //  }
 
+  public List<Map<String, Object>> getAllUserPins()
+      throws InterruptedException, ExecutionException {
     Firestore db = FirestoreClient.getFirestore();
-    List<String> allCourses = new ArrayList<>();
-    ApiFuture<QuerySnapshot> future = db.collectionGroup("courses").get();
+    List<Map<String, Object>> allPins = new ArrayList<>();
+    ApiFuture<QuerySnapshot> future = db.collectionGroup("pins").get();
     List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
     for (QueryDocumentSnapshot doc : documents) {
-      // what does getData return??
-      Map<String, Object> userCourses = doc.getData();
-//      String userCourses = doc.getData();
+      Map<String, Object> pinData = doc.getData();
 
       // 2. Extract the user ID from the document's path: "users/{uid}/pins/{pinId}"
       String[] pathSegments = doc.getReference().getPath().split("/");
       if (pathSegments.length >= 2) {
         String userId = pathSegments[1];
-        userCourses.put("userId", userId);
+        pinData.put("userId", userId);
       }
 
-      allCourses.add(userCourses);
+      allPins.add(pinData);
     }
 
-    return allCourses;
+    return allPins;
   }
 }
