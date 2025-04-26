@@ -34,11 +34,28 @@ function App() {
           <div className="logo">
             <div className="logo-title">
               <a href="index.html" className="logo-link">
-                <img src="/BearTracks.png" alt="Bear Logo" className="logo-image" />
+                <img
+                  src="/BearTracks.png"
+                  alt="Bear Logo"
+                  className="logo-image"
+                />
                 BearTracks
               </a>
-            </div>  
+            </div>
             <progress className="logo-progress" value={40} max={100}></progress>
+          </div>
+          <div className="Sign-in-out-container">
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
+            <SignedIn>
+              <div>
+                <div className="signed-in-buttons">
+                  <h3>Welcome!</h3>
+                  <UserButton />
+                </div>
+              </div>
+            </SignedIn>
           </div>
           <div className="Sign-in-out-container">
             <SignedOut>
@@ -59,15 +76,20 @@ function App() {
         <BearTracks />
       </div>
       {/* Trash icon globally positioned */}
-      <button className="trash-global-icon" onClick={() => console.log("Trash clicked")}>
+      <button
+        className="trash-global-icon"
+        onClick={() => console.log("Trash clicked")}
+      >
         <Trash2 />
       </button>
 
       {/* Question mark icon */}
-      <button className="floating-icon help-icon" onClick={() => console.log("Help clicked")}>
+      <button
+        className="floating-icon help-icon"
+        onClick={() => console.log("Help clicked")}
+      >
         <HelpCircle />
       </button>
-
     </div>
   );
 }
