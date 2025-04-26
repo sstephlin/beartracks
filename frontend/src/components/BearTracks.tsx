@@ -9,7 +9,6 @@ function BearTracks() {
   return (
     <div>
       <SearchBar onSearch={handleSearch} />
-      <p>search</p>
     </div>
   );
 }

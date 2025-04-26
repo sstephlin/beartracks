@@ -1,32 +1,20 @@
-// import { initializeApp } from "firebase/app";
 import "../styles/App.css";
+import Sidebar from "./Sidebar";
 import BearTracks from "./BearTracks";
 import { Trash2, HelpCircle } from "lucide-react";
-// import MapsGearup from "./Maps";
+import { useState } from "react";
+
 import {
   SignedIn,
   SignedOut,
   SignInButton,
-  SignOutButton,
   UserButton,
 } from "@clerk/clerk-react";
 
-// REMEMBER TO PUT YOUR API KEY IN A FOLDER THAT IS GITIGNORED!!
-// (for instance, /src/private/api_key.tsx)
-// import {API_KEY} from "./private/api_key"
-
-// const firebaseConfig = {
-//   apiKey: process.env.API_KEY,
-//   authDomain: process.env.AUTH_DOMAIN,
-//   projectId: process.env.PROJECT_ID,
-//   storageBucket: process.env.STORAGE_BUCKET,
-//   messagingSenderId: process.env.MESSAGING_SENDER_ID,
-//   appId: process.env.APP_ID,
-// };
-
-// initializeApp(firebaseConfig);
-
 function App() {
+  const [expanded, setExpanded] = useState<boolean>(true);
+  const [degree, setDegree] = useState<string>("");
+
   return (
     <div className="App">
       <div className="header-container">
@@ -50,19 +38,41 @@ function App() {
             </SignedOut>
             <SignedIn>
               <div>
-                <div className="signed-in-buttons">
-                  <h3>Welcome!</h3>
-                  <UserButton />
-                </div>
+      <div className="layout-container">
+        <Sidebar
+          expanded={expanded}
+          setExpanded={setExpanded}
+          degree={degree}
+          setDegree={setDegree}
+        />
+        <div className="header-and-content">
+          <header
+            className={`App-header ${
+              expanded ? "header-sidebar-expanded" : "header-sidebar-collapsed"
+            }`}
+          >
+            <div className="logo">
+              <div className="logo-title">
+                <a href="index.html" className="logo-link">
+                  <img
+                    src="/BearTracks.png"
+                    alt="Bear Logo"
+                    className="logo-image"
+                  />
+                  BearTracks
+                </a>
               </div>
-            </SignedIn>
-          </div>
-          <div className="Sign-in-out-container">
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-            <SignedIn>
-              <div>
+              <progress
+                className="logo-progress"
+                value={40}
+                max={100}
+              ></progress>
+            </div>
+            <div className="Sign-in-out-container">
+              <SignedOut>
+                <SignInButton />
+              </SignedOut>
+              <SignedIn>
                 <div className="signed-in-buttons">
                   <h3>Welcome!</h3>
                   <UserButton />
