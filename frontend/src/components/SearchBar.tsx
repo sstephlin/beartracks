@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+
 import "../styles/SearchBar.css";
 
 interface SearchBarProps {
@@ -27,4 +27,3 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
     </div>
   );
 }
-
