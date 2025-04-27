@@ -143,19 +143,21 @@ body {
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
+  color: black;
 }
 
 .logo-title {
   display: flex;
   align-items: center;
   gap: 40px;
+  color: black;
 }
 
 .logo-link {
   display: flex;
   align-items: center;
   text-decoration: none;
-  color: #ffffff;
+  color: black;
   font-weight: 600;
   font-size: 24px;
   font-style: italic;

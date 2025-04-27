@@ -17,27 +17,6 @@ function App() {
 
   return (
     <div className="App">
-      <div className="header-container">
-        <header className="App-header">
-          <div className="logo">
-            <div className="logo-title">
-              <a href="index.html" className="logo-link">
-                <img
-                  src="/BearTracks.png"
-                  alt="Bear Logo"
-                  className="logo-image"
-                />
-                BearTracks
-              </a>
-            </div>
-            <progress className="logo-progress" value={40} max={100}></progress>
-          </div>
-          <div className="Sign-in-out-container">
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-            <SignedIn>
-              <div>
       <div className="layout-container">
         <Sidebar
           expanded={expanded}
@@ -77,29 +56,31 @@ function App() {
                   <h3>Welcome!</h3>
                   <UserButton />
                 </div>
-              </div>
-            </SignedIn>
-          </div>
-        </header>
+              </SignedIn>
+            </div>
+          </header>
+          <main className="main-content">
+            <BearTracks />
+            {/* Floating action buttons */}
+            <div>
+              <button
+                className="trash-global-icon"
+                onClick={() => console.log("Trash clicked")}
+              >
+                <Trash2 />
+              </button>
+            </div>
+            <div>
+              <button
+                className="floating-icon help-icon"
+                onClick={() => console.log("Help clicked")}
+              >
+                <HelpCircle />
+              </button>
+            </div>
+          </main>
+        </div>
       </div>
-      <div>
-        <BearTracks />
-      </div>
-      {/* Trash icon globally positioned */}
-      <button
-        className="trash-global-icon"
-        onClick={() => console.log("Trash clicked")}
-      >
-        <Trash2 />
-      </button>
-
-      {/* Question mark icon */}
-      <button
-        className="floating-icon help-icon"
-        onClick={() => console.log("Help clicked")}
-      >
-        <HelpCircle />
-      </button>
     </div>
   );
 }
