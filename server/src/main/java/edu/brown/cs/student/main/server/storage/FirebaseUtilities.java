@@ -50,15 +50,11 @@ public class FirebaseUtilities implements StorageInterface {
     }
 
     // gets all documents in the collection 'collection_id' for user 'uid'
-
     Firestore db = FirestoreClient.getFirestore();
-    // 1: Make the data payload to add to your collection
     CollectionReference dataRef = db.collection("users").document(uid).collection(collection_id);
 
-    // 2: Get pin documents
     QuerySnapshot dataQuery = dataRef.get().get();
 
-    // 3: Get data from document queries
     List<Map<String, Object>> data = new ArrayList<>();
     for (QueryDocumentSnapshot doc : dataQuery.getDocuments()) {
       data.add(doc.getData());
@@ -74,12 +70,6 @@ public class FirebaseUtilities implements StorageInterface {
       throw new IllegalArgumentException(
           "addDocument: uid, collection_id, doc_id, or data cannot be null");
     }
-    // adds a new document 'doc_name' to colleciton 'collection_id' for user 'uid'
-    // with data payload 'data'.
-
-    // TODO: FIRESTORE PART 1:
-    // use the guide below to implement this handler
-    // - https://firebase.google.com/docs/firestore/quickstart#add_data
 
     Firestore db = FirestoreClient.getFirestore();
     // 1: Get a ref to the collection that you created
@@ -130,7 +120,7 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
-  private void deleteDocument(DocumentReference doc) {
+  public void deleteDocument(DocumentReference doc) {
     // for each subcollection, run deleteCollection()
     Iterable<CollectionReference> collections = doc.listCollections();
     for (CollectionReference collection : collections) {
