@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -151,19 +152,6 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
-  //  public List<String> getAllUserIds() throws InterruptedException, ExecutionException {
-  //    Firestore db = FirestoreClient.getFirestore();
-  //    List<String> userIds = new ArrayList<>();
-  //    ApiFuture<QuerySnapshot> usersSnapshot = db.collection("users").get();
-  //
-  //    System.out.println("Found " + usersSnapshot.get().getDocuments().size() + " user docs.");
-  //
-  //    for (DocumentSnapshot doc : usersSnapshot.get().getDocuments()) {
-  //      userIds.add(doc.getId());
-  //    }
-  //    return userIds;
-  //  }
-
   public List<Map<String, Object>> getAllUserPins()
       throws InterruptedException, ExecutionException {
     Firestore db = FirestoreClient.getFirestore();
@@ -185,5 +173,40 @@ public class FirebaseUtilities implements StorageInterface {
     }
 
     return allPins;
+  }
+
+  @Override
+  public Map<String, List<String>> getAllSemestersAndCourses(String uid)
+      throws InterruptedException, ExecutionException, IllegalArgumentException {
+    if (uid == null) {
+      throw new IllegalArgumentException("getAllSemestersAndCourses: uid cannot be null");
+    }
+
+    Firestore db = FirestoreClient.getFirestore();
+    Map<String, List<String>> semesterToCourses = new HashMap<>();
+
+    // Step 1: Get all semesters under users/{uid}/semesters/*
+    CollectionReference semestersRef = db.collection("users").document(uid).collection("semesters");
+    ApiFuture<QuerySnapshot> semestersFuture = semestersRef.get();
+    List<QueryDocumentSnapshot> semesterDocs = semestersFuture.get().getDocuments();
+
+    // Step 2: For each semester, get the 'courses' subcollection
+    for (QueryDocumentSnapshot semesterDoc : semesterDocs) {
+      String semesterKey = semesterDoc.getId(); // example: "Fall 2025"
+      CollectionReference coursesRef = semesterDoc.getReference().collection("courses");
+      ApiFuture<QuerySnapshot> coursesFuture = coursesRef.get();
+      List<QueryDocumentSnapshot> courseDocs = coursesFuture.get().getDocuments();
+
+      List<String> courseCodes = new ArrayList<>();
+      for (QueryDocumentSnapshot courseDoc : courseDocs) {
+        String courseCode = (String) courseDoc.get("code");
+        if (courseCode != null) {
+          courseCodes.add(courseCode);
+        }
+      }
+      semesterToCourses.put(semesterKey, courseCodes);
+    }
+
+    return semesterToCourses;
   }
 }

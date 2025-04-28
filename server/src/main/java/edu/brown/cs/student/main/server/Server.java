@@ -8,6 +8,7 @@ import edu.brown.cs.student.main.server.handlers.CheckSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveCourseHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.SearchCourseHandler;
+import edu.brown.cs.student.main.server.handlers.StoreConcentrationHandler;
 import edu.brown.cs.student.main.server.parser.CourseCSVParser;
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
@@ -38,12 +39,13 @@ public class Server {
       CourseCatalog catalog = CourseCSVParser.parse("data/mockCourse.csv");
 
       // 3. Set up routes
-      Spark.get("add-course", new AddCourseHandler(firebaseUtils));
+      Spark.get("add-course", new AddCourseHandler(firebaseUtils, catalog));
       Spark.get("add-semester", new AddSemesterHandler(firebaseUtils));
       Spark.get("remove-course", new RemoveCourseHandler(firebaseUtils));
       Spark.get("remove-semester", new RemoveSemesterHandler(firebaseUtils));
       Spark.get("check-semester", new CheckSemesterHandler(catalog));
       Spark.get("search-course", new SearchCourseHandler(catalog));
+      Spark.get("store-concentration", new StoreConcentrationHandler(firebaseUtils));
 
       Spark.notFound(
           (request, response) -> {
