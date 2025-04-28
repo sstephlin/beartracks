@@ -1,36 +1,50 @@
 package edu.brown.cs.student.main.server.parser;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+import java.util.UUID;
 
 public class CourseCSVParser {
-  public static void main(String[] args) throws Exception {
+
+  public static CourseCatalog parse(String filepath) throws IOException {
     CourseCatalog catalog = new CourseCatalog();
     Map<String, String> prereqStringToTreeId = new HashMap<>();
 
-    BufferedReader br =
-        new BufferedReader(
-            new FileReader(
-                "server/src/main/java/edu/brown/cs/student/main/server/data/mockCourse.csv"));
+    InputStream is = CourseCSVParser.class.getClassLoader().getResourceAsStream(filepath);
+    if (is == null) {
+      throw new FileNotFoundException("Resource not found: " + filepath);
+    }
+    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+    // Split header preserving empty columns, include the last semester column
     String header = br.readLine();
-    String[] columns = header.split(",");
-    String[] semesters = Arrays.copyOfRange(columns, 2, columns.length - 1);
+    String[] columns = header.split(",", -1);
+    String[] semesters = Arrays.copyOfRange(columns, 2, columns.length);
 
     String line;
     while ((line = br.readLine()) != null) {
-      String[] tokens = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+      // Preserve trailing empty fields in each row
+      String[] tokens = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       String courseCode = tokens[0];
       String courseName = tokens[1];
       CourseInfo info = new CourseInfo(courseName);
 
-      for (int i = 2; i < tokens.length - 1; i++) {
+      // Loop through every semester column
+      for (int i = 2; i < tokens.length; i++) {
         String cell = tokens[i].trim();
         String semester = semesters[i - 2];
 
         if (cell.equals("[]")) {
           info.semesterToTreeId.put(semester, null);
         } else if (!cell.isEmpty()) {
-          String normalized = cell.replaceAll("\\s+", ""); // normalize spacing
+          String normalized = cell.replaceAll("\\s+", "");
           if (!prereqStringToTreeId.containsKey(normalized)) {
             String treeId = UUID.randomUUID().toString();
             PrereqTreeNode tree = parseTree(cell);
@@ -46,49 +60,15 @@ public class CourseCSVParser {
       catalog.addCourse(courseCode, info);
     }
     br.close();
-    // PRINTING PREREQ
-    //    for (String code : catalog.courseMap.keySet()) {
-    //      CourseInfo info = catalog.courseMap.get(code);
-    //      System.out.println(code + ": " + info.courseName);
-    //      for (String sem : info.semesterToTreeId.keySet()) {
-    //        String treeId = info.semesterToTreeId.get(sem);
-    //        System.out.print("  " + sem + ": ");
-    //        if (treeId == null) {
-    //          System.out.println("No prerequisites");
-    //        } else {
-    //          System.out.println(catalog.treeMap.get(treeId));
-    //        }
-    //      }
-    //    }
-
-    // PRINTING TREE
-    for (String code : catalog.courseMap.keySet()) {
-      CourseInfo info = catalog.courseMap.get(code);
-      System.out.println(code + ": " + info.courseName);
-      for (String sem : info.semesterToTreeId.keySet()) {
-        String treeId = info.semesterToTreeId.get(sem);
-        System.out.println("  " + sem + ":");
-        if (treeId == null) {
-          System.out.println("    No prerequisites");
-        } else {
-          PrereqTreeNode tree = catalog.treeMap.get(treeId);
-          System.out.print(tree.toPrettyString("    "));
-        }
-      }
-    }
+    return catalog;
   }
 
   private static PrereqTreeNode parseTree(String str) {
     str = str.replaceAll("[\\[\\]\"]", "").trim();
-
-    // Empty or [] → return null
     if (str.isEmpty()) return null;
-
-    // Normalize unwrapped comma lists
     if (!str.startsWith("{") && str.contains(",")) {
       str = "{" + str + "}";
     }
-
     if (str.startsWith("{")) {
       return parseGroup(str);
     } else {
