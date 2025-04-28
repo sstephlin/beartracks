@@ -11,14 +11,9 @@ public interface StorageInterface {
 
   void deleteDocument(DocumentReference doc);
 
-  List<Map<String, Object>> getCollection(String uid, String collection_id)
-      throws InterruptedException, ExecutionException;
-
-  void clearCollection(String uid, String collectionName)
-      throws InterruptedException, ExecutionException;
-
-  List<Map<String, Object>> getAllUserPins() throws InterruptedException, ExecutionException;
-
   Map<String, List<String>> getAllSemestersAndCourses(String uid)
       throws InterruptedException, ExecutionException, IllegalArgumentException;
+
+  String getView(String uid) throws Exception;
+  String getConcentration(String uid) throws Exception;
 }

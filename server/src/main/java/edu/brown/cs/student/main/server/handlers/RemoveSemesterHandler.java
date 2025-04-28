@@ -11,7 +11,7 @@ import spark.Response;
 import spark.Route;
 
 public class RemoveSemesterHandler implements Route {
-  public StorageInterface storageHandler;
+  private final StorageInterface storageHandler;
 
   public RemoveSemesterHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;

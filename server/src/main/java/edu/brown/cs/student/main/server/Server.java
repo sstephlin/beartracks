@@ -5,10 +5,14 @@ import static spark.Spark.after;
 import edu.brown.cs.student.main.server.handlers.AddCourseHandler;
 import edu.brown.cs.student.main.server.handlers.AddSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.CheckSemesterHandler;
+import edu.brown.cs.student.main.server.handlers.GetConcentrationHandler;
+import edu.brown.cs.student.main.server.handlers.GetUserCoursesHandler;
+import edu.brown.cs.student.main.server.handlers.GetViewHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveCourseHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.SearchCourseHandler;
 import edu.brown.cs.student.main.server.handlers.StoreConcentrationHandler;
+import edu.brown.cs.student.main.server.handlers.StoreViewHandler;
 import edu.brown.cs.student.main.server.parser.CourseCSVParser;
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
@@ -46,6 +50,10 @@ public class Server {
       Spark.get("check-semester", new CheckSemesterHandler(catalog));
       Spark.get("search-course", new SearchCourseHandler(catalog));
       Spark.get("store-concentration", new StoreConcentrationHandler(firebaseUtils));
+      Spark.get("get-concentration", new GetConcentrationHandler(firebaseUtils));
+      Spark.get("store-view", new StoreViewHandler(firebaseUtils));
+      Spark.get("get-view", new GetViewHandler(firebaseUtils));
+      Spark.get("get-user-courses", new GetUserCoursesHandler(firebaseUtils));
 
       Spark.notFound(
           (request, response) -> {

@@ -12,7 +12,7 @@ import spark.Route;
 
 public class RemoveCourseHandler implements Route {
 
-  public StorageInterface storageHandler;
+  private final StorageInterface storageHandler;
 
   public RemoveCourseHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;

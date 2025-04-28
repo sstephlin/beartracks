@@ -14,8 +14,8 @@ import spark.Response;
 import spark.Route;
 
 public class AddCourseHandler implements Route {
-  public StorageInterface storageHandler;
-  public CourseCatalog catalog;
+  private final StorageInterface storageHandler;
+  private final CourseCatalog catalog;
 
   public AddCourseHandler(StorageInterface storageHandler, CourseCatalog catalog) {
     this.storageHandler = storageHandler;

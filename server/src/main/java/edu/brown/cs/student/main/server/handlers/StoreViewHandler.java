@@ -7,10 +7,10 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class StoreConcentrationHandler implements Route{
+public class StoreViewHandler implements Route {
   private final StorageInterface storageHandler;
 
-  public StoreConcentrationHandler(StorageInterface storageHandler) {
+  public StoreViewHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
   }
 
@@ -19,21 +19,20 @@ public class StoreConcentrationHandler implements Route{
     Map<String, Object> responseMap = new HashMap<>();
     try {
       String uid = request.queryParams("uid");
-      String concentration = request.queryParams("concentration");
+      String view = request.queryParams("view");
 
-      if (uid == null || concentration == null) {
+      if (uid == null || view == null) {
         throw new IllegalArgumentException("Missing required query parameters");
       }
 
-      Map<String, Object> concentrationData = new HashMap<>();
-      concentrationData.put("concentration", concentration);
+      Map<String, Object> viewData = new HashMap<>();
+      viewData.put("view", view);
 
-      // Structure: users/{uid}/concentration/current
-      // concentration data holds the current concentration name
-      storageHandler.addDocument(uid, "concentration", "current", concentrationData);
+      // Now store into the 'view' collection under 'current' document
+      storageHandler.addDocument(uid, "view", "current", viewData);
 
       responseMap.put("response_type", "success");
-      responseMap.put("message", "Set concentration as: " + concentration + " for user " + uid);
+      responseMap.put("message", "Set view as: " + view + " for user " + uid);
     } catch (Exception e) {
       e.printStackTrace();
       responseMap.put("response_type", "failure");
