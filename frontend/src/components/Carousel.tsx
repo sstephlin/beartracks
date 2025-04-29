@@ -74,6 +74,7 @@ export default function Carousel({
       handleDrop(e, semesterId);
     }
   };
+  const boxWidth = expanded ? 270 : 320; // box width + margin/gap
 
   return (
     <div className="carousel-outer-wrapper">
@@ -89,7 +90,8 @@ export default function Carousel({
         <div
           className="carousel-track"
           style={{
-            transform: `translateX(-${(100 / viewCount) * currentIndex}%)`,
+            transform: `translateX(-${currentIndex * boxWidth}px)`,
+            transition: "transform 0.5s ease",
           }}
         >
           {semesters.map((semesterId) => (

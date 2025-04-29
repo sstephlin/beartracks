@@ -11,10 +11,10 @@ function BearTracks(props: BearTracksProps) {
   // const [expanded, setExpanded] = useState<boolean>();
   const [viewCount, setViewCount] = useState<number>(2);
   const [semesters, setSemesters] = useState<string[]>([
-    "fall-2026",
-    "spring-2027",
-    "fall-2027",
-    "spring-2028",
+    "fall 2026",
+    "spring 2027",
+    "fall 2027",
+    "spring 2028",
   ]);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [draggedSearchCourse, setDraggedSearchCourse] = useState<any | null>(
