@@ -1,4 +1,5 @@
 import React from "react";
+import "../styles/SemesterBox.css";
 
 interface CourseSlotProps {
   id: string;
@@ -56,10 +57,10 @@ export default function CourseSlot({
       onDrop={handleDrop}
     >
       {!isEmpty && (
-        <>
-          {courseCode}
+        <div className="course-filled">
+          <div className="course-code">{courseCode}</div>
           {courseTitle && <div className="course-title">{courseTitle}</div>}
-        </>
+        </div>
       )}
     </div>
   );
