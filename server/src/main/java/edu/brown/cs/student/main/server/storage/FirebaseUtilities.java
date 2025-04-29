@@ -205,4 +205,31 @@ public class FirebaseUtilities implements StorageInterface {
     }
     return null;
   }
+
+  @Override
+  public String getCapstoneCourse(String uid) {
+    try {
+      Firestore db = FirestoreClient.getFirestore();
+      CollectionReference semestersRef = db.collection("users").document(uid).collection("semesters");
+      ApiFuture<QuerySnapshot> semestersFuture = semestersRef.get();
+      List<QueryDocumentSnapshot> semesters = semestersFuture.get().getDocuments();
+
+      for (QueryDocumentSnapshot semesterDoc : semesters) {
+        CollectionReference coursesRef = semesterDoc.getReference().collection("courses");
+        ApiFuture<QuerySnapshot> coursesFuture = coursesRef.get();
+        List<QueryDocumentSnapshot> courseDocs = coursesFuture.get().getDocuments();
+
+        for (QueryDocumentSnapshot courseDoc : courseDocs) {
+          Boolean isCapstone = courseDoc.getBoolean("isCapstone");
+          if (isCapstone != null && isCapstone) {
+            return courseDoc.getId(); // Return course code immediately
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return null; // No capstone selected
+  }
 }

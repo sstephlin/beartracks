@@ -57,6 +57,7 @@ public class AddCourseHandler implements Route {
       Map<String, Object> courseData = new HashMap<>();
       courseData.put("code", courseCode);
       courseData.put("title", courseTitle);
+      courseData.put("isCapstone", false); // Default is NOT marked as capstone
 
       storageHandler.addDocument(
           uid + "/semesters/" + semesterKey, "courses", courseCode, courseData);

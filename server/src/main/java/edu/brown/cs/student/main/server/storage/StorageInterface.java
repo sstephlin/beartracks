@@ -20,4 +20,6 @@ public interface StorageInterface {
   String getConcentration(String uid) throws Exception;
 
   Set<String> getAllUserCourses(String userId) throws ExecutionException, InterruptedException;
+
+  String getCapstoneCourse(String uid);
 }

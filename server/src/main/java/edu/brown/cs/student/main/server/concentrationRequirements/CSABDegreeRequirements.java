@@ -76,7 +76,7 @@ public class CSABDegreeRequirements {
             "CSCI 1260", "CSCI 1290", "CSCI 1300", "CSCI 1320", "CSCI 1370",
             "CSCI 1380", "CSCI 1410", "CSCI 1420", "CSCI 1430", "CSCI 1440", "CSCI 1470",
             "CSCI 1515", "CSCI 1550", "CSCI 1600", "CSCI 1640",
-            "CSCI 1660", "CSCI 1620",
+            "CSCI 1660", "CSCI 1620", // (1660 with 1620)
             "CSCI 1670", "CSCI 1690",
             "CSCI 1680", "CSCI 1710", "CSCI 1730", "CSCI 1760",
             "CSCI 1950U", "CSCI 1951A", "CSCI 1951C", "CSCI 1951I", "CSCI 1951U",

@@ -1,5 +1,7 @@
 package edu.brown.cs.student.main.server.concentrationRequirements;
 
+import edu.brown.cs.student.main.server.concentrationRequirements.CSCapstoneCourses;
+import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,13 +10,18 @@ import java.util.Map;
 import java.util.Set;
 
 public class CSRequirementChecker {
+  private StorageInterface storageHandler;
+  private String uid;
   private Set<String> userCourses;
   private Map<String, RequirementRule> requirements;
   private Set<String> usedCourses = new HashSet<>();
 
-  public CSRequirementChecker(Set<String> userCourses, Map<String, RequirementRule> requirements) {
+  public CSRequirementChecker(StorageInterface storageHandler, String uid, Set<String> userCourses, Map<String, RequirementRule> requirements) {
+    this.storageHandler = storageHandler;
+    this.uid = uid;
     this.userCourses = userCourses;
     this.requirements = requirements;
+
   }
 
   // New method: returns a Map of requirement name -> list of fulfilling courses
@@ -105,13 +112,21 @@ public class CSRequirementChecker {
     return matchedCourses;
   }
 
-  // Modified: now returns list
+  /**
+   * checks all the possible elective courses user could take (linear algebra, approved non-cs
+   * @return
+   */
   private List<String> checkElectives() {
     List<String> matchedCourses = new ArrayList<>();
     int electivesSatisfied = 0;
     boolean linearAlgebraUsed = false;
     int csci1970Count = 0;
-    int nonTechnicalCount = 0;
+
+    int nonCsCoursesUsed = 0;
+    int nonTechnicalArtsCoursesUsed = 0;
+
+    int nonCsLimit = (requirements.size() == 10) ? 1 : 3; // AB: 1, ScB: 3
+    int nonTechnicalArtsLimit = (requirements.size() == 10) ? 1 : 3; // AB: 1, ScB: 3
 
     Set<String> linearAlgebraCourses = Set.of("MATH 0520", "MATH 0540", "APMA 0260");
     Set<String> specialElectives = new HashSet<>(requirements.get("Electives").getAcceptableCourses());
@@ -133,28 +148,37 @@ public class CSRequirementChecker {
         try {
           int number = Integer.parseInt(course.replaceAll("[^0-9]", ""));
           if (number >= 1000) {
-            if (course.equals("CSCI 1970")) {
-              csci1970Count++;
-              if (csci1970Count <= 2) {
+            if (ARTS_POLICY_HUM_CS_COURSES.contains(course)) { // check if there are any arts/policy/humanitise CS courses
+              if (nonTechnicalArtsCoursesUsed < nonTechnicalArtsLimit) {
+                matchedCourses.add(course);
+                usedCourses.add(course);
+                electivesSatisfied++;
+                nonTechnicalArtsCoursesUsed++;
+              }
+            } else {
+              if (course.equals("CSCI 1970")) {
+                csci1970Count++;
+                if (csci1970Count <= 2) {
+                  matchedCourses.add(course);
+                  usedCourses.add(course);
+                  electivesSatisfied++;
+                }
+              } else {
                 matchedCourses.add(course);
                 usedCourses.add(course);
                 electivesSatisfied++;
               }
-            } else {
-              matchedCourses.add(course);
-              usedCourses.add(course);
-              electivesSatisfied++;
             }
           }
         } catch (NumberFormatException e) {
           // ignore
         }
-      } else {
-        nonTechnicalCount++;
-        if (nonTechnicalCount <= getNonTechnicalLimit()) {
+      } else if (isAllowedNonCSCourse(course)) { // Handle non-CS department courses
+        if (nonCsCoursesUsed < nonCsLimit) {
           matchedCourses.add(course);
           usedCourses.add(course);
           electivesSatisfied++;
+          nonCsCoursesUsed++;
         }
       }
 
@@ -166,18 +190,42 @@ public class CSRequirementChecker {
     return matchedCourses;
   }
 
-  // Modified: now returns list
+  /**
+   * helper method for checkCapstone that looks for a capstone
+   *
+   * @param courseCode
+   * @return
+   */
+  private boolean isUserMarkedCapstone(String courseCode) {
+    String selectedCapstone = storageHandler.getCapstoneCourse(uid);
+    return selectedCapstone != null && selectedCapstone.equals(courseCode);
+  }
+
+  /**
+   * checks that a user's courses includes a capstone course (either one of the 3 special
+   * capstone classes OR if the user checkmarks it separately)
+   *
+   * @return a list of the first capstone-eligible course that a user has taken
+   */
   private List<String> checkCapstone() {
     List<String> matchedCourses = new ArrayList<>();
-    RequirementRule rule = requirements.get("Capstone");
+
+    // Use your shared constant
+    Set<String> autoCapstones = new HashSet<>(CSCapstoneCourses.AUTO_ACCEPTED);
+
+    // This should be passed into the RequirementChecker (not hardcoded inside)
+    String userSelectedCapstone = storageHandler.getCapstoneCourse(uid);
 
     for (String course : userCourses) {
-      if (rule.getAcceptableCourses().contains(course)) {
-        if (!usedCourses.contains(course) || allowsCapstoneReuse()) {
-          matchedCourses.add(course);
-          usedCourses.add(course);
-          break; // Only need one
-        }
+      if (autoCapstones.contains(course)) {
+        matchedCourses.add(course);
+        usedCourses.add(course);
+        break;
+      }
+      if (userSelectedCapstone != null && course.equals(userSelectedCapstone)) {
+        matchedCourses.add(course);
+        usedCourses.add(course);
+        break;
       }
     }
 
@@ -256,6 +304,7 @@ public class CSRequirementChecker {
     }
   }
 
+  // electives: courses OUTSIDE of cs that count
   public static final Set<String> ALLOWED_NON_CS_COURSES = Set.of(
       "APMA 1160", "APMA 1690", "APMA 1170", "APMA 1200", "APMA 1210",
       "APMA 1360", "APMA 1650", "APMA 1655", "APMA 1660", "APMA 1670",
@@ -277,8 +326,23 @@ public class CSRequirementChecker {
       "PLCY 1702X"
   );
 
-  // any 1000+ math class counts
+  // electives: Arts/Policy/Humanities courses (non-technical CSCI courses)
+  public static final Set<String> ARTS_POLICY_HUM_CS_COURSES = Set.of(
+      "CSCI 1250", "CSCI 1280", "CSCI 1360", "CSCI 1370", "CSCI 1800", "CSCI 1805",
+      "CSCI 1860", "CSCI 1870", "CSCI 1952B", "CSCI 1952X", "CSCI 2002", "CSCI 2402C",
+      "CSCI 2952S", "CSCI 2999A",
+      "APMA 1910", "DEVL 1810", "IAPA 1701A", "IAPA 1801", "PLCY 1702X",
+      "ENGN 1800", "ENGN 1931J" // ENGN 1800/1931J counts as arts/policy too
+  );
+
+  /**
+   * checks if a non CSCI course is approved to count as an elective
+   *
+   * @param courseCode - ex: DATA 1040
+   * @return true or false
+   */
   private boolean isAllowedNonCSCourse(String courseCode) {
+    // first, check if user is taking any 1000+ math class
     if (courseCode.startsWith("MATH")) {
       try {
         int number = Integer.parseInt(courseCode.replaceAll("[^0-9]", ""));
@@ -287,6 +351,7 @@ public class CSRequirementChecker {
         return false;
       }
     }
+    // if not, check if their non cs course is in the set above
     return ALLOWED_NON_CS_COURSES.contains(courseCode);
   }
 }
