@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SemesterBox from "./SemesterBox";
 import CourseDrag from "./CourseDrag";
 import { CarouselMover } from "../hooks/CarouselMover.ts";
 import { CourseDragManager } from "../hooks/CourseDragManager.ts";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
-import { useEffect } from "react";
 
 interface CarouselProps {
   viewCount: number;
@@ -59,6 +58,7 @@ export default function Carousel({
     setCourses,
   } = CourseDragManager([]);
 
+  const [boxIds, setBoxIds] = useState<string[]>(["box1", "box2"]);
   const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
   const [boxSelections, setBoxSelections] = useState<{
     [boxId: string]: string;
@@ -82,7 +82,7 @@ export default function Carousel({
     return () => {
       window.removeEventListener("removeCourse", handleRemoveCourse);
     };
-  }, []);
+  }, [setCourses]);
 
   const getAvailableSemesters = () =>
     allSemesters.filter((sem) => !usedSemesters.includes(sem));
@@ -112,7 +112,11 @@ export default function Carousel({
     }
   };
 
-  const boxIds = ["box1", "box2"];
+  const handleAddSemester = () => {
+    const newBoxId = `box${boxIds.length + 1}`;
+    setBoxIds((prevBoxIds) => [...prevBoxIds, newBoxId]);
+  };
+
   const boxWidth = expanded ? 270 : 320;
 
   return (
@@ -190,8 +194,9 @@ export default function Carousel({
               )}
             </SemesterBox>
           ))}
+
           <div className={`add-box ${expanded ? "expanded" : "collapsed"}`}>
-            <button className="add-button">
+            <button className="add-button" onClick={handleAddSemester}>
               <div className="add-button-plus">+</div>
               <div>New Semester</div>
             </button>
