@@ -192,17 +192,6 @@ public class CSRequirementChecker {
   }
 
   /**
-   * helper method for checkCapstone that looks for a capstone
-   *
-   * @param courseCode
-   * @return
-   */
-  private boolean isUserMarkedCapstone(String courseCode) {
-    String selectedCapstone = storageHandler.getCapstoneCourse(uid);
-    return selectedCapstone != null && selectedCapstone.equals(courseCode);
-  }
-
-  /**
    * checks that a user's courses includes a capstone course (either one of the 3 special
    * capstone classes OR if the user checkmarks it separately)
    *
@@ -214,15 +203,18 @@ public class CSRequirementChecker {
     // Use your shared constant
     Set<String> autoCapstones = new HashSet<>(CSCapstoneCourses.AUTO_ACCEPTED);
 
-    // This should be passed into the RequirementChecker (not hardcoded inside)
+    // get which course the user chose to be their capstone
     String userSelectedCapstone = storageHandler.getCapstoneCourse(uid);
 
     for (String course : userCourses) {
+      // 1. either the user chose one of the 3 special capstone courses OR...
       if (autoCapstones.contains(course)) {
         matchedCourses.add(course);
         usedCourses.add(course);
         break;
       }
+
+      // 2. ...the user marked a course as their capstone course on the frontend
       if (userSelectedCapstone != null && course.equals(userSelectedCapstone)) {
         matchedCourses.add(course);
         usedCourses.add(course);
@@ -230,7 +222,7 @@ public class CSRequirementChecker {
       }
     }
 
-    return matchedCourses;
+    return matchedCourses; // empty if case 1 doesn't apply or user didn't choose a capstone course yet
   }
 
   // Modified: now returns list
