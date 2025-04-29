@@ -1,16 +1,14 @@
 package edu.brown.cs.student.main.server.handlers;
 
+import edu.brown.cs.student.main.server.concentrationRequirements.*;
+import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-
-import edu.brown.cs.student.main.server.concentrationRequirements.*;
-import edu.brown.cs.student.main.server.storage.StorageInterface;
-
-import java.util.Map;
 
 public class CheckUserRequirementsHandler implements Route {
   public StorageInterface storageHandler;

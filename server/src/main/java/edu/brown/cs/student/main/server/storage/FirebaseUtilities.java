@@ -5,11 +5,9 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.FieldValue;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
-import com.google.cloud.firestore.SetOptions;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
@@ -100,7 +98,8 @@ public class FirebaseUtilities implements StorageInterface {
       throws ExecutionException, InterruptedException {
 
     Firestore db = FirestoreClient.getFirestore();
-    CollectionReference semestersRef = db.collection("users").document(userId).collection("semesters");
+    CollectionReference semestersRef =
+        db.collection("users").document(userId).collection("semesters");
 
     ApiFuture<QuerySnapshot> semestersFuture = semestersRef.get();
     List<QueryDocumentSnapshot> semesterDocs = semestersFuture.get().getDocuments();
@@ -125,7 +124,6 @@ public class FirebaseUtilities implements StorageInterface {
         System.out.println("Course doc ID: " + courseDoc.getId());
         System.out.println("Course code field: " + courseDoc.getString("code"));
       }
-
 
       for (QueryDocumentSnapshot courseDoc : courseDocs) {
         if (courseDoc.exists()) {
@@ -193,11 +191,12 @@ public class FirebaseUtilities implements StorageInterface {
 
   @Override
   public String getConcentration(String uid) throws Exception {
-    DocumentReference docRef = FirestoreClient.getFirestore()
-        .collection("users")
-        .document(uid)
-        .collection("concentration")
-        .document("current");
+    DocumentReference docRef =
+        FirestoreClient.getFirestore()
+            .collection("users")
+            .document(uid)
+            .collection("concentration")
+            .document("current");
 
     DocumentSnapshot snapshot = docRef.get().get();
     if (snapshot.exists() && snapshot.getString("concentration") != null) {
