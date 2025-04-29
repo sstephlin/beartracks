@@ -73,3 +73,41 @@
   font-size: 0.9rem;
   word-wrap: break-word;
 }
+
+.trash-area {
+  position: absolute;
+  right: 100px;
+  background: none;
+  border: 2px solid gray;
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border 0.2s ease;
+}
+
+.trash-hovered {
+  background-color: #ffe0e0;
+  border: 2px solid red;
+}
+
+.trash-hovered {
+  animation: wiggle 0.3s ease-in-out infinite;
+}
+
+@keyframes wiggle {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}

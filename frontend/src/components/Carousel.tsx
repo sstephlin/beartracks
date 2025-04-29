@@ -1,10 +1,11 @@
 import { useState } from "react";
 import SemesterBox from "./SemesterBox";
-import CourseSlot from "./CourseDrag";
+import CourseDrag from "./CourseDrag";
 import { CarouselMover } from "../hooks/CarouselMover.ts";
 import { CourseDragManager } from "../hooks/CourseDragManager.ts";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
+import { useEffect } from "react";
 
 interface CarouselProps {
   viewCount: number;
@@ -62,6 +63,26 @@ export default function Carousel({
   const [boxSelections, setBoxSelections] = useState<{
     [boxId: string]: string;
   }>({});
+
+  useEffect(() => {
+    const handleRemoveCourse = (e: any) => {
+      const { courseId, semesterId } = e.detail;
+      console.log("Removing courseId:", courseId, "semesterId:", semesterId);
+
+      setCourses((prev) =>
+        prev.filter(
+          (course) =>
+            !(course.id === courseId && course.semesterId === semesterId)
+        )
+      );
+    };
+
+    window.addEventListener("removeCourse", handleRemoveCourse);
+
+    return () => {
+      window.removeEventListener("removeCourse", handleRemoveCourse);
+    };
+  }, []);
 
   const getAvailableSemesters = () =>
     allSemesters.filter((sem) => !usedSemesters.includes(sem));
@@ -128,11 +149,12 @@ export default function Carousel({
             >
               {(boxSelections[boxId] &&
                 getCoursesForSemester(boxSelections[boxId]).map((course) => (
-                  <CourseSlot
+                  <CourseDrag
                     key={course.id}
                     id={course.id}
                     courseCode={course.courseCode}
                     courseTitle={course.courseTitle}
+                    semesterId={boxSelections[boxId]}
                     isEmpty={false}
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
@@ -144,11 +166,12 @@ export default function Carousel({
                 Array(emptySlots[boxSelections[boxId]] || 0)
                   .fill(0)
                   .map((_, i) => (
-                    <CourseSlot
+                    <CourseDrag
                       key={`empty-${boxId}-${i}`}
                       id={`empty-${boxId}-${i}`}
                       courseCode=""
                       courseTitle=""
+                      semesterId={boxSelections[boxId]}
                       isEmpty={true}
                       onDragOver={handleDragOver}
                       onDrop={(e) =>
