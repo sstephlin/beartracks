@@ -4,6 +4,7 @@ import CourseSlot from "./CourseDrag";
 import { CarouselMover } from "../hooks/CarouselMover.ts";
 import { CourseDragManager } from "../hooks/CourseDragManager.ts";
 import "../styles/Carousel.css";
+import "../styles/SemesterBox.css";
 
 interface Course {
   id: string;
@@ -17,6 +18,7 @@ interface CarouselProps {
   setViewCount: Dispatch<SetStateAction<number>>;
   semesters: string[];
   draggedSearchCourse: any | null;
+  expanded: boolean;
 }
 
 export default function Carousel({
@@ -24,6 +26,7 @@ export default function Carousel({
   setViewCount,
   semesters,
   draggedSearchCourse,
+  expanded,
 }: CarouselProps) {
   const { currentIndex, next, prev, maxIndex } = CarouselMover(
     semesters.length,
@@ -95,6 +98,7 @@ export default function Carousel({
               title={semesterId.toUpperCase()}
               onDragOver={handleDragOver}
               onDrop={(e) => handleSemesterDrop(e, semesterId)}
+              expanded={expanded}
             >
               {getCoursesForSemester(semesterId).map((course) => (
                 <CourseSlot

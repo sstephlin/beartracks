@@ -4,7 +4,11 @@ import Carousel from "./Carousel";
 import { Trash2 } from "lucide-react";
 import "../styles/BearTracks.css";
 
-function BearTracks() {
+interface BearTracksProps {
+  expanded: boolean;
+}
+function BearTracks(props: BearTracksProps) {
+  // const [expanded, setExpanded] = useState<boolean>();
   const [viewCount, setViewCount] = useState<number>(2);
   const [semesters, setSemesters] = useState<string[]>([
     "fall-2026",
@@ -78,6 +82,7 @@ function BearTracks() {
         setViewCount={setViewCount}
         semesters={semesters}
         draggedSearchCourse={draggedSearchCourse}
+        expanded={props.expanded}
       />
     </div>
   );

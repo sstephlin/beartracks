@@ -6,6 +6,7 @@ interface SemesterBoxProps {
   children?: React.ReactNode;
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent) => void;
+  expanded: boolean;
 }
 
 const SemesterBox: React.FC<SemesterBoxProps> = ({
@@ -13,6 +14,7 @@ const SemesterBox: React.FC<SemesterBoxProps> = ({
   children,
   onDragOver,
   onDrop,
+  expanded,
 }) => {
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -30,7 +32,7 @@ const SemesterBox: React.FC<SemesterBoxProps> = ({
 
   return (
     <div
-      className="semester-box"
+      className={`semester-box ${expanded ? "expanded" : "collapsed"}`}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >

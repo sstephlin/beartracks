@@ -1,14 +1,26 @@
-/* Semester Box Main */
-.semester-box {
-  flex: 1 1 0;
-  max-width: 400px;
+.semester-box.expanded {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 250px; /* fix size so they line up evenly */
+  min-height: 400px;
   background-color: #f8f9fa;
   border-radius: 8px;
-  padding: 16px;
+  margin: 0 8px; /* space between boxes */
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: blue;
+}
+.semester-box.collapsed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 300px; /* fix size so they line up evenly */
+  min-height: 400px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin: 0 8px; /* space between boxes */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: blue;
 }
 
 /* Semester Box Header */
@@ -24,7 +36,7 @@
 /* Semester Content */
 .semester-content {
   background-color: white;
-  height: 350px;
+  height: 450px;
   padding: 10px;
   display: flex;
   flex-direction: column;
