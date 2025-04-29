@@ -209,7 +209,8 @@ public class FirebaseUtilities implements StorageInterface {
   public String getCapstoneCourse(String uid) {
     try {
       Firestore db = FirestoreClient.getFirestore();
-      CollectionReference semestersRef = db.collection("users").document(uid).collection("semesters");
+      CollectionReference semestersRef =
+          db.collection("users").document(uid).collection("semesters");
       ApiFuture<QuerySnapshot> semestersFuture = semestersRef.get();
       List<QueryDocumentSnapshot> semesters = semestersFuture.get().getDocuments();
 

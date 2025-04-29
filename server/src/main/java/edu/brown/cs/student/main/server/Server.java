@@ -43,8 +43,8 @@ public class Server {
       // 2. Parse CourseCatalog once at startup
       CourseCatalog catalog = CourseCSVParser.parse("data/mockCourse.csv");
 
-      Spark.get("add-course", new AddCourseHandler(firebaseUtils, catalog));
-      Spark.get("add-semester", new AddSemesterHandler(firebaseUtils));
+      Spark.post("add-course", new AddCourseHandler(firebaseUtils, catalog));
+      Spark.post("add-semester", new AddSemesterHandler(firebaseUtils));
       Spark.get("remove-course", new RemoveCourseHandler(firebaseUtils));
       Spark.get("remove-semester", new RemoveSemesterHandler(firebaseUtils));
       Spark.get("check-semester", new CheckSemesterHandler(catalog));

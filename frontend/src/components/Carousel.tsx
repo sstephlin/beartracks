@@ -5,6 +5,7 @@ import { CarouselMover } from "../hooks/CarouselMover.ts";
 import { CourseDragManager } from "../hooks/CourseDragManager.ts";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
+import { useUser } from "@clerk/clerk-react";
 
 interface CarouselProps {
   viewCount: number;
@@ -45,6 +46,7 @@ export default function Carousel({
     allSemesters.length,
     viewCount
   );
+  const { user } = useUser();
 
   const {
     courses,
@@ -87,9 +89,33 @@ export default function Carousel({
   const getAvailableSemesters = () =>
     allSemesters.filter((sem) => !usedSemesters.includes(sem));
 
-  const handleSemesterSelect = (boxId: string, semester: string) => {
+  const handleSemesterSelect = async (boxId: string, semester: string) => {
     setBoxSelections((prev) => ({ ...prev, [boxId]: semester }));
     setUsedSemesters((prev) => [...prev, semester]);
+
+    // 🔄 Parse semester (e.g., "Fall 25" → "Fall", "25")
+    const [term, year] = semester.split(" ");
+    const uid = user?.id;
+
+    if (!uid || !term || !year) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:1234/add-semester?uid=${uid}&term=${term}&year=${year}`,
+        {
+          method: "POST",
+        }
+      );
+
+      const result = await response.json();
+      if (result.response_type === "failure") {
+        console.warn("Failed to add semester:", result.error);
+      } else {
+        console.log("Semester added:", result.message);
+      }
+    } catch (err) {
+      console.error("Network error while adding semester:", err);
+    }
   };
 
   const handleSemesterDrop = (e: React.DragEvent, semesterId: string) => {
@@ -118,25 +144,35 @@ export default function Carousel({
     courseTitle: string
   ) => {
     setCourses((prev) =>
-      prev.map((c) =>
-        c.id === id ? { ...c, courseCode, courseTitle, isEditing: false } : c
+      prev.map((course) =>
+        course.id === id
+          ? { ...course, courseCode, courseTitle, isEditing: false }
+          : course
       )
     );
 
-    const uid = "test"; // Replace with real UID
     const course = courses.find((c) => c.id === id);
-    const term = course?.semesterId.split(" ")[0];
-    const year = course?.semesterId.split(" ")[1];
+    if (!course || !user?.id) return;
+
+    const [term, year] = course.semesterId.split(" ");
+    const uid = user.id;
 
     try {
-      await fetch(
+      const response = await fetch(
         `http://localhost:1234/add-course?uid=${uid}&code=${encodeURIComponent(
           courseCode
-        )}&title=${encodeURIComponent(courseTitle)}&term=${term}&year=${year}`,
+        )}&title=${encodeURIComponent(
+          courseTitle
+        )}&term=${term}&year=${year}&skipCheck=true`,
         { method: "POST" }
       );
+
+      const result = await response.json();
+      if (result.response_type === "failure") {
+        console.warn("Failed to add course to Firestore:", result.error);
+      }
     } catch (err) {
-      console.error("Failed to add course:", err);
+      console.error("Network error while saving course:", err);
     }
   };
 

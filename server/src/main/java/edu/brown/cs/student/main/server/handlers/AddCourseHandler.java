@@ -47,7 +47,10 @@ public class AddCourseHandler implements Route {
       Set<String> completedCourses = getCompletedCourses(uid, semesterKey);
       boolean prereqsMet = checkPrerequisites(courseCode, completedCourses, semesterKey);
 
-      if (!prereqsMet) {
+      String skip = request.queryParams("skipCheck");
+      boolean skipCheck = skip != null && skip.equalsIgnoreCase("true");
+
+      if (!skipCheck && !prereqsMet) {
         responseMap.put("response_type", "failure");
         responseMap.put("error", "Prerequisites not met or course does not exist: " + courseCode);
         response.type("application/json");

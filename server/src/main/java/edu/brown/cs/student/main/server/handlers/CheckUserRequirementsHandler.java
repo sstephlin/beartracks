@@ -48,7 +48,8 @@ public class CheckUserRequirementsHandler implements Route {
         throw new IllegalArgumentException("Unsupported concentration: " + concentration);
       }
 
-      CSRequirementChecker checker = new CSRequirementChecker(this.storageHandler, uid, userCourses, requirements);
+      CSRequirementChecker checker =
+          new CSRequirementChecker(this.storageHandler, uid, userCourses, requirements);
       Map<String, List<String>> requirementResults = checker.checkAllRequirements();
 
       int coursesCompleted = checker.countCoursesCompleted();

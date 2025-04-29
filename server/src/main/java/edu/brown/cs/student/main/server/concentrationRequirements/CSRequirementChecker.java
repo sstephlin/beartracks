@@ -1,6 +1,5 @@
 package edu.brown.cs.student.main.server.concentrationRequirements;
 
-import edu.brown.cs.student.main.server.concentrationRequirements.CSCapstoneCourses;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,12 +15,15 @@ public class CSRequirementChecker {
   private Map<String, RequirementRule> requirements;
   private Set<String> usedCourses = new HashSet<>();
 
-  public CSRequirementChecker(StorageInterface storageHandler, String uid, Set<String> userCourses, Map<String, RequirementRule> requirements) {
+  public CSRequirementChecker(
+      StorageInterface storageHandler,
+      String uid,
+      Set<String> userCourses,
+      Map<String, RequirementRule> requirements) {
     this.storageHandler = storageHandler;
     this.uid = uid;
     this.userCourses = userCourses;
     this.requirements = requirements;
-
   }
 
   // New method: returns a Map of requirement name -> list of fulfilling courses
@@ -114,6 +116,7 @@ public class CSRequirementChecker {
 
   /**
    * checks all the possible elective courses user could take (linear algebra, approved non-cs
+   *
    * @return
    */
   private List<String> checkElectives() {
@@ -149,7 +152,8 @@ public class CSRequirementChecker {
         try {
           int number = Integer.parseInt(course.replaceAll("[^0-9]", ""));
           if (number >= 1000) {
-            if (ARTS_POLICY_HUM_CS_COURSES.contains(course)) { // check if there are any arts/policy/humanitise CS courses
+            if (ARTS_POLICY_HUM_CS_COURSES.contains(
+                course)) { // check if there are any arts/policy/humanitise CS courses
               if (nonTechnicalArtsCoursesUsed < nonTechnicalArtsLimit) {
                 matchedCourses.add(course);
                 usedCourses.add(course);
@@ -203,8 +207,8 @@ public class CSRequirementChecker {
   }
 
   /**
-   * checks that a user's courses includes a capstone course (either one of the 3 special
-   * capstone classes OR if the user checkmarks it separately)
+   * checks that a user's courses includes a capstone course (either one of the 3 special capstone
+   * classes OR if the user checkmarks it separately)
    *
    * @return a list of the first capstone-eligible course that a user has taken
    */
@@ -306,35 +310,93 @@ public class CSRequirementChecker {
   }
 
   // electives: courses OUTSIDE of cs that count
-  public static final Set<String> ALLOWED_NON_CS_COURSES = Set.of(
-      "APMA 1160", "APMA 1690", "APMA 1170", "APMA 1200", "APMA 1210",
-      "APMA 1360", "APMA 1650", "APMA 1655", "APMA 1660", "APMA 1670",
-      "APMA 1710", "APMA 1720", "APMA 1740", "APMA 1910", "APMA 1930W", "APMA 1930X",
-      "PHP2630", "PHP2650",
-      "CLPS 1211", "CLPS 1291", "CLPS 1342", "CLPS 1350", "CLPS 1491", "CLPS 1520", "CLPS 1950",
-      "DATA 1030", "DATA 1340", "DATA 1080",
-      "DEVL 1810",
-      "EEPS 1340", "EEPS 1720",
-      "ECON 1490", "ECON 1870",
-      "ENGN 1010", "ENGN 1570", "ENGN 1580", "ENGN 1600", "ENGN 1610", "ENGN 1630",
-      "ENGN 1640", "ENGN 1650", "ENGN 1660", "ENGN 1800", "ENGN 1931J", "ENGN 1931T", "ENGN 2520",
-      "IAPA 1701A", "IAPA 1801",
-      "MUSC 1210",
-      "NEUR 1440", "NEUR 1660",
-      "PHIL 1630", "PHIL 1635", "PHIL 1880", "PHIL 1855",
-      "PHYS 1600", "PHYS 2550",
-      "PHP 1855",
-      "PLCY 1702X"
-  );
+  public static final Set<String> ALLOWED_NON_CS_COURSES =
+      Set.of(
+          "APMA 1160",
+          "APMA 1690",
+          "APMA 1170",
+          "APMA 1200",
+          "APMA 1210",
+          "APMA 1360",
+          "APMA 1650",
+          "APMA 1655",
+          "APMA 1660",
+          "APMA 1670",
+          "APMA 1710",
+          "APMA 1720",
+          "APMA 1740",
+          "APMA 1910",
+          "APMA 1930W",
+          "APMA 1930X",
+          "PHP2630",
+          "PHP2650",
+          "CLPS 1211",
+          "CLPS 1291",
+          "CLPS 1342",
+          "CLPS 1350",
+          "CLPS 1491",
+          "CLPS 1520",
+          "CLPS 1950",
+          "DATA 1030",
+          "DATA 1340",
+          "DATA 1080",
+          "DEVL 1810",
+          "EEPS 1340",
+          "EEPS 1720",
+          "ECON 1490",
+          "ECON 1870",
+          "ENGN 1010",
+          "ENGN 1570",
+          "ENGN 1580",
+          "ENGN 1600",
+          "ENGN 1610",
+          "ENGN 1630",
+          "ENGN 1640",
+          "ENGN 1650",
+          "ENGN 1660",
+          "ENGN 1800",
+          "ENGN 1931J",
+          "ENGN 1931T",
+          "ENGN 2520",
+          "IAPA 1701A",
+          "IAPA 1801",
+          "MUSC 1210",
+          "NEUR 1440",
+          "NEUR 1660",
+          "PHIL 1630",
+          "PHIL 1635",
+          "PHIL 1880",
+          "PHIL 1855",
+          "PHYS 1600",
+          "PHYS 2550",
+          "PHP 1855",
+          "PLCY 1702X");
 
   // electives: Arts/Policy/Humanities courses (non-technical CSCI courses)
-  public static final Set<String> ARTS_POLICY_HUM_CS_COURSES = Set.of(
-      "CSCI 1250", "CSCI 1280", "CSCI 1360", "CSCI 1370", "CSCI 1800", "CSCI 1805",
-      "CSCI 1860", "CSCI 1870", "CSCI 1952B", "CSCI 1952X", "CSCI 2002", "CSCI 2402C",
-      "CSCI 2952S", "CSCI 2999A",
-      "APMA 1910", "DEVL 1810", "IAPA 1701A", "IAPA 1801", "PLCY 1702X",
-      "ENGN 1800", "ENGN 1931J" // ENGN 1800/1931J counts as arts/policy too
-  );
+  public static final Set<String> ARTS_POLICY_HUM_CS_COURSES =
+      Set.of(
+          "CSCI 1250",
+          "CSCI 1280",
+          "CSCI 1360",
+          "CSCI 1370",
+          "CSCI 1800",
+          "CSCI 1805",
+          "CSCI 1860",
+          "CSCI 1870",
+          "CSCI 1952B",
+          "CSCI 1952X",
+          "CSCI 2002",
+          "CSCI 2402C",
+          "CSCI 2952S",
+          "CSCI 2999A",
+          "APMA 1910",
+          "DEVL 1810",
+          "IAPA 1701A",
+          "IAPA 1801",
+          "PLCY 1702X",
+          "ENGN 1800",
+          "ENGN 1931J" // ENGN 1800/1931J counts as arts/policy too
+          );
 
   /**
    * checks if a non CSCI course is approved to count as an elective

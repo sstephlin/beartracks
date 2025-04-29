@@ -1,8 +1,8 @@
 package edu.brown.cs.student.main.server.handlers;
 
+import edu.brown.cs.student.main.server.concentrationRequirements.CSCapstoneCourses;
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.parser.CourseInfo;
-import edu.brown.cs.student.main.server.concentrationRequirements.CSCapstoneCourses;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
