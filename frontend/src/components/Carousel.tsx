@@ -190,6 +190,12 @@ export default function Carousel({
               )}
             </SemesterBox>
           ))}
+          <div className={`add-box ${expanded ? "expanded" : "collapsed"}`}>
+            <button className="add-button">
+              <div className="add-button-plus">+</div>
+              <div>New Semester</div>
+            </button>
+          </div>
         </div>
       </div>
 
