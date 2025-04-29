@@ -29,8 +29,11 @@ public class AddSemesterHandler implements Route {
 
       String semesterKey = term + " " + year;
 
-      // Adds an empty document: users/{uid}/semesters/{semesterKey}
-      storageHandler.addDocument(uid, "semesters", semesterKey, Collections.emptyMap());
+      // Create a semester document with a dummy field so that getAllUserCourses function can actually
+      Map<String, Object> semesterData = new HashMap<>();
+      semesterData.put("exists", true);
+
+      storageHandler.addDocument(uid, "semesters", semesterKey, semesterData);
 
       responseMap.put("response_type", "success");
       responseMap.put("message", semesterKey + " added for user " + uid);

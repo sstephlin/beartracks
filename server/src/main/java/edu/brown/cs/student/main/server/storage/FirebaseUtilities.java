@@ -4,9 +4,12 @@ import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.FieldValue;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.firestore.SetOptions;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
@@ -15,8 +18,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class FirebaseUtilities implements StorageInterface {
@@ -43,27 +49,6 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public List<Map<String, Object>> getCollection(String uid, String collection_id)
-      throws InterruptedException, ExecutionException, IllegalArgumentException {
-    if (uid == null || collection_id == null) {
-      throw new IllegalArgumentException("getCollection: uid and/or collection_id cannot be null");
-    }
-
-    // gets all documents in the collection 'collection_id' for user 'uid'
-    Firestore db = FirestoreClient.getFirestore();
-    CollectionReference dataRef = db.collection("users").document(uid).collection(collection_id);
-
-    QuerySnapshot dataQuery = dataRef.get().get();
-
-    List<Map<String, Object>> data = new ArrayList<>();
-    for (QueryDocumentSnapshot doc : dataQuery.getDocuments()) {
-      data.add(doc.getData());
-    }
-
-    return data;
-  }
-
-  @Override
   public void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data)
       throws IllegalArgumentException {
     if (uid == null || collection_id == null || doc_id == null || data == null) {
@@ -77,47 +62,6 @@ public class FirebaseUtilities implements StorageInterface {
         db.collection("users").document(uid).collection(collection_id);
     // 2: Write data to the collection ref
     collectionRef.document(doc_id).set(data);
-  }
-
-  // clears the collections inside of a specific user.
-  //  @Override
-  public void clearUser(String uid) throws IllegalArgumentException {
-    if (uid == null) {
-      throw new IllegalArgumentException("removeUser: uid cannot be null");
-    }
-    try {
-      // removes all data for user 'uid'
-      Firestore db = FirestoreClient.getFirestore();
-      // 1: Get a ref to the user document
-      DocumentReference userDoc = db.collection("users").document(uid);
-      // 2: Delete the user document
-      deleteDocument(userDoc);
-    } catch (Exception e) {
-      System.err.println("Error removing user : " + uid);
-      System.err.println(e.getMessage());
-    }
-  }
-
-  public void clearCollection(String uid, String collectionName)
-      throws InterruptedException, ExecutionException {
-    if (uid == null) {
-      throw new IllegalArgumentException("removeUser: uid cannot be null");
-    }
-    try {
-      Firestore db = FirestoreClient.getFirestore();
-      CollectionReference collectionRef =
-          db.collection("users").document(uid).collection(collectionName);
-      ApiFuture<QuerySnapshot> future = collectionRef.get();
-      List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-
-      // deletes all of a user's pins (aka documents)
-      for (QueryDocumentSnapshot doc : documents) {
-        deleteDocument(doc.getReference()); // recursively deletes doc + its subcollections
-      }
-    } catch (Exception e) {
-      System.err.println("Error removing user : " + uid);
-      System.err.println(e.getMessage());
-    }
   }
 
   public void deleteDocument(DocumentReference doc) {
@@ -185,5 +129,116 @@ public class FirebaseUtilities implements StorageInterface {
     }
 
     return allPins;
+  }
+
+  // gets all the courses a user has taken, returns it as a set
+  public Set<String> getAllUserCourses(String userId)
+      throws ExecutionException, InterruptedException {
+
+    Firestore db = FirestoreClient.getFirestore();
+    CollectionReference semestersRef = db.collection("users").document(userId).collection("semesters");
+
+    ApiFuture<QuerySnapshot> semestersFuture = semestersRef.get();
+    List<QueryDocumentSnapshot> semesterDocs = semestersFuture.get().getDocuments();
+    System.out.println("Fetched semester docs size: " + semesterDocs.size());
+    for (QueryDocumentSnapshot semesterDoc : semesterDocs) {
+      System.out.println("Semester doc ID: " + semesterDoc.getId());
+    }
+
+    Set<String> allCourses = new HashSet<>();
+
+    for (QueryDocumentSnapshot semesterDoc : semesterDocs) {
+      if (!semesterDoc.exists()) {
+        continue; // skip if semester doc is empty
+      }
+
+      CollectionReference coursesRef = semesterDoc.getReference().collection("courses");
+      ApiFuture<QuerySnapshot> coursesFuture = coursesRef.get();
+      List<QueryDocumentSnapshot> courseDocs = coursesFuture.get().getDocuments();
+      System.out.println("Fetching courses for semester: " + semesterDoc.getId());
+      System.out.println("Number of courses found: " + courseDocs.size());
+      for (QueryDocumentSnapshot courseDoc : courseDocs) {
+        System.out.println("Course doc ID: " + courseDoc.getId());
+        System.out.println("Course code field: " + courseDoc.getString("code"));
+      }
+
+
+      for (QueryDocumentSnapshot courseDoc : courseDocs) {
+        if (courseDoc.exists()) {
+          String courseCode = courseDoc.getString("code");
+          if (courseCode != null) {
+            allCourses.add(courseCode.toUpperCase()); // Normalize if needed
+          }
+        }
+      }
+    }
+
+    return allCourses;
+  }
+
+  @Override
+  public Map<String, List<String>> getAllSemestersAndCourses(String uid)
+      throws InterruptedException, ExecutionException, IllegalArgumentException {
+    if (uid == null) {
+      throw new IllegalArgumentException("getAllSemestersAndCourses: uid cannot be null");
+    }
+
+    Firestore db = FirestoreClient.getFirestore();
+    Map<String, List<String>> semesterToCourses = new HashMap<>();
+
+    // Step 1: Get all semesters under users/{uid}/semesters/*
+    CollectionReference semestersRef = db.collection("users").document(uid).collection("semesters");
+    ApiFuture<QuerySnapshot> semestersFuture = semestersRef.get();
+    List<QueryDocumentSnapshot> semesterDocs = semestersFuture.get().getDocuments();
+
+    // Step 2: For each semester, get the 'courses' subcollection
+    for (QueryDocumentSnapshot semesterDoc : semesterDocs) {
+      String semesterKey = semesterDoc.getId(); // example: "Fall 2025"
+      CollectionReference coursesRef = semesterDoc.getReference().collection("courses");
+      ApiFuture<QuerySnapshot> coursesFuture = coursesRef.get();
+      List<QueryDocumentSnapshot> courseDocs = coursesFuture.get().getDocuments();
+
+      List<String> courseCodes = new ArrayList<>();
+      for (QueryDocumentSnapshot courseDoc : courseDocs) {
+        String courseCode = (String) courseDoc.get("code");
+        if (courseCode != null) {
+          courseCodes.add(courseCode);
+        }
+      }
+      semesterToCourses.put(semesterKey, courseCodes);
+    }
+
+    return semesterToCourses;
+  }
+
+  @Override
+  public String getView(String uid) throws Exception {
+    DocumentReference docRef =
+        FirestoreClient.getFirestore()
+            .collection("users")
+            .document(uid)
+            .collection("view")
+            .document("current");
+
+    DocumentSnapshot snapshot = docRef.get().get();
+    if (snapshot.exists() && snapshot.getString("view") != null) {
+      return snapshot.getString("view");
+    }
+    return null; // frontend will default to "2"
+  }
+
+  @Override
+  public String getConcentration(String uid) throws Exception {
+    DocumentReference docRef = FirestoreClient.getFirestore()
+        .collection("users")
+        .document(uid)
+        .collection("concentration")
+        .document("current");
+
+    DocumentSnapshot snapshot = docRef.get().get();
+    if (snapshot.exists() && snapshot.getString("concentration") != null) {
+      return snapshot.getString("concentration");
+    }
+    return null;
   }
 }

@@ -5,12 +5,17 @@ import static spark.Spark.after;
 import edu.brown.cs.student.main.server.handlers.AddCourseHandler;
 import edu.brown.cs.student.main.server.handlers.AddSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.CheckSemesterHandler;
+import edu.brown.cs.student.main.server.handlers.CheckUserRequirementsHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveCourseHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.SearchCourseHandler;
+import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
+import edu.brown.cs.student.main.server.parser.CourseCSVParser;
 import java.io.IOException;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import spark.Filter;
 import spark.Spark;
 
@@ -29,14 +34,19 @@ public class Server {
 
     StorageInterface firebaseUtils;
     try {
+      // 1. Initialize Firebase
       firebaseUtils = new FirebaseUtilities();
 
-      Spark.get("add-course", new AddCourseHandler(firebaseUtils));
+      // 2. Parse CourseCatalog once at startup
+      CourseCatalog catalog = CourseCSVParser.parse("data/mockCourse.csv");
+
+      Spark.get("add-course", new AddCourseHandler(firebaseUtils, catalog));
       Spark.get("add-semester", new AddSemesterHandler(firebaseUtils));
       Spark.get("remove-course", new RemoveCourseHandler(firebaseUtils));
       Spark.get("remove-semester", new RemoveSemesterHandler(firebaseUtils));
       Spark.get("check-semester", new CheckSemesterHandler(firebaseUtils));
       Spark.get("search-course", new SearchCourseHandler(firebaseUtils));
+      Spark.get("check-concentration-requirements", new CheckUserRequirementsHandler(firebaseUtils));
 
       Spark.notFound(
           (request, response) -> {
@@ -52,6 +62,11 @@ public class Server {
       e.printStackTrace();
       System.err.println(
           "Error: Could not initialize Firebase. Likely due to firebase_config.json not being found. Exiting.");
+      System.exit(1);
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.err.println(
+          "Error: Failed to parse Course CSV file. Check the file path or format. Exiting.");
       System.exit(1);
     }
   }

@@ -3,6 +3,7 @@ package edu.brown.cs.student.main.server.storage;
 import com.google.cloud.firestore.DocumentReference;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public interface StorageInterface {
@@ -11,14 +12,12 @@ public interface StorageInterface {
 
   void deleteDocument(DocumentReference doc);
 
-  List<Map<String, Object>> getCollection(String uid, String collection_id)
-      throws InterruptedException, ExecutionException;
+  Map<String, List<String>> getAllSemestersAndCourses(String uid)
+      throws InterruptedException, ExecutionException, IllegalArgumentException;
 
-  //  void clearUser(String uid) throws InterruptedException, ExecutionException;
+  String getView(String uid) throws Exception;
 
-  void clearCollection(String uid, String collectionName)
-      throws InterruptedException, ExecutionException;
+  String getConcentration(String uid) throws Exception;
 
-  //  List<String> getAllUserIds() throws InterruptedException, ExecutionException;
-  List<Map<String, Object>> getAllUserPins() throws InterruptedException, ExecutionException;
+  Set<String> getAllUserCourses(String userId) throws ExecutionException, InterruptedException;
 }
