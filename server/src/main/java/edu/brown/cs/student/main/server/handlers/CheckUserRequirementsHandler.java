@@ -1,7 +1,6 @@
 package edu.brown.cs.student.main.server.handlers;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import spark.Request;
@@ -51,7 +50,7 @@ public class CheckUserRequirementsHandler implements Route {
         throw new IllegalArgumentException("Unsupported concentration: " + concentration);
       }
 
-      RequirementChecker checker = new RequirementChecker(userCourses, requirements);
+      CSRequirementChecker checker = new CSRequirementChecker(userCourses, requirements);
       Map<String, List<String>> requirementResults = checker.checkAllRequirements();
 
       int coursesCompleted = checker.countCoursesCompleted();

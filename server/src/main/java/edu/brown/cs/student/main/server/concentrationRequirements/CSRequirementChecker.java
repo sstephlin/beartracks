@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class RequirementChecker {
+public class CSRequirementChecker {
   private Set<String> userCourses;
   private Map<String, RequirementRule> requirements;
   private Set<String> usedCourses = new HashSet<>();
 
-  public RequirementChecker(Set<String> userCourses, Map<String, RequirementRule> requirements) {
+  public CSRequirementChecker(Set<String> userCourses, Map<String, RequirementRule> requirements) {
     this.userCourses = userCourses;
     this.requirements = requirements;
   }
@@ -256,4 +256,37 @@ public class RequirementChecker {
     }
   }
 
+  public static final Set<String> ALLOWED_NON_CS_COURSES = Set.of(
+      "APMA 1160", "APMA 1690", "APMA 1170", "APMA 1200", "APMA 1210",
+      "APMA 1360", "APMA 1650", "APMA 1655", "APMA 1660", "APMA 1670",
+      "APMA 1710", "APMA 1720", "APMA 1740", "APMA 1910", "APMA 1930W", "APMA 1930X",
+      "PHP2630", "PHP2650",
+      "CLPS 1211", "CLPS 1291", "CLPS 1342", "CLPS 1350", "CLPS 1491", "CLPS 1520", "CLPS 1950",
+      "DATA 1030", "DATA 1340", "DATA 1080",
+      "DEVL 1810",
+      "EEPS 1340", "EEPS 1720",
+      "ECON 1490", "ECON 1870",
+      "ENGN 1010", "ENGN 1570", "ENGN 1580", "ENGN 1600", "ENGN 1610", "ENGN 1630",
+      "ENGN 1640", "ENGN 1650", "ENGN 1660", "ENGN 1800", "ENGN 1931J", "ENGN 1931T", "ENGN 2520",
+      "IAPA 1701A", "IAPA 1801",
+      "MUSC 1210",
+      "NEUR 1440", "NEUR 1660",
+      "PHIL 1630", "PHIL 1635", "PHIL 1880", "PHIL 1855",
+      "PHYS 1600", "PHYS 2550",
+      "PHP 1855",
+      "PLCY 1702X"
+  );
+
+  // any 1000+ math class counts
+  private boolean isAllowedNonCSCourse(String courseCode) {
+    if (courseCode.startsWith("MATH")) {
+      try {
+        int number = Integer.parseInt(courseCode.replaceAll("[^0-9]", ""));
+        return number >= 1000;
+      } catch (NumberFormatException e) {
+        return false;
+      }
+    }
+    return ALLOWED_NON_CS_COURSES.contains(courseCode);
+  }
 }
