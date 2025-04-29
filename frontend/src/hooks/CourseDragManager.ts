@@ -53,13 +53,13 @@ export function CourseDragManager(initialCourses: Course[]) {
     return courses.filter((course) => course.semesterId === semesterId);
   };
 
-  const addCourse = (semesterId: string) => {
+  const addCourse = (semesterId: string, course?: Partial<Course>) => {
     const newCourse = {
       id: `course-${Date.now()}`,
-      courseCode: "",
-      courseTitle: "",
+      courseCode: course?.courseCode || "",
+      courseTitle: course?.courseTitle || "",
       semesterId,
-      isEditing: true, // 👈 mark as editable
+      isEditing: course?.isEditing ?? true, // ← default to true only if not provided
     };
 
     setCourses((prev) => [...prev, newCourse]);

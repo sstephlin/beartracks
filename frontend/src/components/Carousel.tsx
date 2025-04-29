@@ -118,22 +118,53 @@ export default function Carousel({
     }
   };
 
-  const handleSemesterDrop = (e: React.DragEvent, semesterId: string) => {
+  const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
     e.preventDefault();
 
-    const courseId = e.dataTransfer.getData("courseId");
     const searchCourseRaw = e.dataTransfer.getData("searchCourse");
+    const courseId = e.dataTransfer.getData("courseId");
 
+    // Case 1: Dragged from search results
     if (searchCourseRaw) {
       const searchCourse = JSON.parse(searchCourseRaw);
       const newCourse = {
-        id: `search-${Date.now()}`,
         courseCode: searchCourse.courseCode,
         courseTitle: searchCourse.courseName,
-        semesterId,
+        isEditing: false, // ✅ Prevents input field from showing
       };
-      setCourses((prev) => [...prev, newCourse]);
-    } else if (courseId) {
+
+      addCourse(semesterId, newCourse); // You must pass `Partial<Course>`
+
+      // 🔁 Backend fetch to persist (NO skipCheck)
+      const [term, year] = semesterId.split(" ");
+      const uid = user?.id;
+      if (!uid || !term || !year) return;
+
+      try {
+        const response = await fetch(
+          `http://localhost:1234/add-course?uid=${uid}&code=${encodeURIComponent(
+            newCourse.courseCode
+          )}&title=${encodeURIComponent(
+            newCourse.courseTitle
+          )}&term=${term}&year=${year}`,
+          {
+            method: "POST",
+          }
+        );
+
+        const result = await response.json();
+        if (result.response_type === "failure") {
+          console.warn("Backend rejected course:", result.error);
+        } else {
+          console.log("Course added successfully:", result.message);
+        }
+      } catch (err) {
+        console.error("Network error while saving search-dragged course:", err);
+      }
+    }
+
+    // Case 2: Dragged from another semester
+    else if (courseId) {
       handleDrop(e, semesterId);
     }
   };
