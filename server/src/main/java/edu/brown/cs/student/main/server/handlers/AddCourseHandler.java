@@ -74,7 +74,8 @@ public class AddCourseHandler implements Route {
   }
 
   // helper methods below...
-  private boolean checkPrerequisites(String courseCode, Set<String> completedCourses, String semesterKey) {
+  private boolean checkPrerequisites(
+      String courseCode, Set<String> completedCourses, String semesterKey) {
     CourseInfo courseInfo = catalog.courseMap.get(courseCode);
     if (courseInfo == null) return false;
     String treeId = courseInfo.semesterToTreeId.get(semesterKey);

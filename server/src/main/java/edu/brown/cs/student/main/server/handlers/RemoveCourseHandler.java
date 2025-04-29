@@ -35,12 +35,13 @@ public class RemoveCourseHandler implements Route {
       String semesterKey = term + " " + year;
 
       Firestore db = FirestoreClient.getFirestore();
-      DocumentReference docRef = db.collection("users")
-          .document(uid)
-          .collection("semesters")
-          .document(semesterKey)
-          .collection("courses")
-          .document(courseCode);
+      DocumentReference docRef =
+          db.collection("users")
+              .document(uid)
+              .collection("semesters")
+              .document(semesterKey)
+              .collection("courses")
+              .document(courseCode);
 
       storageHandler.deleteDocument(docRef);
 

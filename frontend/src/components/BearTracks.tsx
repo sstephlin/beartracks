@@ -1,7 +1,8 @@
 import { useState } from "react";
 import SearchBar from "./SearchBar";
 import Carousel from "./Carousel";
-import "../styles/BearTracks.css"; // Create this new css file if you want better layout
+import { Trash2 } from "lucide-react";
+import "../styles/BearTracks.css";
 
 interface BearTracksProps {
   expanded: boolean;
@@ -30,7 +31,6 @@ function BearTracks(props: BearTracksProps) {
       const data = await response.json();
 
       if (data.result === "success") {
-        console.log("Found courses:", data.courses);
         setSearchResults(data.courses);
       } else {
         console.error(data.message);
@@ -53,9 +53,13 @@ function BearTracks(props: BearTracksProps) {
 
   return (
     <div className="bear-tracks-container">
-      <SearchBar onSearch={handleSearch} />
+      <div className="searchbar-and-trash-container">
+        <SearchBar onSearch={handleSearch} />
+        <button className="trash-near-search">
+          <Trash2 />
+        </button>
+      </div>
 
-      {/* Search Result Draggable Blocks */}
       {searchResults.length > 0 && (
         <div className="search-results-container">
           {searchResults.map((course, index) => (
