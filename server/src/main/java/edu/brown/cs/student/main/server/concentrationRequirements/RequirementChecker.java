@@ -114,7 +114,8 @@ public class RequirementChecker {
     int nonTechnicalCount = 0;
 
     Set<String> linearAlgebraCourses = Set.of("MATH 0520", "MATH 0540", "APMA 0260");
-    Set<String> specialElectives = new HashSet<>(requirements.get("Electives").getAcceptableCourses());
+    Set<String> specialElectives =
+        new HashSet<>(requirements.get("Electives").getAcceptableCourses());
     Set<String> availableCourses = getAvailableCourses();
 
     for (String course : availableCourses) {

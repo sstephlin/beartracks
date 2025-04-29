@@ -54,7 +54,8 @@ public class Server {
       Spark.get("store-view", new StoreViewHandler(firebaseUtils));
       Spark.get("get-view", new GetViewHandler(firebaseUtils));
       Spark.get("get-user-courses", new GetUserCoursesHandler(firebaseUtils));
-      Spark.get("check-concentration-requirements", new CheckUserRequirementsHandler(firebaseUtils));
+      Spark.get(
+          "check-concentration-requirements", new CheckUserRequirementsHandler(firebaseUtils));
 
       Spark.notFound(
           (request, response) -> {
