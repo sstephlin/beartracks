@@ -112,6 +112,34 @@ export default function Carousel({
     }
   };
 
+  const handleSaveCourse = async (
+    id: string,
+    courseCode: string,
+    courseTitle: string
+  ) => {
+    setCourses((prev) =>
+      prev.map((c) =>
+        c.id === id ? { ...c, courseCode, courseTitle, isEditing: false } : c
+      )
+    );
+
+    const uid = "test"; // Replace with real UID
+    const course = courses.find((c) => c.id === id);
+    const term = course?.semesterId.split(" ")[0];
+    const year = course?.semesterId.split(" ")[1];
+
+    try {
+      await fetch(
+        `http://localhost:1234/add-course?uid=${uid}&code=${encodeURIComponent(
+          courseCode
+        )}&title=${encodeURIComponent(courseTitle)}&term=${term}&year=${year}`,
+        { method: "POST" }
+      );
+    } catch (err) {
+      console.error("Failed to add course:", err);
+    }
+  };
+
   const handleAddSemester = () => {
     const newBoxId = `box${boxIds.length + 1}`;
     setBoxIds((prevBoxIds) => [...prevBoxIds, newBoxId]);
@@ -160,8 +188,10 @@ export default function Carousel({
                     courseTitle={course.courseTitle}
                     semesterId={boxSelections[boxId]}
                     isEmpty={false}
+                    isEditing={course.isEditing}
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
+                    onSaveCourse={handleSaveCourse}
                   />
                 ))) ||
                 null}

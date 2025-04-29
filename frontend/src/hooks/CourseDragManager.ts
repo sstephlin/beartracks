@@ -5,6 +5,7 @@ interface Course {
   courseCode: string;
   courseTitle: string;
   semesterId: string;
+  isEditing?: boolean;
 }
 
 export function CourseDragManager(initialCourses: Course[]) {
@@ -53,17 +54,15 @@ export function CourseDragManager(initialCourses: Course[]) {
   };
 
   const addCourse = (semesterId: string) => {
-    const coursesInSemester = getCoursesForSemester(semesterId);
-    if (coursesInSemester.length >= 10) return;
-
-    const newCourse: Course = {
+    const newCourse = {
       id: `course-${Date.now()}`,
-      courseCode: "NEW COURSE",
-      courseTitle: "Click to edit...",
+      courseCode: "",
+      courseTitle: "",
       semesterId,
+      isEditing: true, // 👈 mark as editable
     };
 
-    setCourses([...courses, newCourse]);
+    setCourses((prev) => [...prev, newCourse]);
 
     setEmptySlots((prev) => ({
       ...prev,
