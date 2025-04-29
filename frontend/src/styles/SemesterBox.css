@@ -1,9 +1,7 @@
-/* styles/SemesterBox.css */
-
+/* Semester Box Main */
 .semester-box {
   flex: 1 1 0;
-  /* min-width: 200px; prevent boxes from getting too small */
-  max-width: 400px; /* optional: cap max size if needed */
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -13,6 +11,7 @@
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Semester Box Header */
 .semester-header {
   background-color: #2b1919;
   color: white;
@@ -22,6 +21,7 @@
   font-size: 16px;
 }
 
+/* Semester Content */
 .semester-content {
   background-color: white;
   height: 350px;
@@ -35,11 +35,12 @@
   min-width: 90%;
 }
 
+/* Custom Scrollbar */
 .semester-content::-webkit-scrollbar {
   width: 6px;
 }
 
-/* Course slot styles */
+/* Course Slot */
 .course-slot {
   background-color: #f0d7d7;
   border-radius: 4px;
@@ -50,14 +51,15 @@
   justify-content: center;
 }
 
+/* Filled Course Slot */
 .course-filled {
   background-color: #f0d7d7;
   font-size: 14px;
-  text-align: left;
-  padding: 10px 15px;
   text-align: center;
+  padding: 10px 15px;
 }
 
+/* Add New Course Button */
 .add-course-button {
   background-color: white;
   border: 3px solid #e0e0e0;
@@ -74,7 +76,7 @@
   background-color: #f9f9f9;
 }
 
-/* Container styles for organizing semester boxes */
+/* Semester Box Wrapper (for Carousel Layout) */
 .semester-boxes-wrapper {
   display: flex;
   flex-wrap: nowrap;
@@ -82,4 +84,26 @@
   padding: 20px;
   gap: 15px;
   justify-content: center;
+}
+
+/* Dragging Hover Effect */
+.semester-content.drag-over {
+  background-color: #f8f8f8;
+  border: 2px dashed #aaa;
+}
+
+/* Fade In Animation for New Courses */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.course-slot.new-course {
+  animation: fadeIn 0.3s ease-out;
 }

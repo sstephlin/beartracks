@@ -1,20 +1,59 @@
-.search-results-container {
+.bear-tracks-container {
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  width: 100%;
+  padding-top: 2vh;
+}
+
+.searchbar-and-trash-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* <-- CHANGE THIS */
+  width: 80%; /* or 90%, or 100% if you want full width */
+  margin: 16px auto; /* center the whole container */
+}
+
+.trash-near-search {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 28px;
+  color: #444;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.trash-near-search:hover {
+  background-color: #f2f2f2;
+}
+
+/* Search results */
+.search-results-container {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  height: 350px;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 12px;
   margin-top: 8px;
-  flex-wrap: wrap;
-  justify-content: flex-start;
 }
 
 .search-course-block {
   background-color: #5c3d2e;
   color: white;
-  padding: 10px 14px;
+  padding: 16px;
   border-radius: 8px;
-  width: 160px;
-  cursor: grab;
   text-align: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: grab;
 }
 
 .search-course-block:hover {
@@ -23,9 +62,10 @@
 
 .course-code {
   font-weight: bold;
+  margin-bottom: 8px;
 }
 
 .course-title {
   font-size: 0.9rem;
-  margin-top: 4px;
+  word-wrap: break-word;
 }
