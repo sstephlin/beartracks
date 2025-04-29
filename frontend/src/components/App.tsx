@@ -61,15 +61,6 @@ function App() {
           </header>
           <main className="main-content">
             <BearTracks expanded={expanded} />
-            {/* Floating action buttons */}
-            <div>
-              <button
-                className="trash-global-icon"
-                onClick={() => console.log("Trash clicked")}
-              >
-                <Trash2 />
-              </button>
-            </div>
             <div>
               <button
                 className="floating-icon help-icon"

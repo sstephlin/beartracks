@@ -22,7 +22,10 @@ function BearTracks(props: BearTracksProps) {
   );
 
   const handleSearch = async (query: string) => {
-    if (!query.trim()) return;
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
 
     try {
       const response = await fetch(
@@ -80,7 +83,6 @@ function BearTracks(props: BearTracksProps) {
       <Carousel
         viewCount={viewCount}
         setViewCount={setViewCount}
-        semesters={semesters}
         draggedSearchCourse={draggedSearchCourse}
         expanded={props.expanded}
       />

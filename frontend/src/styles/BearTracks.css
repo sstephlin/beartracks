@@ -6,14 +6,18 @@
 }
 
 .searchbar-and-trash-container {
+  position: relative;
+  width: 100%;
+  margin: 16px auto;
   display: flex;
+  justify-content: center; /* Center the search bar */
   align-items: center;
-  justify-content: space-between; /* <-- CHANGE THIS */
-  width: 80%; /* or 90%, or 100% if you want full width */
-  margin: 16px auto; /* center the whole container */
+  padding: 0 40px; /* Optional: Add some side padding */
 }
 
 .trash-near-search {
+  position: absolute;
+  right: 100px; /* Adjust how far from the right */
   background: none;
   border: none;
   cursor: pointer;

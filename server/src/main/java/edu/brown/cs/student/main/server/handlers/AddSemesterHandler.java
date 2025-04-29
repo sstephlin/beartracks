@@ -1,7 +1,6 @@
 package edu.brown.cs.student.main.server.handlers;
 
 import edu.brown.cs.student.main.server.storage.StorageInterface;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import spark.Request;
@@ -29,7 +28,8 @@ public class AddSemesterHandler implements Route {
 
       String semesterKey = term + " " + year;
 
-      // Create a semester document with a dummy field so that getAllUserCourses function can actually
+      // Create a semester document with a dummy field so that getAllUserCourses function can
+      // actually
       Map<String, Object> semesterData = new HashMap<>();
       semesterData.put("exists", true);
 
