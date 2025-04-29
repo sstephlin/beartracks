@@ -15,5 +15,6 @@ public interface StorageInterface {
       throws InterruptedException, ExecutionException, IllegalArgumentException;
 
   String getView(String uid) throws Exception;
+
   String getConcentration(String uid) throws Exception;
 }

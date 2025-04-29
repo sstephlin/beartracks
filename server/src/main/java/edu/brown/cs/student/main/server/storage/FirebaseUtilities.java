@@ -122,11 +122,12 @@ public class FirebaseUtilities implements StorageInterface {
 
   @Override
   public String getView(String uid) throws Exception {
-    DocumentReference docRef = FirestoreClient.getFirestore()
-        .collection("users")
-        .document(uid)
-        .collection("view")
-        .document("current");
+    DocumentReference docRef =
+        FirestoreClient.getFirestore()
+            .collection("users")
+            .document(uid)
+            .collection("view")
+            .document("current");
 
     DocumentSnapshot snapshot = docRef.get().get();
     if (snapshot.exists() && snapshot.getString("view") != null) {
@@ -137,11 +138,12 @@ public class FirebaseUtilities implements StorageInterface {
 
   @Override
   public String getConcentration(String uid) throws Exception {
-    DocumentReference docRef = FirestoreClient.getFirestore()
-        .collection("users")
-        .document(uid)
-        .collection("concentration")
-        .document("current");
+    DocumentReference docRef =
+        FirestoreClient.getFirestore()
+            .collection("users")
+            .document(uid)
+            .collection("concentration")
+            .document("current");
 
     DocumentSnapshot snapshot = docRef.get().get();
     if (snapshot.exists() && snapshot.getString("concentration") != null) {
@@ -149,5 +151,4 @@ public class FirebaseUtilities implements StorageInterface {
     }
     return null;
   }
-
 }

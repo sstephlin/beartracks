@@ -25,7 +25,8 @@ public class CheckSemesterHandler implements Route {
     if (courseCode == null || courseCode.trim().isEmpty()) {
       responseMap.put("result", "error");
       responseMap.put("message", "Missing or empty 'courseCode' parameter.");
-      return responseMap;
+      response.type("application/json");
+      return Utils.toMoshiJson(responseMap);
     }
 
     CourseInfo info = catalog.courseMap.get(courseCode);
@@ -33,18 +34,16 @@ public class CheckSemesterHandler implements Route {
     if (info == null) {
       responseMap.put("result", "error");
       responseMap.put("message", "Course not found.");
-      return responseMap;
+      response.type("application/json");
+      return Utils.toMoshiJson(responseMap);
     }
 
-    List<String> offeredSemesters = new ArrayList<>();
-    for (String semester : info.semesterToTreeId.keySet()) {
-      // We only care that the semester exists in the map
-      offeredSemesters.add(semester);
-    }
+    List<String> offeredSemesters = new ArrayList<>(info.semesterToTreeId.keySet());
 
     responseMap.put("result", "success");
     responseMap.put("offeredSemesters", offeredSemesters);
 
-    return responseMap;
+    response.type("application/json");
+    return Utils.toMoshiJson(responseMap);
   }
 }

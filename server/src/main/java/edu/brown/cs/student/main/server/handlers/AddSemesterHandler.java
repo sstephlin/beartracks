@@ -29,7 +29,6 @@ public class AddSemesterHandler implements Route {
 
       String semesterKey = term + " " + year;
 
-      // Adds an empty document: users/{uid}/semesters/{semesterKey}
       storageHandler.addDocument(uid, "semesters", semesterKey, Collections.emptyMap());
 
       responseMap.put("response_type", "success");
@@ -40,6 +39,7 @@ public class AddSemesterHandler implements Route {
       responseMap.put("error", e.getMessage());
     }
 
+    response.type("application/json");
     return Utils.toMoshiJson(responseMap);
   }
 }

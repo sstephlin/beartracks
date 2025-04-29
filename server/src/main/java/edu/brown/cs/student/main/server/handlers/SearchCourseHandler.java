@@ -25,13 +25,15 @@ public class SearchCourseHandler implements Route {
     if (query == null || query.trim().isEmpty()) {
       responseMap.put("result", "error");
       responseMap.put("message", "Missing or empty 'query' parameter.");
-      return responseMap;
+      response.type("application/json");
+      return Utils.toMoshiJson(responseMap);
     }
 
     if (catalog == null) {
       responseMap.put("result", "error");
       responseMap.put("message", "Course catalog not loaded.");
-      return responseMap;
+      response.type("application/json");
+      return Utils.toMoshiJson(responseMap);
     }
 
     List<Map<String, String>> matchedCourses = searchCourses(catalog, query);
@@ -44,7 +46,8 @@ public class SearchCourseHandler implements Route {
       responseMap.put("courses", matchedCourses);
     }
 
-    return responseMap;
+    response.type("application/json");
+    return Utils.toMoshiJson(responseMap);
   }
 
   private List<Map<String, String>> searchCourses(CourseCatalog catalog, String query) {

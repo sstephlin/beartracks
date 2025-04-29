@@ -24,7 +24,6 @@ public class GetUserCoursesHandler implements Route {
         throw new IllegalArgumentException("Missing uid parameter");
       }
 
-      // Step 1: Load all semesters and their courses
       Map<String, List<String>> semesterToCourses = storageHandler.getAllSemestersAndCourses(uid);
 
       responseMap.put("response_type", "success");
@@ -36,6 +35,7 @@ public class GetUserCoursesHandler implements Route {
       responseMap.put("error", e.getMessage());
     }
 
+    response.type("application/json");
     return Utils.toMoshiJson(responseMap);
   }
 }

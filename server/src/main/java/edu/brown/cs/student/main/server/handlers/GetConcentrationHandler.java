@@ -25,7 +25,7 @@ public class GetConcentrationHandler implements Route {
 
       String concentration = storageHandler.getConcentration(uid);
       if (concentration == null) {
-        concentration = "Undeclared"; // Default
+        concentration = "Undeclared";
       }
 
       responseMap.put("response_type", "success");
@@ -37,6 +37,7 @@ public class GetConcentrationHandler implements Route {
       responseMap.put("error", e.getMessage());
     }
 
+    response.type("application/json");
     return Utils.toMoshiJson(responseMap);
   }
 }

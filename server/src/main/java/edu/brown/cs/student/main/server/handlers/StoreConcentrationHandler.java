@@ -7,7 +7,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class StoreConcentrationHandler implements Route{
+public class StoreConcentrationHandler implements Route {
   private final StorageInterface storageHandler;
 
   public StoreConcentrationHandler(StorageInterface storageHandler) {
@@ -28,8 +28,6 @@ public class StoreConcentrationHandler implements Route{
       Map<String, Object> concentrationData = new HashMap<>();
       concentrationData.put("concentration", concentration);
 
-      // Structure: users/{uid}/concentration/current
-      // concentration data holds the current concentration name
       storageHandler.addDocument(uid, "concentration", "current", concentrationData);
 
       responseMap.put("response_type", "success");
@@ -40,6 +38,7 @@ public class StoreConcentrationHandler implements Route{
       responseMap.put("error", e.getMessage());
     }
 
+    response.type("application/json");
     return Utils.toMoshiJson(responseMap);
   }
 }

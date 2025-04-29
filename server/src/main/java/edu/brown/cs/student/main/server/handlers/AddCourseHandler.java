@@ -36,21 +36,18 @@ public class AddCourseHandler implements Route {
         throw new IllegalArgumentException("Missing required query parameters");
       }
 
-      String semesterKey = term + " " + year; // ex. "Fall 2025"
+      String semesterKey = term + " " + year;
 
-      // Step 1: Load user's completed courses (only up to previous semesters)
       Set<String> completedCourses = getCompletedCourses(uid, semesterKey);
-
-      // Step 2: Check prerequisites
       boolean prereqsMet = checkPrerequisites(courseCode, completedCourses, semesterKey);
 
       if (!prereqsMet) {
         responseMap.put("response_type", "failure");
         responseMap.put("error", "Prerequisites not met or course does not exist: " + courseCode);
+        response.type("application/json");
         return Utils.toMoshiJson(responseMap);
       }
 
-      // Step 3: Add the course
       Map<String, Object> courseData = new HashMap<>();
       courseData.put("code", courseCode);
       courseData.put("title", courseTitle);
@@ -66,48 +63,34 @@ public class AddCourseHandler implements Route {
       responseMap.put("error", e.getMessage());
     }
 
+    response.type("application/json");
     return Utils.toMoshiJson(responseMap);
   }
 
-  private boolean checkPrerequisites(
-      String courseCode, Set<String> completedCourses, String semesterKey) {
+  // helper methods below...
+  private boolean checkPrerequisites(String courseCode, Set<String> completedCourses, String semesterKey) {
     CourseInfo courseInfo = catalog.courseMap.get(courseCode);
-    if (courseInfo == null) {
-      return false; // Course doesn't exist
-    }
-
+    if (courseInfo == null) return false;
     String treeId = courseInfo.semesterToTreeId.get(semesterKey);
-    if (treeId == null) {
-      return true; // No prereqs this semester
-    }
-
+    if (treeId == null) return true;
     PrereqTreeNode prereqTree = catalog.treeMap.get(treeId);
-    if (prereqTree == null) {
-      return true; // No prereq tree found
-    }
-
+    if (prereqTree == null) return true;
     return evaluateTree(prereqTree, completedCourses);
   }
 
   private boolean evaluateTree(PrereqTreeNode node, Set<String> completedCourses) {
-    if (node.type == PrereqTreeNode.Type.COURSE) {
-      return completedCourses.contains(node.courseCode);
-    } else if (node.type == PrereqTreeNode.Type.AND) {
-      for (PrereqTreeNode child : node.children) {
-        if (!evaluateTree(child, completedCourses)) {
-          return false;
-        }
-      }
+    if (node.type == PrereqTreeNode.Type.COURSE) return completedCourses.contains(node.courseCode);
+    if (node.type == PrereqTreeNode.Type.AND) {
+      for (PrereqTreeNode child : node.children)
+        if (!evaluateTree(child, completedCourses)) return false;
       return true;
-    } else if (node.type == PrereqTreeNode.Type.OR) {
-      for (PrereqTreeNode child : node.children) {
-        if (evaluateTree(child, completedCourses)) {
-          return true;
-        }
-      }
+    }
+    if (node.type == PrereqTreeNode.Type.OR) {
+      for (PrereqTreeNode child : node.children)
+        if (evaluateTree(child, completedCourses)) return true;
       return false;
     }
-    return true; // Should not reach here
+    return true;
   }
 
   private Set<String> getCompletedCourses(String uid, String currentSemesterKey) throws Exception {
@@ -124,25 +107,13 @@ public class AddCourseHandler implements Route {
   private boolean isSemesterBefore(String semester1, String semester2) {
     String[] parts1 = semester1.split(" ");
     String[] parts2 = semester2.split(" ");
-    if (parts1.length != 2 || parts2.length != 2) {
-      return false; // Malformed semester string
-    }
-
+    if (parts1.length != 2 || parts2.length != 2) return false;
     String term1 = parts1[0];
     int year1 = Integer.parseInt(parts1[1]);
     String term2 = parts2[0];
     int year2 = Integer.parseInt(parts2[1]);
-
-    if (year1 < year2) {
-      return true;
-    } else if (year1 > year2) {
-      return false;
-    } else {
-      // Same year: Spring before Fall
-      if (term1.equals("Spring") && term2.equals("Fall")) {
-        return true;
-      }
-      return false;
-    }
+    if (year1 < year2) return true;
+    if (year1 > year2) return false;
+    return term1.equals("Spring") && term2.equals("Fall");
   }
 }

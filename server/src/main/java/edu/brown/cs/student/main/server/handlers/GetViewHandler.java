@@ -26,7 +26,7 @@ public class GetViewHandler implements Route {
       String view = storageHandler.getView(uid);
 
       if (view == null) {
-        view = "2"; // Default to "2"
+        view = "2";
       }
 
       responseMap.put("response_type", "success");
@@ -38,6 +38,7 @@ public class GetViewHandler implements Route {
       responseMap.put("error", e.getMessage());
     }
 
+    response.type("application/json");
     return Utils.toMoshiJson(responseMap);
   }
 }

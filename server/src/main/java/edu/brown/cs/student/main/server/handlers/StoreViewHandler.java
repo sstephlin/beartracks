@@ -28,7 +28,6 @@ public class StoreViewHandler implements Route {
       Map<String, Object> viewData = new HashMap<>();
       viewData.put("view", view);
 
-      // Now store into the 'view' collection under 'current' document
       storageHandler.addDocument(uid, "view", "current", viewData);
 
       responseMap.put("response_type", "success");
@@ -39,6 +38,7 @@ public class StoreViewHandler implements Route {
       responseMap.put("error", e.getMessage());
     }
 
+    response.type("application/json");
     return Utils.toMoshiJson(responseMap);
   }
 }

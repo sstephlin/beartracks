@@ -29,24 +29,25 @@ public class RemoveSemesterHandler implements Route {
         throw new IllegalArgumentException("Missing required query parameters");
       }
 
-      String semesterKey = term + " " + year; // ex. "Fall 2021"
+      String semesterKey = term + " " + year;
 
       Firestore db = FirestoreClient.getFirestore();
-      DocumentReference docRef =
-          db.collection("users").document(uid).collection("semesters").document(semesterKey);
+      DocumentReference docRef = db.collection("users")
+          .document(uid)
+          .collection("semesters")
+          .document(semesterKey);
 
-      // Call deleteDocument on that reference
       storageHandler.deleteDocument(docRef);
 
       responseMap.put("response_type", "success");
       responseMap.put("message", semesterKey + " removed for user " + uid);
     } catch (Exception e) {
-      // error likely occurred in the storage handler
       e.printStackTrace();
       responseMap.put("response_type", "failure");
       responseMap.put("error", e.getMessage());
     }
 
+    response.type("application/json");
     return Utils.toMoshiJson(responseMap);
   }
 }
