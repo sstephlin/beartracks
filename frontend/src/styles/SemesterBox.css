@@ -1,81 +1,85 @@
 /* styles/SemesterBox.css */
 
 .semester-box {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 400px;
-    margin: 10px;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  
-  .semester-header {
-    background-color: #2b1919;
-    color: white;
-    padding: 10px 15px;
-    font-weight: bold;
-    text-align: center;
-    font-size: 16px;
-  }
-  
-  .semester-content {
-    background-color: white;
-    height: 350px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border: 3px solid #e0e0e0;
-    overflow-y: auto; 
-    scroll-behavior: smooth;
-  }
+  flex: 1 1 0;
+  /* min-width: 200px; prevent boxes from getting too small */
+  max-width: 400px; /* optional: cap max size if needed */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-  .semester-content::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  /* Course slot styles */
-  .course-slot {
-    background-color: #f0d7d7;
-    border-radius: 4px;
-    min-height: 50px;
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .course-filled {
-    background-color: #f0d7d7;
-    font-size: 14px;
-    text-align: left;
-    padding: 10px 15px;
-    text-align: center;
-  }
-  
-  .add-course-button {
-    background-color: white;
-    border: 3px solid #e0e0e0;
-    border-radius: 4px;
-    padding: 10px 15px;
-    cursor: pointer;
-    margin-top: auto;
-    color: black;
-    font-size: 14px;
-    text-align: center;
-  }
-  
-  .add-course-button:hover {
-    background-color: #f9f9f9;
-  }
-  
-  /* Container styles for organizing semester boxes */
-  .semester-boxes-wrapper {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 20px;
-    gap: 15px;
-    justify-content: center;
-  }
+.semester-header {
+  background-color: #2b1919;
+  color: white;
+  padding: 10px 15px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 16px;
+}
+
+.semester-content {
+  background-color: white;
+  height: 350px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 3px solid #e0e0e0;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  min-width: 90%;
+}
+
+.semester-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Course slot styles */
+.course-slot {
+  background-color: #f0d7d7;
+  border-radius: 4px;
+  min-height: 50px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.course-filled {
+  background-color: #f0d7d7;
+  font-size: 14px;
+  text-align: left;
+  padding: 10px 15px;
+  text-align: center;
+}
+
+.add-course-button {
+  background-color: white;
+  border: 3px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+  margin-top: auto;
+  color: black;
+  font-size: 14px;
+  text-align: center;
+}
+
+.add-course-button:hover {
+  background-color: #f9f9f9;
+}
+
+/* Container styles for organizing semester boxes */
+.semester-boxes-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 20px;
+  gap: 15px;
+  justify-content: center;
+}

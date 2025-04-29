@@ -1,42 +1,29 @@
-import React from 'react';
+import React from "react";
 
 interface CourseSlotProps {
   id: string;
-  courseCode?: string;
+  courseCode: string;
   courseTitle?: string;
-  isEmpty?: boolean;
+  isEmpty: boolean;
   onDragStart?: (e: React.DragEvent, id: string) => void;
-  onDragOver?: (e: React.DragEvent) => void;
-  onDrop?: (e: React.DragEvent, id: string) => void;
   onDragEnd?: (e: React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent) => void;
 }
 
-const CourseSlot: React.FC<CourseSlotProps> = ({
+export default function CourseSlot({
   id,
   courseCode,
   courseTitle,
-  isEmpty = true,
+  isEmpty,
   onDragStart,
+  onDragEnd,
   onDragOver,
   onDrop,
-  onDragEnd
-}) => {
+}: CourseSlotProps) {
   const handleDragStart = (e: React.DragEvent) => {
-    if (onDragStart && !isEmpty) {
+    if (onDragStart) {
       onDragStart(e, id);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault(); // Necessary to allow dropping
-    if (onDragOver) {
-      onDragOver(e);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    if (onDrop) {
-      onDrop(e, id);
     }
   };
 
@@ -46,29 +33,34 @@ const CourseSlot: React.FC<CourseSlotProps> = ({
     }
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (onDragOver) {
+      onDragOver(e);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    if (onDrop) {
+      onDrop(e);
+    }
+  };
+
   return (
-    <div 
-      className={`course-slot ${!isEmpty ? 'course-filled' : ''}`}
+    <div
+      className={`course-slot ${isEmpty ? "empty" : "filled"}`}
       draggable={!isEmpty}
       onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
-      onDragEnd={handleDragEnd} // Add this line
-      data-id={id}
     >
       {!isEmpty && (
         <>
           {courseCode}
-          {courseTitle && (
-            <>
-              <br />
-              {courseTitle}
-            </>
-          )}
+          {courseTitle && <div className="course-title">{courseTitle}</div>}
         </>
       )}
     </div>
   );
-};
-
-export default CourseSlot;
+}
