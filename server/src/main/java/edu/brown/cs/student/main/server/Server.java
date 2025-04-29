@@ -6,16 +6,19 @@ import edu.brown.cs.student.main.server.handlers.AddCourseHandler;
 import edu.brown.cs.student.main.server.handlers.AddSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.CheckSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.CheckUserRequirementsHandler;
+import edu.brown.cs.student.main.server.handlers.GetConcentrationHandler;
+import edu.brown.cs.student.main.server.handlers.GetUserCoursesHandler;
+import edu.brown.cs.student.main.server.handlers.GetViewHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveCourseHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.SearchCourseHandler;
+import edu.brown.cs.student.main.server.handlers.StoreConcentrationHandler;
+import edu.brown.cs.student.main.server.handlers.StoreViewHandler;
+import edu.brown.cs.student.main.server.parser.CourseCSVParser;
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
-import edu.brown.cs.student.main.server.parser.CourseCSVParser;
 import java.io.IOException;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import spark.Filter;
 import spark.Spark;
 
@@ -44,8 +47,13 @@ public class Server {
       Spark.get("add-semester", new AddSemesterHandler(firebaseUtils));
       Spark.get("remove-course", new RemoveCourseHandler(firebaseUtils));
       Spark.get("remove-semester", new RemoveSemesterHandler(firebaseUtils));
-      Spark.get("check-semester", new CheckSemesterHandler(firebaseUtils));
-      Spark.get("search-course", new SearchCourseHandler(firebaseUtils));
+      Spark.get("check-semester", new CheckSemesterHandler(catalog));
+      Spark.get("search-course", new SearchCourseHandler(catalog));
+      Spark.get("store-concentration", new StoreConcentrationHandler(firebaseUtils));
+      Spark.get("get-concentration", new GetConcentrationHandler(firebaseUtils));
+      Spark.get("store-view", new StoreViewHandler(firebaseUtils));
+      Spark.get("get-view", new GetViewHandler(firebaseUtils));
+      Spark.get("get-user-courses", new GetUserCoursesHandler(firebaseUtils));
       Spark.get("check-concentration-requirements", new CheckUserRequirementsHandler(firebaseUtils));
 
       Spark.notFound(

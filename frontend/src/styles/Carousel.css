@@ -1,0 +1,59 @@
+.carousel-outer-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  align-items: center;
+  display: flex;
+  justify-content: center; /* Center the carousel itself */
+  background-color: aqua;
+}
+
+.carousel-inner-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 90%;
+  padding: 16px 0;
+  display: flex; /* <<< Add this line */
+  justify-content: center; /* Center the carousel-track */
+  align-items: stretch;
+}
+
+.carousel-track {
+  display: flex;
+  flex-direction: row;
+  justify-content: center; /* <<< Change this from space-between to center */
+  align-items: stretch;
+}
+
+.carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY();
+  z-index: 1000;
+  background: white;
+  border: 1px solid lightgray;
+  border-radius: 8px; /* <<< changed from 50% to 8px for slightly rounded corners */
+  width: 60px; /* <<< slightly wider */
+  height: 40px; /* <<< less tall */
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  opacity: 0.8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+}
+
+.carousel-button.left {
+  left: 0;
+}
+
+.carousel-button.right {
+  right: 0;
+}
+
+.carousel-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}

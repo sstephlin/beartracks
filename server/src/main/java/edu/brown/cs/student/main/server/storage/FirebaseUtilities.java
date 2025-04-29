@@ -95,42 +95,6 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
-  //  public List<String> getAllUserIds() throws InterruptedException, ExecutionException {
-  //    Firestore db = FirestoreClient.getFirestore();
-  //    List<String> userIds = new ArrayList<>();
-  //    ApiFuture<QuerySnapshot> usersSnapshot = db.collection("users").get();
-  //
-  //    System.out.println("Found " + usersSnapshot.get().getDocuments().size() + " user docs.");
-  //
-  //    for (DocumentSnapshot doc : usersSnapshot.get().getDocuments()) {
-  //      userIds.add(doc.getId());
-  //    }
-  //    return userIds;
-  //  }
-
-  public List<Map<String, Object>> getAllUserPins()
-      throws InterruptedException, ExecutionException {
-    Firestore db = FirestoreClient.getFirestore();
-    List<Map<String, Object>> allPins = new ArrayList<>();
-    ApiFuture<QuerySnapshot> future = db.collectionGroup("pins").get();
-    List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-
-    for (QueryDocumentSnapshot doc : documents) {
-      Map<String, Object> pinData = doc.getData();
-
-      // 2. Extract the user ID from the document's path: "users/{uid}/pins/{pinId}"
-      String[] pathSegments = doc.getReference().getPath().split("/");
-      if (pathSegments.length >= 2) {
-        String userId = pathSegments[1];
-        pinData.put("userId", userId);
-      }
-
-      allPins.add(pinData);
-    }
-
-    return allPins;
-  }
-
   // gets all the courses a user has taken, returns it as a set
   public Set<String> getAllUserCourses(String userId)
       throws ExecutionException, InterruptedException {

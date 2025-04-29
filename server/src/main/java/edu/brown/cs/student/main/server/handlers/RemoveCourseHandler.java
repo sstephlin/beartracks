@@ -12,7 +12,7 @@ import spark.Route;
 
 public class RemoveCourseHandler implements Route {
 
-  public StorageInterface storageHandler;
+  private final StorageInterface storageHandler;
 
   public RemoveCourseHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
@@ -32,33 +32,27 @@ public class RemoveCourseHandler implements Route {
         throw new IllegalArgumentException("Missing required query parameters");
       }
 
-      String semesterKey = term + " " + year; // ex. "Fall 2021"
-
-      Map<String, Object> courseData = new HashMap<>();
-      courseData.put("code", courseCode);
-      courseData.put("title", courseTitle);
+      String semesterKey = term + " " + year;
 
       Firestore db = FirestoreClient.getFirestore();
-      DocumentReference docRef =
-          db.collection("users")
-              .document(uid)
-              .collection("semesters")
-              .document(semesterKey)
-              .collection("courses")
-              .document(courseCode);
+      DocumentReference docRef = db.collection("users")
+          .document(uid)
+          .collection("semesters")
+          .document(semesterKey)
+          .collection("courses")
+          .document(courseCode);
 
-      // Call deleteDocument on that reference
       storageHandler.deleteDocument(docRef);
 
       responseMap.put("response_type", "success");
       responseMap.put("message", "Course " + courseCode + " removed from semester " + semesterKey);
     } catch (Exception e) {
-      // error likely occurred in the storage handler
       e.printStackTrace();
       responseMap.put("response_type", "failure");
       responseMap.put("error", e.getMessage());
     }
 
+    response.type("application/json");
     return Utils.toMoshiJson(responseMap);
   }
 }

@@ -1,0 +1,31 @@
+.search-results-container {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.search-course-block {
+  background-color: #5c3d2e;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  width: 160px;
+  cursor: grab;
+  text-align: center;
+}
+
+.search-course-block:hover {
+  background-color: #7b5944;
+}
+
+.course-code {
+  font-weight: bold;
+}
+
+.course-title {
+  font-size: 0.9rem;
+  margin-top: 4px;
+}

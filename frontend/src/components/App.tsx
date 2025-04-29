@@ -60,7 +60,7 @@ function App() {
             </div>
           </header>
           <main className="main-content">
-            <BearTracks />
+            <BearTracks expanded={expanded} />
             {/* Floating action buttons */}
             <div>
               <button
