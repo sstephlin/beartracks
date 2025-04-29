@@ -1,35 +1,49 @@
-import { Dispatch, SetStateAction } from "react";
+import { useState } from "react";
 import SemesterBox from "./SemesterBox";
-import CourseSlot from "./CourseDrag";
+import CourseDrag from "./CourseDrag";
 import { CarouselMover } from "../hooks/CarouselMover.ts";
 import { CourseDragManager } from "../hooks/CourseDragManager.ts";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
-
-interface Course {
-  id: string;
-  courseCode: string;
-  courseTitle: string;
-  semesterId: string;
-}
+import { useEffect } from "react";
 
 interface CarouselProps {
   viewCount: number;
-  setViewCount: Dispatch<SetStateAction<number>>;
-  semesters: string[];
+  setViewCount: React.Dispatch<React.SetStateAction<number>>;
   draggedSearchCourse: any | null;
   expanded: boolean;
 }
 
+const allSemesters = [
+  "Fall 21",
+  "Winter 21",
+  "Spring 22",
+  "Summer 22",
+  "Fall 22",
+  "Winter 22",
+  "Spring 23",
+  "Summer 23",
+  "Fall 23",
+  "Winter 23",
+  "Spring 24",
+  "Summer 24",
+  "Fall 24",
+  "Winter 24",
+  "Spring 25",
+  "Summer 25",
+  "Fall 25",
+  "Winter 25",
+  "Spring 26",
+];
+
 export default function Carousel({
   viewCount,
   setViewCount,
-  semesters,
   draggedSearchCourse,
   expanded,
 }: CarouselProps) {
   const { currentIndex, next, prev, maxIndex } = CarouselMover(
-    semesters.length,
+    allSemesters.length,
     viewCount
   );
 
@@ -43,14 +57,40 @@ export default function Carousel({
     getCoursesForSemester,
     addCourse,
     setCourses,
-  } = CourseDragManager([
-    {
-      id: "course-1",
-      courseCode: "CSCI 1430",
-      courseTitle: "Computer Vision",
-      semesterId: "spring-2027",
-    },
-  ]);
+  } = CourseDragManager([]);
+
+  const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
+  const [boxSelections, setBoxSelections] = useState<{
+    [boxId: string]: string;
+  }>({});
+
+  useEffect(() => {
+    const handleRemoveCourse = (e: any) => {
+      const { courseId, semesterId } = e.detail;
+      console.log("Removing courseId:", courseId, "semesterId:", semesterId);
+
+      setCourses((prev) =>
+        prev.filter(
+          (course) =>
+            !(course.id === courseId && course.semesterId === semesterId)
+        )
+      );
+    };
+
+    window.addEventListener("removeCourse", handleRemoveCourse);
+
+    return () => {
+      window.removeEventListener("removeCourse", handleRemoveCourse);
+    };
+  }, []);
+
+  const getAvailableSemesters = () =>
+    allSemesters.filter((sem) => !usedSemesters.includes(sem));
+
+  const handleSemesterSelect = (boxId: string, semester: string) => {
+    setBoxSelections((prev) => ({ ...prev, [boxId]: semester }));
+    setUsedSemesters((prev) => [...prev, semester]);
+  };
 
   const handleSemesterDrop = (e: React.DragEvent, semesterId: string) => {
     e.preventDefault();
@@ -60,21 +100,20 @@ export default function Carousel({
 
     if (searchCourseRaw) {
       const searchCourse = JSON.parse(searchCourseRaw);
-
-      const newCourse: Course = {
+      const newCourse = {
         id: `search-${Date.now()}`,
         courseCode: searchCourse.courseCode,
         courseTitle: searchCourse.courseName,
         semesterId,
       };
-
       setCourses((prev) => [...prev, newCourse]);
     } else if (courseId) {
-      // Moving existing course
       handleDrop(e, semesterId);
     }
   };
-  const boxWidth = expanded ? 270 : 320; // box width + margin/gap
+
+  const boxIds = ["box1", "box2"];
+  const boxWidth = expanded ? 270 : 320;
 
   return (
     <div className="carousel-outer-wrapper">
@@ -94,44 +133,61 @@ export default function Carousel({
             transition: "transform 0.5s ease",
           }}
         >
-          {semesters.map((semesterId) => (
+          {boxIds.map((boxId) => (
             <SemesterBox
-              key={semesterId}
-              title={semesterId.toUpperCase()}
+              key={boxId}
+              boxId={boxId}
+              selectedSemester={boxSelections[boxId] || ""}
+              availableSemesters={getAvailableSemesters()}
+              onSemesterSelect={handleSemesterSelect}
               onDragOver={handleDragOver}
-              onDrop={(e) => handleSemesterDrop(e, semesterId)}
+              onDrop={(e) => {
+                const selected = boxSelections[boxId];
+                if (selected) handleSemesterDrop(e, selected);
+              }}
               expanded={expanded}
             >
-              {getCoursesForSemester(semesterId).map((course) => (
-                <CourseSlot
-                  key={course.id}
-                  id={course.id}
-                  courseCode={course.courseCode}
-                  courseTitle={course.courseTitle}
-                  isEmpty={false}
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
-                />
-              ))}
-              {Array(emptySlots[semesterId] || 0)
-                .fill(0)
-                .map((_, i) => (
-                  <CourseSlot
-                    key={`empty-${semesterId}-${i}`}
-                    id={`empty-${semesterId}-${i}`}
-                    courseCode=""
-                    courseTitle=""
-                    isEmpty={true}
-                    onDragOver={handleDragOver}
-                    onDrop={(e) => handleSemesterDrop(e, semesterId)}
+              {(boxSelections[boxId] &&
+                getCoursesForSemester(boxSelections[boxId]).map((course) => (
+                  <CourseDrag
+                    key={course.id}
+                    id={course.id}
+                    courseCode={course.courseCode}
+                    courseTitle={course.courseTitle}
+                    semesterId={boxSelections[boxId]}
+                    isEmpty={false}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
                   />
-                ))}
-              <button
-                className="add-course-button"
-                onClick={() => addCourse(semesterId)}
-              >
-                + New course
-              </button>
+                ))) ||
+                null}
+
+              {boxSelections[boxId] &&
+                Array(emptySlots[boxSelections[boxId]] || 0)
+                  .fill(0)
+                  .map((_, i) => (
+                    <CourseDrag
+                      key={`empty-${boxId}-${i}`}
+                      id={`empty-${boxId}-${i}`}
+                      courseCode=""
+                      courseTitle=""
+                      semesterId={boxSelections[boxId]}
+                      isEmpty={true}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) =>
+                        handleSemesterDrop(e, boxSelections[boxId])
+                      }
+                    />
+                  ))}
+
+              {boxSelections[boxId] && (
+                <button
+                  className="add-course-button"
+                  onClick={() => addCourse(boxSelections[boxId])}
+                >
+                  + New course
+                </button>
+              )}
             </SemesterBox>
           ))}
         </div>

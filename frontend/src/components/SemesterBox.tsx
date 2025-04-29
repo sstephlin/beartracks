@@ -2,31 +2,40 @@ import React from "react";
 import "../styles/SemesterBox.css";
 
 interface SemesterBoxProps {
-  title: string;
+  boxId: string;
+  selectedSemester: string;
+  availableSemesters: string[];
+  onSemesterSelect: (boxId: string, semester: string) => void;
+  expanded: boolean;
   children?: React.ReactNode;
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent) => void;
-  expanded: boolean;
 }
 
 const SemesterBox: React.FC<SemesterBoxProps> = ({
-  title,
+  boxId,
+  selectedSemester,
+  availableSemesters,
+  onSemesterSelect,
+  expanded,
   children,
   onDragOver,
   onDrop,
-  expanded,
 }) => {
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    if (onDragOver) {
-      onDragOver(e);
-    }
+    onDragOver?.(e);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    if (onDrop) {
-      onDrop(e);
+    onDrop?.(e);
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    if (value) {
+      onSemesterSelect(boxId, value);
     }
   };
 
@@ -36,7 +45,24 @@ const SemesterBox: React.FC<SemesterBoxProps> = ({
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      <div className="semester-header">{title}</div>
+      {selectedSemester ? (
+        <div className="semester-header">{selectedSemester}</div>
+      ) : (
+        <select
+          className="semester-select-full"
+          defaultValue=""
+          onChange={handleSelectChange}
+        >
+          <option value="" disabled>
+            Select a semester
+          </option>
+          {availableSemesters.map((sem) => (
+            <option key={sem} value={sem}>
+              {sem}
+            </option>
+          ))}
+        </select>
+      )}
       <div className="semester-content">{children}</div>
     </div>
   );

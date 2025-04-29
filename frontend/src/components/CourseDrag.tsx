@@ -1,10 +1,11 @@
 import React from "react";
 import "../styles/SemesterBox.css";
 
-interface CourseSlotProps {
+interface CourseDragProps {
   id: string;
   courseCode: string;
   courseTitle?: string;
+  semesterId: string;
   isEmpty: boolean;
   onDragStart?: (e: React.DragEvent, id: string) => void;
   onDragEnd?: (e: React.DragEvent) => void;
@@ -12,19 +13,26 @@ interface CourseSlotProps {
   onDrop?: (e: React.DragEvent) => void;
 }
 
-export default function CourseSlot({
+export default function CourseDrag({
   id,
   courseCode,
   courseTitle,
   isEmpty,
+  semesterId,
   onDragStart,
   onDragEnd,
   onDragOver,
   onDrop,
-}: CourseSlotProps) {
+}: CourseDragProps) {
   const handleDragStart = (e: React.DragEvent) => {
     if (onDragStart) {
       onDragStart(e, id);
+
+      // 🧹 Add these lines:
+      e.dataTransfer.setData("courseId", id); // course unique id
+      e.dataTransfer.setData("semesterId", semesterId); // semester name like "Fall 23"
+      e.dataTransfer.setData("courseCode", courseCode); // course code like CSCI 1230
+      e.dataTransfer.setData("courseTitle", courseTitle || ""); // optional title
     }
   };
 

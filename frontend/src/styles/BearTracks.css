@@ -6,14 +6,18 @@
 }
 
 .searchbar-and-trash-container {
+  position: relative;
+  width: 100%;
+  margin: 16px auto;
   display: flex;
+  justify-content: center; /* Center the search bar */
   align-items: center;
-  justify-content: space-between; /* <-- CHANGE THIS */
-  width: 80%; /* or 90%, or 100% if you want full width */
-  margin: 16px auto; /* center the whole container */
+  padding: 0 40px; /* Optional: Add some side padding */
 }
 
 .trash-near-search {
+  position: absolute;
+  right: 100px; /* Adjust how far from the right */
   background: none;
   border: none;
   cursor: pointer;
@@ -68,4 +72,42 @@
 .course-title {
   font-size: 0.9rem;
   word-wrap: break-word;
+}
+
+.trash-area {
+  position: absolute;
+  right: 100px;
+  background: none;
+  border: 2px solid gray;
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border 0.2s ease;
+}
+
+.trash-hovered {
+  background-color: #ffe0e0;
+  border: 2px solid red;
+}
+
+.trash-hovered {
+  animation: wiggle 0.3s ease-in-out infinite;
+}
+
+@keyframes wiggle {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
