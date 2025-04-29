@@ -52,10 +52,16 @@ public class CheckUserRequirementsHandler implements Route {
       }
 
       RequirementChecker checker = new RequirementChecker(userCourses, requirements);
-      Map<String, List<String>> requirementsStatus = checker.checkAllRequirements();
+      Map<String, List<String>> requirementResults = checker.checkAllRequirements();
+
+      int coursesCompleted = checker.countCoursesCompleted();
+      int totalRequired = checker.getTotalCoursesRequired();
 
       responseMap.put("response_type", "success");
-      responseMap.put("requirements_status", requirementsStatus);
+      responseMap.put("requirements_breakdown", requirementResults);
+      responseMap.put("courses_completed", coursesCompleted);
+      responseMap.put("total_required", totalRequired);
+
     } catch (Exception e) {
       e.printStackTrace();
       responseMap.put("response_type", "failure");

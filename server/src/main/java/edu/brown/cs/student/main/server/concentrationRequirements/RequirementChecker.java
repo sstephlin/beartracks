@@ -231,4 +231,29 @@ public class RequirementChecker {
       return 3;
     }
   }
+
+  // ex: 6/16 for Sc.B
+  public int countCoursesCompleted() {
+    int completedCourses = 0;
+    Map<String, List<String>> requirementResults = this.checkAllRequirements();
+
+    for (Map.Entry<String, List<String>> entry : requirementResults.entrySet()) {
+      List<String> fulfillingCourses = entry.getValue();
+      if (fulfillingCourses != null) {
+        completedCourses += fulfillingCourses.size();
+      }
+    }
+
+    return completedCourses;
+  }
+
+  // based on requirements size, we know if user is AB or ScB
+  public int getTotalCoursesRequired() {
+    if (requirements.size() == 10) {
+      return 10; // AB requirements
+    } else {
+      return 16; // ScB requirements
+    }
+  }
+
 }
