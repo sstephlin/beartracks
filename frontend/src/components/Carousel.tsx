@@ -70,39 +70,68 @@ export default function Carousel({
     [boxId: string]: string;
   }>({});
 
+  // useEffect(() => {
+  //   const handleRemoveCourse = async (e: any) => {
+  //     const { courseCode, semesterId } = e.detail;
+  //     console.log(
+  //       "Removing courseCode:",
+  //       courseCode,
+  //       "semesterId:",
+  //       semesterId
+  //     );
+
+  //     setCourses((prev) =>
+  //       prev.filter(
+  //         (course) =>
+  //           !(
+  //             course.courseCode === courseCode &&
+  //             course.semesterId === semesterId
+  //           )
+  //       )
+  //     );
+
+  //     if (!user?.id) return;
+  //     for (const c of courses) {
+  //       const met = await checkPrereqs(user.id, c.courseCode, c.semesterId);
+  //       setPrereqStatus(c.id, met);
+  //     }
+  //   };
+
+  //   window.addEventListener("removeCourse", handleRemoveCourse);
+
+  //   return () => {
+  //     window.removeEventListener("removeCourse", handleRemoveCourse);
+  //   };
+  // }, [courses, user?.id, setPrereqStatus, setCourses]);
+
   useEffect(() => {
     const handleRemoveCourse = async (e: any) => {
       const { courseCode, semesterId } = e.detail;
-      console.log(
-        "Removing courseCode:",
-        courseCode,
-        "semesterId:",
-        semesterId
-      );
-
-      setCourses((prev) =>
-        prev.filter(
-          (course) =>
-            !(
-              course.courseCode === courseCode &&
-              course.semesterId === semesterId
-            )
-        )
-      );
+      console.log("Removing", courseCode, "from", semesterId);
 
       if (!user?.id) return;
-      for (const c of courses) {
-        const met = await checkPrereqs(user.id, c.courseCode, c.semesterId);
-        setPrereqStatus(c.id, met);
-      }
+
+      // 1) Remove locally and get the updated list
+      setCourses((prev) => {
+        const updated = prev.filter(
+          (c) => !(c.courseCode === courseCode && c.semesterId === semesterId)
+        );
+
+        // 2) Re-check prereqs on the new list
+        updated.forEach(async (c) => {
+          const met = await checkPrereqs(user.id, c.courseCode, c.semesterId);
+          setPrereqStatus(c.id, met);
+        });
+
+        return updated;
+      });
     };
 
     window.addEventListener("removeCourse", handleRemoveCourse);
-
     return () => {
       window.removeEventListener("removeCourse", handleRemoveCourse);
     };
-  }, [courses, user?.id, setPrereqStatus, setCourses]);
+  }, [user?.id, setPrereqStatus, setCourses]); // <-- note: NO `courses` here
 
   const getAvailableSemesters = () =>
     allSemesters.filter((sem) => !usedSemesters.includes(sem));

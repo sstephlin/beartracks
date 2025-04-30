@@ -221,4 +221,13 @@ public class FirebaseUtilities implements StorageInterface {
 
     return null;
   }
+
+  @Override
+  public void updateDocument(
+      DocumentReference ref,
+      Map<String,Object> updates
+  ) {
+    // Firestore’s update() will merge these fields into the existing document
+    ref.update(updates);
+  }
 }

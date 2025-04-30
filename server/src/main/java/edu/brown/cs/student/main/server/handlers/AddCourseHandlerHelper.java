@@ -23,7 +23,7 @@ public class AddCourseHandlerHelper {
   // Simple lexicographical comparison fallback
   // You may improve this with full term ordering logic
   private static int compareSemesters(String a, String b) {
-    String[] terms = {"Winter", "Spring", "Summer", "Fall"};
+    String[] terms = {"Spring", "Summer", "Fall", "Winter"};
     String[] aParts = a.split(" ");
     String[] bParts = b.split(" ");
 
