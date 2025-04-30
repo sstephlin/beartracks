@@ -1,24 +1,30 @@
 import { useState } from "react";
+import { CourseItem } from "../types";
 
-interface Course {
-  id: string;
-  courseCode: string;
-  courseTitle: string;
-  semesterId: string;
-}
+type Course = CourseItem;
 
-export function CourseDragManager(initialCourses: Course[]) {
+export function CourseDragManager(initialCourses: CourseItem[]) {
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [draggedCourse, setDraggedCourse] = useState<string | null>(null);
   const [emptySlots, setEmptySlots] = useState<{ [key: string]: number }>({});
 
-  const handleDragStart = (e: React.DragEvent, courseId: string) => {
-    setDraggedCourse(courseId);
-    e.dataTransfer.setData("courseId", courseId);
+  const setPrereqStatus = (id: string, met: boolean) => {
+    setCourses((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, prereqMet: met } : c))
+    );
+  };
 
+  const handleDragStart = (
+    e: React.DragEvent,
+    course: { courseCode: string; courseTitle: string; semesterId: string }
+  ) => {
+    e.dataTransfer.setData("courseCode", course.courseCode);
+    e.dataTransfer.setData("courseTitle", course.courseTitle);
+    e.dataTransfer.setData("semesterId", course.semesterId);
+
+    const target = e.currentTarget as HTMLElement;
     setTimeout(() => {
-      const target = e.currentTarget as HTMLElement;
-      target.style.opacity = "0.4";
+      if (target) target.style.opacity = "0.4";
     }, 0);
   };
 
@@ -52,28 +58,22 @@ export function CourseDragManager(initialCourses: Course[]) {
     return courses.filter((course) => course.semesterId === semesterId);
   };
 
-  const addCourse = (semesterId: string) => {
-    const coursesInSemester = getCoursesForSemester(semesterId);
-    if (coursesInSemester.length >= 10) return;
-
-    const newCourse: Course = {
-      id: `course-${Date.now()}`,
-      courseCode: "NEW COURSE",
-      courseTitle: "Click to edit...",
+  const addCourse = (semesterId: string, course?: Partial<CourseItem>) => {
+    const newCourse: CourseItem = {
+      id: course!.id!,
+      courseCode: course!.courseCode!,
+      courseTitle: course!.courseTitle!,
       semesterId,
+      isEditing: course!.isEditing ?? false,
+      prereqMet: course!.prereqMet ?? false,
     };
-
-    setCourses([...courses, newCourse]);
-
-    setEmptySlots((prev) => ({
-      ...prev,
-      [semesterId]: Math.min((prev[semesterId] || 0) + 0, 5),
-    }));
+    setCourses((prev) => [...prev, newCourse]);
   };
 
   return {
     courses,
     setCourses,
+    setPrereqStatus,
     draggedCourse,
     emptySlots,
     handleDragStart,

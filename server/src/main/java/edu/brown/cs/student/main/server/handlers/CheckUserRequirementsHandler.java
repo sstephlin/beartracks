@@ -48,11 +48,18 @@ public class CheckUserRequirementsHandler implements Route {
         throw new IllegalArgumentException("Unsupported concentration: " + concentration);
       }
 
-      RequirementChecker checker = new RequirementChecker(userCourses, requirements);
-      Map<String, List<String>> requirementsStatus = checker.checkAllRequirements();
+      CSRequirementChecker checker =
+          new CSRequirementChecker(this.storageHandler, uid, userCourses, requirements);
+      Map<String, List<String>> requirementResults = checker.checkAllRequirements();
+
+      int coursesCompleted = checker.countCoursesCompleted();
+      int totalRequired = checker.getTotalCoursesRequired();
 
       responseMap.put("response_type", "success");
-      responseMap.put("requirements_status", requirementsStatus);
+      responseMap.put("requirements_breakdown", requirementResults);
+      responseMap.put("courses_completed", coursesCompleted);
+      responseMap.put("total_required", totalRequired); // 10 for AB, 16 for ScB
+
     } catch (Exception e) {
       e.printStackTrace();
       responseMap.put("response_type", "failure");

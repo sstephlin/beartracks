@@ -96,7 +96,7 @@ public class CSABDegreeRequirements {
                 "CSCI 1600",
                 "CSCI 1640",
                 "CSCI 1660",
-                "CSCI 1620",
+                "CSCI 1620", // (1660 with 1620)
                 "CSCI 1670",
                 "CSCI 1690",
                 "CSCI 1680",

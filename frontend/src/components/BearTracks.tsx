@@ -3,11 +3,14 @@ import SearchBar from "./SearchBar";
 import Carousel from "./Carousel";
 import { Trash2 } from "lucide-react";
 import "../styles/BearTracks.css";
+import { useUser } from "@clerk/clerk-react";
 
 interface BearTracksProps {
   expanded: boolean;
 }
 export default function BearTracks(props: BearTracksProps) {
+  const { user } = useUser();
+  const uid = user?.id;
   const [viewCount, setViewCount] = useState<number>(2);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [draggedSearchCourse, setDraggedSearchCourse] = useState<any | null>(
@@ -52,22 +55,20 @@ export default function BearTracks(props: BearTracksProps) {
     e.preventDefault();
     setIsTrashHovered(false);
 
-    const courseId = e.dataTransfer.getData("courseId");
     const semesterId = e.dataTransfer.getData("semesterId");
     const courseCode = e.dataTransfer.getData("courseCode");
     const courseTitle = e.dataTransfer.getData("courseTitle");
 
-    if (courseId && semesterId) {
-      // 🧹 Dispatch an event to update frontend immediately
+    if (courseCode && semesterId) {
       window.dispatchEvent(
         new CustomEvent("removeCourse", {
-          detail: { courseId, semesterId },
+          detail: { courseCode, semesterId }, // ✅ use courseCode instead of courseId
         })
       );
 
-      // 🧹 Then call backend (optional: you can await, or just fire and forget)
       const [term, year] = semesterId.split(" ");
-      const uid = "test"; // replace with real UID
+      if (!uid) return;
+
       const url = `http://localhost:1234/remove-course?uid=${uid}&code=${encodeURIComponent(
         courseCode
       )}&title=${encodeURIComponent(courseTitle)}&term=${term}&year=${year}`;
@@ -120,6 +121,7 @@ export default function BearTracks(props: BearTracksProps) {
         setViewCount={setViewCount}
         draggedSearchCourse={draggedSearchCourse}
         expanded={props.expanded}
+        uid={uid}
       />
     </div>
   );

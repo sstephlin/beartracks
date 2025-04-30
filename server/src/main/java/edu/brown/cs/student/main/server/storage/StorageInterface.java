@@ -20,4 +20,7 @@ public interface StorageInterface {
   String getConcentration(String uid) throws Exception;
 
   Set<String> getAllUserCourses(String userId) throws ExecutionException, InterruptedException;
+
+  String getCapstoneCourse(String uid);
+  void updateDocument(DocumentReference ref, Map<String,Object> updates);
 }
