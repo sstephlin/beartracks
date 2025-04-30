@@ -4,6 +4,7 @@ import static spark.Spark.after;
 
 import edu.brown.cs.student.main.server.handlers.AddCourseHandler;
 import edu.brown.cs.student.main.server.handlers.AddSemesterHandler;
+import edu.brown.cs.student.main.server.handlers.CheckPrereqsHandler;
 import edu.brown.cs.student.main.server.handlers.CheckSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.CheckUserRequirementsHandler;
 import edu.brown.cs.student.main.server.handlers.GetConcentrationHandler;
@@ -56,6 +57,7 @@ public class Server {
       Spark.get("get-user-courses", new GetUserCoursesHandler(firebaseUtils));
       Spark.get(
           "check-concentration-requirements", new CheckUserRequirementsHandler(firebaseUtils));
+      Spark.get("check-prereqs", new CheckPrereqsHandler(firebaseUtils, catalog));
 
       Spark.notFound(
           (request, response) -> {

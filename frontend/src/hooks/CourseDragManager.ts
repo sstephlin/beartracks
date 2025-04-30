@@ -1,17 +1,18 @@
 import { useState } from "react";
+import { CourseItem } from "../types";
 
-interface Course {
-  id: string;
-  courseCode: string;
-  courseTitle: string;
-  semesterId: string;
-  isEditing?: boolean;
-}
+type Course = CourseItem;
 
-export function CourseDragManager(initialCourses: Course[]) {
+export function CourseDragManager(initialCourses: CourseItem[]) {
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [draggedCourse, setDraggedCourse] = useState<string | null>(null);
   const [emptySlots, setEmptySlots] = useState<{ [key: string]: number }>({});
+
+  const setPrereqStatus = (id: string, met: boolean) => {
+    setCourses((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, prereqMet: met } : c))
+    );
+  };
 
   const handleDragStart = (
     e: React.DragEvent,
@@ -57,26 +58,22 @@ export function CourseDragManager(initialCourses: Course[]) {
     return courses.filter((course) => course.semesterId === semesterId);
   };
 
-  const addCourse = (semesterId: string, course?: Partial<Course>) => {
-    const newCourse = {
-      id: `course-${Date.now()}`,
-      courseCode: course?.courseCode || "",
-      courseTitle: course?.courseTitle || "",
+  const addCourse = (semesterId: string, course?: Partial<CourseItem>) => {
+    const newCourse: CourseItem = {
+      id: course!.id!,
+      courseCode: course!.courseCode!,
+      courseTitle: course!.courseTitle!,
       semesterId,
-      isEditing: course?.isEditing ?? true, // ← default to true only if not provided
+      isEditing: course!.isEditing ?? false,
+      prereqMet: course!.prereqMet ?? false,
     };
-
     setCourses((prev) => [...prev, newCourse]);
-
-    setEmptySlots((prev) => ({
-      ...prev,
-      [semesterId]: Math.min((prev[semesterId] || 0) + 0, 5),
-    }));
   };
 
   return {
     courses,
     setCourses,
+    setPrereqStatus,
     draggedCourse,
     emptySlots,
     handleDragStart,

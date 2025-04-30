@@ -6,6 +6,8 @@ import { CourseDragManager } from "../hooks/CourseDragManager.ts";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
 import { useUser } from "@clerk/clerk-react";
+import { checkPrereqs } from "../utils/prereqUtils";
+import { CourseItem } from "../types";
 
 interface CarouselProps {
   viewCount: number;
@@ -59,6 +61,7 @@ export default function Carousel({
     getCoursesForSemester,
     addCourse,
     setCourses,
+    setPrereqStatus,
   } = CourseDragManager([]);
 
   const [boxIds, setBoxIds] = useState<string[]>(["box1", "box2"]);
@@ -68,7 +71,7 @@ export default function Carousel({
   }>({});
 
   useEffect(() => {
-    const handleRemoveCourse = (e: any) => {
+    const handleRemoveCourse = async (e: any) => {
       const { courseCode, semesterId } = e.detail;
       console.log(
         "Removing courseCode:",
@@ -86,6 +89,12 @@ export default function Carousel({
             )
         )
       );
+
+      if (!user?.id) return;
+      for (const c of courses) {
+        const met = await checkPrereqs(user.id, c.courseCode, c.semesterId);
+        setPrereqStatus(c.id, met);
+      }
     };
 
     window.addEventListener("removeCourse", handleRemoveCourse);
@@ -93,7 +102,7 @@ export default function Carousel({
     return () => {
       window.removeEventListener("removeCourse", handleRemoveCourse);
     };
-  }, [setCourses]);
+  }, [courses, user?.id, setPrereqStatus, setCourses]);
 
   const getAvailableSemesters = () =>
     allSemesters.filter((sem) => !usedSemesters.includes(sem));
@@ -137,12 +146,24 @@ export default function Carousel({
     if (searchCourseRaw) {
       const searchCourse = JSON.parse(searchCourseRaw);
       const newCourse = {
+        id: `course-${Date.now()}`,
         courseCode: searchCourse.courseCode,
         courseTitle: searchCourse.courseName,
-        isEditing: false, // ✅ Prevents input field from showing
+        semesterId,
+        isEditing: false,
+        prereqMet: false,
       };
 
-      addCourse(semesterId, newCourse); // You must pass `Partial<Course>`
+      addCourse(semesterId, newCourse);
+
+      if (user?.id) {
+        const met = await checkPrereqs(
+          user.id,
+          newCourse.courseCode,
+          semesterId
+        );
+        setPrereqStatus(newCourse.id, met);
+      }
 
       // 🔁 Backend fetch to persist (NO skipCheck)
       const [term, year] = semesterId.split(" ");
@@ -160,15 +181,25 @@ export default function Carousel({
             method: "POST",
           }
         );
+        const body = await response.json();
+        const met = body.prereqsMet as boolean;
 
-        const result = await response.json();
-        if (result.response_type === "failure") {
-          console.warn("Backend rejected course:", result.error);
-        } else {
-          console.log("Course added successfully:", result.message);
-        }
+        console.log(`Added ${newCourse.courseCode}, prereqsMet=${met}`);
+        setPrereqStatus(newCourse.id, met);
       } catch (err) {
         console.error("Network error while saving search-dragged course:", err);
+      }
+
+      if (user?.id) {
+        for (const c of courses) {
+          if (c.id === newCourse.id) continue;
+          const nowMet = await checkPrereqs(
+            user.id,
+            c.courseCode,
+            c.semesterId
+          );
+          setPrereqStatus(c.id, nowMet);
+        }
       }
     }
 
@@ -268,6 +299,7 @@ export default function Carousel({
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
                     onSaveCourse={handleSaveCourse}
+                    prereqMet={course.prereqMet}
                   />
                 ))) ||
                 null}

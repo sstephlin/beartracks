@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../styles/SemesterBox.css";
 
 interface CourseDragProps {
+  prereqMet?: boolean;
   id: string;
   courseCode: string;
   courseTitle?: string;
@@ -30,6 +31,7 @@ export default function CourseDrag({
   onDragOver,
   onDrop,
   onSaveCourse,
+  prereqMet = true,
 }: CourseDragProps) {
   const [code, setCode] = useState(courseCode);
   const [title, setTitle] = useState(courseTitle || "");
@@ -56,7 +58,11 @@ export default function CourseDrag({
 
   return (
     <div
-      className={`course-slot ${isEmpty ? "empty" : "filled"}`}
+      className={`
+        course-slot 
+        ${isEmpty ? "empty" : "filled"} 
+        ${!isEmpty ? (prereqMet ? "pr-met" : "pr-not-met") : ""}
+      `} // CHANGE: add prereq classes
       draggable={!isEmpty && !isEditing}
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
