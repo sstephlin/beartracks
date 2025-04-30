@@ -1,13 +1,9 @@
 package edu.brown.cs.student.main.server.storage;
 
 import com.google.api.core.ApiFuture;
+import com.google.api.core.ApiFutures;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.firestore.CollectionReference;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
@@ -15,26 +11,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 public class FirebaseUtilities implements StorageInterface {
 
   public FirebaseUtilities() throws IOException {
-    // TODO: FIRESTORE PART 0:
-    // Create /resources/ folder with firebase_config.json and
-    // add your admin SDK from Firebase. see:
-    // https://docs.google.com/document/d/10HuDtBWjkUoCaVj_A53IFm5torB_ws06fW3KYFZqKjc/edit?usp=sharing
     String workingDirectory = System.getProperty("user.dir");
     Path firebaseConfigPath =
         Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
-    // ^-- if your /resources/firebase_config.json exists but is not found,
-    // try printing workingDirectory and messing around with this path.
 
     FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
 
@@ -55,45 +40,61 @@ public class FirebaseUtilities implements StorageInterface {
     }
 
     Firestore db = FirestoreClient.getFirestore();
-    // 1: Get a ref to the collection that you created
     CollectionReference collectionRef =
         db.collection("users").document(uid).collection(collection_id);
-    // 2: Write data to the collection ref
     collectionRef.document(doc_id).set(data);
   }
 
+  // New recursive deletion logic
   public void deleteDocument(DocumentReference doc) {
-    // for each subcollection, run deleteCollection()
-    Iterable<CollectionReference> collections = doc.listCollections();
-    for (CollectionReference collection : collections) {
-      deleteCollection(collection);
-    }
-    // then delete the document
-    doc.delete();
-  }
-
-  // recursively removes all the documents and collections inside a collection
-  // https://firebase.google.com/docs/firestore/manage-data/delete-data#collections
-  private void deleteCollection(CollectionReference collection) {
     try {
+      Iterable<CollectionReference> subcollections = doc.listCollections();
+      List<ApiFuture<List<WriteResult>>> subDeletes = new ArrayList<>();
 
-      // get all documents in the collection
-      ApiFuture<QuerySnapshot> future = collection.get();
-      List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-
-      // delete each document
-      for (QueryDocumentSnapshot doc : documents) {
-        doc.getReference().delete();
+      for (CollectionReference subcol : subcollections) {
+        subDeletes.add(deleteCollection(subcol));
       }
 
-      // NOTE: the query to documents may be arbitrarily large. A more robust
-      // solution would involve batching the collection.get() call.
+      // Wait for all subcollections to be deleted
+      ApiFutures.allAsList(subDeletes).get();
+
+      // Now delete the document itself
+      doc.delete().get();
+
     } catch (Exception e) {
-      System.err.println("Error deleting collection : " + e.getMessage());
+      System.err.println("Error deleting document and its subcollections: " + e.getMessage());
     }
   }
 
-  // gets all the courses a user has taken, returns it as a set
+  // Recursively deletes all documents in a collection
+  private ApiFuture<List<WriteResult>> deleteCollection(CollectionReference collection) {
+    Firestore db = FirestoreClient.getFirestore();
+
+    ApiFuture<QuerySnapshot> future = collection.get();
+    return ApiFutures.transformAsync(
+        future,
+        querySnapshot -> {
+          List<ApiFuture<WriteResult>> deletes = new ArrayList<>();
+          for (QueryDocumentSnapshot docSnap : querySnapshot.getDocuments()) {
+            deletes.add(deleteDocumentRecursive(docSnap.getReference()));
+          }
+          return ApiFutures.allAsList(deletes);
+        },
+        Runnable::run);
+  }
+
+  private ApiFuture<WriteResult> deleteDocumentRecursive(DocumentReference docRef) {
+    Iterable<CollectionReference> subcollections = docRef.listCollections();
+    List<ApiFuture<List<WriteResult>>> subDeletes = new ArrayList<>();
+
+    for (CollectionReference subcolRef : subcollections) {
+      subDeletes.add(deleteCollection(subcolRef));
+    }
+
+    return ApiFutures.transformAsync(
+        ApiFutures.allAsList(subDeletes), (ignored) -> docRef.delete(), Runnable::run);
+  }
+
   public Set<String> getAllUserCourses(String userId)
       throws ExecutionException, InterruptedException {
 
@@ -103,33 +104,23 @@ public class FirebaseUtilities implements StorageInterface {
 
     ApiFuture<QuerySnapshot> semestersFuture = semestersRef.get();
     List<QueryDocumentSnapshot> semesterDocs = semestersFuture.get().getDocuments();
-    System.out.println("Fetched semester docs size: " + semesterDocs.size());
-    for (QueryDocumentSnapshot semesterDoc : semesterDocs) {
-      System.out.println("Semester doc ID: " + semesterDoc.getId());
-    }
 
     Set<String> allCourses = new HashSet<>();
 
     for (QueryDocumentSnapshot semesterDoc : semesterDocs) {
       if (!semesterDoc.exists()) {
-        continue; // skip if semester doc is empty
+        continue;
       }
 
       CollectionReference coursesRef = semesterDoc.getReference().collection("courses");
       ApiFuture<QuerySnapshot> coursesFuture = coursesRef.get();
       List<QueryDocumentSnapshot> courseDocs = coursesFuture.get().getDocuments();
-      System.out.println("Fetching courses for semester: " + semesterDoc.getId());
-      System.out.println("Number of courses found: " + courseDocs.size());
-      for (QueryDocumentSnapshot courseDoc : courseDocs) {
-        System.out.println("Course doc ID: " + courseDoc.getId());
-        System.out.println("Course code field: " + courseDoc.getString("code"));
-      }
 
       for (QueryDocumentSnapshot courseDoc : courseDocs) {
         if (courseDoc.exists()) {
           String courseCode = courseDoc.getString("code");
           if (courseCode != null) {
-            allCourses.add(courseCode.toUpperCase()); // Normalize if needed
+            allCourses.add(courseCode.toUpperCase());
           }
         }
       }
@@ -148,14 +139,12 @@ public class FirebaseUtilities implements StorageInterface {
     Firestore db = FirestoreClient.getFirestore();
     Map<String, List<String>> semesterToCourses = new HashMap<>();
 
-    // Step 1: Get all semesters under users/{uid}/semesters/*
     CollectionReference semestersRef = db.collection("users").document(uid).collection("semesters");
     ApiFuture<QuerySnapshot> semestersFuture = semestersRef.get();
     List<QueryDocumentSnapshot> semesterDocs = semestersFuture.get().getDocuments();
 
-    // Step 2: For each semester, get the 'courses' subcollection
     for (QueryDocumentSnapshot semesterDoc : semesterDocs) {
-      String semesterKey = semesterDoc.getId(); // example: "Fall 2025"
+      String semesterKey = semesterDoc.getId();
       CollectionReference coursesRef = semesterDoc.getReference().collection("courses");
       ApiFuture<QuerySnapshot> coursesFuture = coursesRef.get();
       List<QueryDocumentSnapshot> courseDocs = coursesFuture.get().getDocuments();
@@ -186,7 +175,7 @@ public class FirebaseUtilities implements StorageInterface {
     if (snapshot.exists() && snapshot.getString("view") != null) {
       return snapshot.getString("view");
     }
-    return null; // frontend will default to "2"
+    return null;
   }
 
   @Override
@@ -209,7 +198,8 @@ public class FirebaseUtilities implements StorageInterface {
   public String getCapstoneCourse(String uid) {
     try {
       Firestore db = FirestoreClient.getFirestore();
-      CollectionReference semestersRef = db.collection("users").document(uid).collection("semesters");
+      CollectionReference semestersRef =
+          db.collection("users").document(uid).collection("semesters");
       ApiFuture<QuerySnapshot> semestersFuture = semestersRef.get();
       List<QueryDocumentSnapshot> semesters = semestersFuture.get().getDocuments();
 
@@ -221,7 +211,7 @@ public class FirebaseUtilities implements StorageInterface {
         for (QueryDocumentSnapshot courseDoc : courseDocs) {
           Boolean isCapstone = courseDoc.getBoolean("isCapstone");
           if (isCapstone != null && isCapstone) {
-            return courseDoc.getId(); // Return course code immediately
+            return courseDoc.getId();
           }
         }
       }
@@ -229,6 +219,6 @@ public class FirebaseUtilities implements StorageInterface {
       e.printStackTrace();
     }
 
-    return null; // No capstone selected
+    return null;
   }
 }

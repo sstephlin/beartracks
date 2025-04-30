@@ -4,6 +4,7 @@ import static spark.Spark.after;
 
 import edu.brown.cs.student.main.server.handlers.AddCourseHandler;
 import edu.brown.cs.student.main.server.handlers.AddSemesterHandler;
+import edu.brown.cs.student.main.server.handlers.CheckPrereqsHandler;
 import edu.brown.cs.student.main.server.handlers.CheckSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.CheckUserRequirementsHandler;
 import edu.brown.cs.student.main.server.handlers.GetConcentrationHandler;
@@ -43,19 +44,20 @@ public class Server {
       // 2. Parse CourseCatalog once at startup
       CourseCatalog catalog = CourseCSVParser.parse("data/mockCourse.csv");
 
-      Spark.get("add-course", new AddCourseHandler(firebaseUtils, catalog));
-      Spark.get("add-semester", new AddSemesterHandler(firebaseUtils));
-      Spark.get("remove-course", new RemoveCourseHandler(firebaseUtils));
-      Spark.get("remove-semester", new RemoveSemesterHandler(firebaseUtils));
+      Spark.post("add-course", new AddCourseHandler(firebaseUtils, catalog));
+      Spark.post("add-semester", new AddSemesterHandler(firebaseUtils));
+      Spark.post("remove-course", new RemoveCourseHandler(firebaseUtils));
+      Spark.post("remove-semester", new RemoveSemesterHandler(firebaseUtils));
       Spark.get("check-semester", new CheckSemesterHandler(catalog));
       Spark.get("search-course", new SearchCourseHandler(catalog));
-      Spark.get("store-concentration", new StoreConcentrationHandler(firebaseUtils));
+      Spark.post("store-concentration", new StoreConcentrationHandler(firebaseUtils));
       Spark.get("get-concentration", new GetConcentrationHandler(firebaseUtils));
-      Spark.get("store-view", new StoreViewHandler(firebaseUtils));
+      Spark.post("store-view", new StoreViewHandler(firebaseUtils));
       Spark.get("get-view", new GetViewHandler(firebaseUtils));
       Spark.get("get-user-courses", new GetUserCoursesHandler(firebaseUtils));
       Spark.get(
           "check-concentration-requirements", new CheckUserRequirementsHandler(firebaseUtils));
+      Spark.get("check-prereqs", new CheckPrereqsHandler(firebaseUtils, catalog));
 
       Spark.notFound(
           (request, response) -> {

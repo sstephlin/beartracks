@@ -5,12 +5,16 @@ import { CarouselMover } from "../hooks/CarouselMover.ts";
 import { CourseDragManager } from "../hooks/CourseDragManager.ts";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
+import { useUser } from "@clerk/clerk-react";
+import { checkPrereqs } from "../utils/prereqUtils";
+import { CourseItem } from "../types";
 
 interface CarouselProps {
   viewCount: number;
   setViewCount: React.Dispatch<React.SetStateAction<number>>;
   draggedSearchCourse: any | null;
   expanded: boolean;
+  uid: string | undefined;
 }
 
 const allSemesters = [
@@ -45,6 +49,7 @@ export default function Carousel({
     allSemesters.length,
     viewCount
   );
+  const { user } = useUser();
 
   const {
     courses,
@@ -56,6 +61,7 @@ export default function Carousel({
     getCoursesForSemester,
     addCourse,
     setCourses,
+    setPrereqStatus,
   } = CourseDragManager([]);
 
   const [boxIds, setBoxIds] = useState<string[]>(["box1", "box2"]);
@@ -65,16 +71,30 @@ export default function Carousel({
   }>({});
 
   useEffect(() => {
-    const handleRemoveCourse = (e: any) => {
-      const { courseId, semesterId } = e.detail;
-      console.log("Removing courseId:", courseId, "semesterId:", semesterId);
+    const handleRemoveCourse = async (e: any) => {
+      const { courseCode, semesterId } = e.detail;
+      console.log(
+        "Removing courseCode:",
+        courseCode,
+        "semesterId:",
+        semesterId
+      );
 
       setCourses((prev) =>
         prev.filter(
           (course) =>
-            !(course.id === courseId && course.semesterId === semesterId)
+            !(
+              course.courseCode === courseCode &&
+              course.semesterId === semesterId
+            )
         )
       );
+
+      if (!user?.id) return;
+      for (const c of courses) {
+        const met = await checkPrereqs(user.id, c.courseCode, c.semesterId);
+        setPrereqStatus(c.id, met);
+      }
     };
 
     window.addEventListener("removeCourse", handleRemoveCourse);
@@ -82,33 +102,148 @@ export default function Carousel({
     return () => {
       window.removeEventListener("removeCourse", handleRemoveCourse);
     };
-  }, [setCourses]);
+  }, [courses, user?.id, setPrereqStatus, setCourses]);
 
   const getAvailableSemesters = () =>
     allSemesters.filter((sem) => !usedSemesters.includes(sem));
 
-  const handleSemesterSelect = (boxId: string, semester: string) => {
+  const handleSemesterSelect = async (boxId: string, semester: string) => {
     setBoxSelections((prev) => ({ ...prev, [boxId]: semester }));
     setUsedSemesters((prev) => [...prev, semester]);
+
+    // 🔄 Parse semester (e.g., "Fall 25" → "Fall", "25")
+    const [term, year] = semester.split(" ");
+    const uid = user?.id;
+
+    if (!uid || !term || !year) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:1234/add-semester?uid=${uid}&term=${term}&year=${year}`,
+        {
+          method: "POST",
+        }
+      );
+
+      const result = await response.json();
+      if (result.response_type === "failure") {
+        console.warn("Failed to add semester:", result.error);
+      } else {
+        console.log("Semester added:", result.message);
+      }
+    } catch (err) {
+      console.error("Network error while adding semester:", err);
+    }
   };
 
-  const handleSemesterDrop = (e: React.DragEvent, semesterId: string) => {
+  const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
     e.preventDefault();
 
-    const courseId = e.dataTransfer.getData("courseId");
     const searchCourseRaw = e.dataTransfer.getData("searchCourse");
+    const courseId = e.dataTransfer.getData("courseId");
 
+    // Case 1: Dragged from search results
     if (searchCourseRaw) {
       const searchCourse = JSON.parse(searchCourseRaw);
       const newCourse = {
-        id: `search-${Date.now()}`,
+        id: `course-${Date.now()}`,
         courseCode: searchCourse.courseCode,
         courseTitle: searchCourse.courseName,
         semesterId,
+        isEditing: false,
+        prereqMet: false,
       };
-      setCourses((prev) => [...prev, newCourse]);
-    } else if (courseId) {
+
+      addCourse(semesterId, newCourse);
+
+      if (user?.id) {
+        const met = await checkPrereqs(
+          user.id,
+          newCourse.courseCode,
+          semesterId
+        );
+        setPrereqStatus(newCourse.id, met);
+      }
+
+      // 🔁 Backend fetch to persist (NO skipCheck)
+      const [term, year] = semesterId.split(" ");
+      const uid = user?.id;
+      if (!uid || !term || !year) return;
+
+      try {
+        const response = await fetch(
+          `http://localhost:1234/add-course?uid=${uid}&code=${encodeURIComponent(
+            newCourse.courseCode
+          )}&title=${encodeURIComponent(
+            newCourse.courseTitle
+          )}&term=${term}&year=${year}`,
+          {
+            method: "POST",
+          }
+        );
+        const body = await response.json();
+        const met = body.prereqsMet as boolean;
+
+        console.log(`Added ${newCourse.courseCode}, prereqsMet=${met}`);
+        setPrereqStatus(newCourse.id, met);
+      } catch (err) {
+        console.error("Network error while saving search-dragged course:", err);
+      }
+
+      if (user?.id) {
+        for (const c of courses) {
+          if (c.id === newCourse.id) continue;
+          const nowMet = await checkPrereqs(
+            user.id,
+            c.courseCode,
+            c.semesterId
+          );
+          setPrereqStatus(c.id, nowMet);
+        }
+      }
+    }
+
+    // Case 2: Dragged from another semester
+    else if (courseId) {
       handleDrop(e, semesterId);
+    }
+  };
+
+  const handleSaveCourse = async (
+    id: string,
+    courseCode: string,
+    courseTitle: string
+  ) => {
+    setCourses((prev) =>
+      prev.map((course) =>
+        course.id === id
+          ? { ...course, courseCode, courseTitle, isEditing: false }
+          : course
+      )
+    );
+
+    const course = courses.find((c) => c.id === id);
+    if (!course || !user?.id) return;
+
+    const [term, year] = course.semesterId.split(" ");
+    const uid = user.id;
+
+    try {
+      const response = await fetch(
+        `http://localhost:1234/add-course?uid=${uid}&code=${encodeURIComponent(
+          courseCode
+        )}&title=${encodeURIComponent(
+          courseTitle
+        )}&term=${term}&year=${year}&skipCheck=true`,
+        { method: "POST" }
+      );
+
+      const result = await response.json();
+      if (result.response_type === "failure") {
+        console.warn("Failed to add course to Firestore:", result.error);
+      }
+    } catch (err) {
+      console.error("Network error while saving course:", err);
     }
   };
 
@@ -160,8 +295,11 @@ export default function Carousel({
                     courseTitle={course.courseTitle}
                     semesterId={boxSelections[boxId]}
                     isEmpty={false}
+                    isEditing={course.isEditing}
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
+                    onSaveCourse={handleSaveCourse}
+                    prereqMet={course.prereqMet}
                   />
                 ))) ||
                 null}
