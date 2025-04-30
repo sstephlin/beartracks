@@ -58,7 +58,7 @@ export default function Carousel({
     setCourses,
   } = CourseDragManager([]);
 
-  const [boxIds, setBoxIds] = useState<string[]>(["box1", "box2"]);
+  const [boxIds, setBoxIds] = useState<string[]>(["box1"]);
   const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
   const [boxSelections, setBoxSelections] = useState<{
     [boxId: string]: string;

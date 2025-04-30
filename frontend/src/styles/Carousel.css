@@ -1,6 +1,6 @@
 .carousel-outer-wrapper {
   position: relative;
-  max-width: 100%;
+  max-width: 80vw;
   overflow: hidden;
   align-items: center;
   display: flex;
