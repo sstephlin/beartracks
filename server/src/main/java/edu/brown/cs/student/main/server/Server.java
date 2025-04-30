@@ -46,7 +46,7 @@ public class Server {
 
       Spark.post("add-course", new AddCourseHandler(firebaseUtils, catalog));
       Spark.post("add-semester", new AddSemesterHandler(firebaseUtils));
-      Spark.post("remove-course", new RemoveCourseHandler(firebaseUtils));
+      Spark.post("remove-course", new RemoveCourseHandler(firebaseUtils, catalog));
       Spark.post("remove-semester", new RemoveSemesterHandler(firebaseUtils));
       Spark.get("check-semester", new CheckSemesterHandler(catalog));
       Spark.get("search-course", new SearchCourseHandler(catalog));
