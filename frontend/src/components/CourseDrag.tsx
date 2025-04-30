@@ -8,7 +8,10 @@ interface CourseDragProps {
   semesterId: string;
   isEmpty: boolean;
   isEditing?: boolean;
-  onDragStart?: (e: React.DragEvent, id: string) => void;
+  onDragStart?: (
+    e: React.DragEvent,
+    course: { courseCode: string; courseTitle: string; semesterId: string }
+  ) => void;
   onDragEnd?: (e: React.DragEvent) => void;
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent) => void;
@@ -39,12 +42,16 @@ export default function CourseDrag({
 
   const handleDragStart = (e: React.DragEvent) => {
     if (onDragStart) {
-      onDragStart(e, id);
-      e.dataTransfer.setData("courseId", id);
-      e.dataTransfer.setData("semesterId", semesterId);
-      e.dataTransfer.setData("courseCode", courseCode);
-      e.dataTransfer.setData("courseTitle", courseTitle || "");
+      onDragStart(e, {
+        courseCode,
+        courseTitle: courseTitle || "",
+        semesterId,
+      });
     }
+
+    e.dataTransfer.setData("courseCode", courseCode);
+    e.dataTransfer.setData("courseTitle", courseTitle || "");
+    e.dataTransfer.setData("semesterId", semesterId);
   };
 
   return (

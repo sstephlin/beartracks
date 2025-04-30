@@ -45,13 +45,13 @@ public class Server {
 
       Spark.post("add-course", new AddCourseHandler(firebaseUtils, catalog));
       Spark.post("add-semester", new AddSemesterHandler(firebaseUtils));
-      Spark.get("remove-course", new RemoveCourseHandler(firebaseUtils));
-      Spark.get("remove-semester", new RemoveSemesterHandler(firebaseUtils));
+      Spark.post("remove-course", new RemoveCourseHandler(firebaseUtils));
+      Spark.post("remove-semester", new RemoveSemesterHandler(firebaseUtils));
       Spark.get("check-semester", new CheckSemesterHandler(catalog));
       Spark.get("search-course", new SearchCourseHandler(catalog));
-      Spark.get("store-concentration", new StoreConcentrationHandler(firebaseUtils));
+      Spark.post("store-concentration", new StoreConcentrationHandler(firebaseUtils));
       Spark.get("get-concentration", new GetConcentrationHandler(firebaseUtils));
-      Spark.get("store-view", new StoreViewHandler(firebaseUtils));
+      Spark.post("store-view", new StoreViewHandler(firebaseUtils));
       Spark.get("get-view", new GetViewHandler(firebaseUtils));
       Spark.get("get-user-courses", new GetUserCoursesHandler(firebaseUtils));
       Spark.get(

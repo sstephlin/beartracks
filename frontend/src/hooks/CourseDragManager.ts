@@ -13,13 +13,17 @@ export function CourseDragManager(initialCourses: Course[]) {
   const [draggedCourse, setDraggedCourse] = useState<string | null>(null);
   const [emptySlots, setEmptySlots] = useState<{ [key: string]: number }>({});
 
-  const handleDragStart = (e: React.DragEvent, courseId: string) => {
-    setDraggedCourse(courseId);
-    e.dataTransfer.setData("courseId", courseId);
+  const handleDragStart = (
+    e: React.DragEvent,
+    course: { courseCode: string; courseTitle: string; semesterId: string }
+  ) => {
+    e.dataTransfer.setData("courseCode", course.courseCode);
+    e.dataTransfer.setData("courseTitle", course.courseTitle);
+    e.dataTransfer.setData("semesterId", course.semesterId);
 
+    const target = e.currentTarget as HTMLElement;
     setTimeout(() => {
-      const target = e.currentTarget as HTMLElement;
-      target.style.opacity = "0.4";
+      if (target) target.style.opacity = "0.4";
     }, 0);
   };
 

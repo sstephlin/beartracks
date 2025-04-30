@@ -1,7 +1,7 @@
 import "../styles/App.css";
 import Sidebar from "./Sidebar";
 import BearTracks from "./BearTracks";
-import { Trash2, HelpCircle } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import { useState } from "react";
 
 import {

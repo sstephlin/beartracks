@@ -12,6 +12,7 @@ interface CarouselProps {
   setViewCount: React.Dispatch<React.SetStateAction<number>>;
   draggedSearchCourse: any | null;
   expanded: boolean;
+  uid: string | undefined;
 }
 
 const allSemesters = [
@@ -68,13 +69,21 @@ export default function Carousel({
 
   useEffect(() => {
     const handleRemoveCourse = (e: any) => {
-      const { courseId, semesterId } = e.detail;
-      console.log("Removing courseId:", courseId, "semesterId:", semesterId);
+      const { courseCode, semesterId } = e.detail;
+      console.log(
+        "Removing courseCode:",
+        courseCode,
+        "semesterId:",
+        semesterId
+      );
 
       setCourses((prev) =>
         prev.filter(
           (course) =>
-            !(course.id === courseId && course.semesterId === semesterId)
+            !(
+              course.courseCode === courseCode &&
+              course.semesterId === semesterId
+            )
         )
       );
     };
