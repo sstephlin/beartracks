@@ -30,14 +30,13 @@ public class UpdateCapstoneHandler implements Route {
 
       // 1. Find old capstone if it exists and set isCapstone field to false
       String previousCapstone = storageHandler.getCapstoneCourse(uid);
+
       if (previousCapstone != null && !previousCapstone.equals(courseCode)) {
-        storageHandler.updateIsCapstoneField(
-            uid + "/semesters/" + semester + "/courses", previousCapstone, "isCapstone", false);
+        storageHandler.updateIsCapstoneField(uid, semester, previousCapstone,false);
       }
 
       // 2. Mark new course as capstone
-      storageHandler.updateIsCapstoneField(
-          uid + "/semesters/" + semester + "/courses", courseCode, "isCapstone", true);
+      storageHandler.updateIsCapstoneField(uid, semester, courseCode, true);
 
       responseMap.put("response_type", "success");
       responseMap.put("message", "Capstone course updated to " + courseCode);

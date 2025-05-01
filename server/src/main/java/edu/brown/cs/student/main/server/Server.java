@@ -15,6 +15,7 @@ import edu.brown.cs.student.main.server.handlers.RemoveSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.SearchCourseHandler;
 import edu.brown.cs.student.main.server.handlers.StoreConcentrationHandler;
 import edu.brown.cs.student.main.server.handlers.StoreViewHandler;
+import edu.brown.cs.student.main.server.handlers.UpdateCapstoneHandler;
 import edu.brown.cs.student.main.server.parser.CourseCSVParser;
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
@@ -58,6 +59,8 @@ public class Server {
       Spark.get(
           "check-concentration-requirements", new CheckUserRequirementsHandler(firebaseUtils));
       Spark.get("check-prereqs", new CheckPrereqsHandler(firebaseUtils, catalog));
+      Spark.post("update-capstone", new UpdateCapstoneHandler(firebaseUtils));
+
 
       Spark.notFound(
           (request, response) -> {

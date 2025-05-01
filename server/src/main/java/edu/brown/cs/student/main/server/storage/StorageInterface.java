@@ -23,7 +23,7 @@ public interface StorageInterface {
 
   String getCapstoneCourse(String uid);
 
-  void updateIsCapstoneField(String collectionPath, String docId, String fieldName, Boolean newValue);
+  void updateIsCapstoneField(String uid, String semester, String courseCode, boolean isCapstone);
 
   void updateDocument(DocumentReference ref, Map<String,Object> updates);
 }
