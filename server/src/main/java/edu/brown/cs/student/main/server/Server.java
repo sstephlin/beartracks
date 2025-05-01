@@ -59,6 +59,7 @@ public class Server {
       Spark.get(
           "check-concentration-requirements", new CheckUserRequirementsHandler(firebaseUtils));
       Spark.get("check-prereqs", new CheckPrereqsHandler(firebaseUtils, catalog));
+      Spark.post("/refresh", new RefreshAllCoursesHandler(catalog));
       Spark.post("update-capstone", new UpdateCapstoneHandler(firebaseUtils));
 
 
