@@ -39,19 +39,6 @@ public class AddCourseHandlerHelper {
     return termA - termB;
   }
 
-  //  public static boolean checkPrerequisites(
-  //      CourseCatalog catalog, String courseCode, Set<String> completedCourses, String semester) {
-  //    PrereqTreeNode prereqTree = catalog.getPrereqTree(courseCode, semester);
-  //    if (prereqTree == null || prereqTree.isEmpty()) return true;
-  //
-  //    for (String prereq : prereqs) {
-  //      if (!completedCourses.contains(prereq.toUpperCase())) {
-  //        return false;
-  //      }
-  //    }
-  //
-  //    return true;
-  //  }
   public static boolean checkPrerequisites(
       CourseCatalog catalog,
       String courseCode,
@@ -103,37 +90,4 @@ public class AddCourseHandlerHelper {
 
     return false; // fallback
   }
-  //  private static boolean evaluateTree(
-  //      PrereqTreeNode node, Set<String> completed, CourseCatalog catalog) {
-  //    if (node.isLeaf()) {
-  //      String course = node.courseCode.toUpperCase();
-  //
-  //      if (completed.contains(course)) return true;
-  //
-  //      // Try to recursively satisfy the course through its own prereqs
-  //      PrereqTreeNode subTree = catalog.getPrereqTree(course, null);
-  //      if (subTree == null || subTree.isEmpty()) {
-  //        return false; // course not completed and has no known prereqs = cannot satisfy
-  //      }
-  //
-  //      // Only satisfied if the prereqs of the course are satisfied
-  //      return evaluateTree(subTree, completed, catalog);
-  //    }
-  //
-  //    if (node.type == PrereqTreeNode.Type.AND) {
-  //      for (PrereqTreeNode child : node.children) {
-  //        if (!evaluateTree(child, completed, catalog)) return false;
-  //      }
-  //      return true;
-  //    }
-  //
-  //    if (node.type == PrereqTreeNode.Type.OR) {
-  //      for (PrereqTreeNode child : node.children) {
-  //        if (evaluateTree(child, completed, catalog)) return true;
-  //      }
-  //      return false;
-  //    }
-  //
-  //    return false; // should never happen
-  //  }
 }
