@@ -2,6 +2,7 @@ package edu.brown.cs.student.main.server.handlers;
 
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import java.util.*;
+import edu.brown.cs.student.main.server.parser.PrereqTreeNode;
 
 public class AddCourseHandlerHelper {
 
@@ -38,17 +39,48 @@ public class AddCourseHandlerHelper {
     return termA - termB;
   }
 
-  public static boolean checkPrerequisites(
-      CourseCatalog catalog, String courseCode, Set<String> completedCourses, String semester) {
-    List<String> prereqs = catalog.getPrereqs(courseCode, semester);
-    if (prereqs == null || prereqs.isEmpty()) return true;
+//  public static boolean checkPrerequisites(
+//      CourseCatalog catalog, String courseCode, Set<String> completedCourses, String semester) {
+//    PrereqTreeNode prereqTree = catalog.getPrereqTree(courseCode, semester);
+//    if (prereqTree == null || prereqTree.isEmpty()) return true;
+//
+//    for (String prereq : prereqs) {
+//      if (!completedCourses.contains(prereq.toUpperCase())) {
+//        return false;
+//      }
+//    }
+//
+//    return true;
+//  }
+public static boolean checkPrerequisites(
+    CourseCatalog catalog,
+    String courseCode,
+    Set<String> completedCourses,
+    String semester
+) {
+  PrereqTreeNode prereqTree = catalog.getPrereqTree(courseCode, semester);
+  if (prereqTree == null || prereqTree.isEmpty()) return true;
 
-    for (String prereq : prereqs) {
-      if (!completedCourses.contains(prereq.toUpperCase())) {
-        return false;
-      }
+  return evaluateTree(prereqTree, completedCourses);
+}
+
+  private static boolean evaluateTree(PrereqTreeNode node, Set<String> completed) {
+    if (node.isLeaf()) {
+      return completed.contains(node.getValue().toUpperCase());
     }
 
-    return true;
+    if (node.type == PrereqTreeNode.Type.AND) {
+      for (PrereqTreeNode child : node.children) {
+        if (!evaluateTree(child, completed)) return false;
+      }
+      return true;
+    } else if (node.type == PrereqTreeNode.Type.OR) {
+      for (PrereqTreeNode child : node.children) {
+        if (evaluateTree(child, completed)) return true;
+      }
+      return false;
+    }
+
+    return false; // should not happen
   }
 }
