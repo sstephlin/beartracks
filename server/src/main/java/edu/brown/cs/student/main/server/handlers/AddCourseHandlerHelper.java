@@ -53,41 +53,87 @@ public class AddCourseHandlerHelper {
   //    return true;
   //  }
   public static boolean checkPrerequisites(
-      CourseCatalog catalog, String courseCode, Set<String> completedCourses, String semester) {
+      CourseCatalog catalog,
+      String courseCode,
+      Set<String> completedCourses,
+      String semester,
+      Map<String, String> courseToSemester) {
     PrereqTreeNode prereqTree = catalog.getPrereqTree(courseCode, semester);
     if (prereqTree == null || prereqTree.isEmpty()) return true;
 
-    return evaluateTree(prereqTree, completedCourses, catalog);
+    return evaluateTree(prereqTree, completedCourses, catalog, courseToSemester);
   }
 
   private static boolean evaluateTree(
-      PrereqTreeNode node, Set<String> completed, CourseCatalog catalog) {
+      PrereqTreeNode node,
+      Set<String> completed,
+      CourseCatalog catalog,
+      Map<String, String> courseToSemester) {
     if (node.isLeaf()) {
       String course = node.courseCode.toUpperCase();
+      System.out.println(completed);
+      if (completed.contains(course)) {
+        // Check if this completed course itself has prereqs that are met
+        String semester = courseToSemester.get(course);
+        PrereqTreeNode subTree = catalog.getPrereqTree(course, semester);
+        System.out.println(subTree);
+        if (subTree == null || subTree.isEmpty()) {
+          System.out.println("base");
+          return true; // no prereqs → completed is enough
+        }
 
-      // Base case: course has been completed
-      if (completed.contains(course)) return true;
-
-      // Recursive case: try to see if prereqs of this course are met
-      PrereqTreeNode subTree = catalog.getPrereqTree(course, /* semester is unknown */ null);
-      if (subTree == null || subTree.isEmpty())
-        return false; // no prereqs known = cannot fulfill this
-      return evaluateTree(subTree, completed, catalog);
+        // Check recursively if its own prereqs are met
+        return evaluateTree(subTree, completed, catalog, courseToSemester);
+      }
+      return false; // not completed, can't satisfy
     }
 
     // Internal nodes: AND / OR
     if (node.type == PrereqTreeNode.Type.AND) {
       for (PrereqTreeNode child : node.children) {
-        if (!evaluateTree(child, completed, catalog)) return false;
+        if (!evaluateTree(child, completed, catalog, courseToSemester)) return false;
       }
       return true;
     } else if (node.type == PrereqTreeNode.Type.OR) {
       for (PrereqTreeNode child : node.children) {
-        if (evaluateTree(child, completed, catalog)) return true;
+        if (evaluateTree(child, completed, catalog, courseToSemester)) return true;
       }
       return false;
     }
 
     return false; // fallback
   }
+  //  private static boolean evaluateTree(
+  //      PrereqTreeNode node, Set<String> completed, CourseCatalog catalog) {
+  //    if (node.isLeaf()) {
+  //      String course = node.courseCode.toUpperCase();
+  //
+  //      if (completed.contains(course)) return true;
+  //
+  //      // Try to recursively satisfy the course through its own prereqs
+  //      PrereqTreeNode subTree = catalog.getPrereqTree(course, null);
+  //      if (subTree == null || subTree.isEmpty()) {
+  //        return false; // course not completed and has no known prereqs = cannot satisfy
+  //      }
+  //
+  //      // Only satisfied if the prereqs of the course are satisfied
+  //      return evaluateTree(subTree, completed, catalog);
+  //    }
+  //
+  //    if (node.type == PrereqTreeNode.Type.AND) {
+  //      for (PrereqTreeNode child : node.children) {
+  //        if (!evaluateTree(child, completed, catalog)) return false;
+  //      }
+  //      return true;
+  //    }
+  //
+  //    if (node.type == PrereqTreeNode.Type.OR) {
+  //      for (PrereqTreeNode child : node.children) {
+  //        if (evaluateTree(child, completed, catalog)) return true;
+  //      }
+  //      return false;
+  //    }
+  //
+  //    return false; // should never happen
+  //  }
 }
