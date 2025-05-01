@@ -58,15 +58,21 @@ export function CourseDragManager(initialCourses: CourseItem[]) {
     return courses.filter((course) => course.semesterId === semesterId);
   };
 
-  const addCourse = (semesterId: string, course?: Partial<CourseItem>) => {
+  const addCourse = (
+    semesterId: string,
+    course?: Partial<CourseItem>,
+    source: "search" | "new" = "search"
+  ) => {
     const newCourse: CourseItem = {
-      id: course!.id!,
-      courseCode: course!.courseCode!,
-      courseTitle: course!.courseTitle!,
+      id: course?.id ?? crypto.randomUUID(),
+      courseCode: course?.courseCode ?? (source === "new" ? "" : "NEW-COURSE"),
+      courseTitle:
+        course?.courseTitle ?? (source === "new" ? "" : "New Course"),
       semesterId,
-      isEditing: course!.isEditing ?? false,
-      prereqMet: course!.prereqMet ?? false,
+      isEditing: source === "new" ? true : course?.isEditing ?? false,
+      prereqMet: course?.prereqMet ?? false,
     };
+
     setCourses((prev) => [...prev, newCourse]);
   };
 

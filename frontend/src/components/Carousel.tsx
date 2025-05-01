@@ -354,7 +354,9 @@ export default function Carousel({
               {boxSelections[boxId] && (
                 <button
                   className="add-course-button"
-                  onClick={() => addCourse(boxSelections[boxId])}
+                  onClick={() =>
+                    addCourse(boxSelections[boxId], undefined, "new")
+                  }
                 >
                   + New course
                 </button>
