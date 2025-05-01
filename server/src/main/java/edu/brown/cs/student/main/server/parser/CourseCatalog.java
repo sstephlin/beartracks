@@ -17,18 +17,18 @@ public class CourseCatalog {
     treeMap.put(treeId, tree);
   }
 
-//  public List<String> getPrereqs(String courseCode, String semesterKey) {
-//    CourseInfo courseInfo = courseMap.get(courseCode);
-//    if (courseInfo == null) return null;
-//
-//    String treeId = courseInfo.semesterToTreeId.get(semesterKey);
-//    if (treeId == null) return null;
-//
-//    PrereqTreeNode tree = treeMap.get(treeId);
-//    if (tree == null) return null;
-//
-//    return extractCoursesFromTree(tree);
-//  }
+  //  public List<String> getPrereqs(String courseCode, String semesterKey) {
+  //    CourseInfo courseInfo = courseMap.get(courseCode);
+  //    if (courseInfo == null) return null;
+  //
+  //    String treeId = courseInfo.semesterToTreeId.get(semesterKey);
+  //    if (treeId == null) return null;
+  //
+  //    PrereqTreeNode tree = treeMap.get(treeId);
+  //    if (tree == null) return null;
+  //
+  //    return extractCoursesFromTree(tree);
+  //  }
   public PrereqTreeNode getPrereqTree(String courseCode, String semesterKey) {
     CourseInfo courseInfo = courseMap.get(courseCode);
     if (courseInfo == null) return null;

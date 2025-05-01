@@ -1,8 +1,8 @@
 package edu.brown.cs.student.main.server.handlers;
 
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
-import java.util.*;
 import edu.brown.cs.student.main.server.parser.PrereqTreeNode;
+import java.util.*;
 
 public class AddCourseHandlerHelper {
 
@@ -39,48 +39,55 @@ public class AddCourseHandlerHelper {
     return termA - termB;
   }
 
-//  public static boolean checkPrerequisites(
-//      CourseCatalog catalog, String courseCode, Set<String> completedCourses, String semester) {
-//    PrereqTreeNode prereqTree = catalog.getPrereqTree(courseCode, semester);
-//    if (prereqTree == null || prereqTree.isEmpty()) return true;
-//
-//    for (String prereq : prereqs) {
-//      if (!completedCourses.contains(prereq.toUpperCase())) {
-//        return false;
-//      }
-//    }
-//
-//    return true;
-//  }
-public static boolean checkPrerequisites(
-    CourseCatalog catalog,
-    String courseCode,
-    Set<String> completedCourses,
-    String semester
-) {
-  PrereqTreeNode prereqTree = catalog.getPrereqTree(courseCode, semester);
-  if (prereqTree == null || prereqTree.isEmpty()) return true;
+  //  public static boolean checkPrerequisites(
+  //      CourseCatalog catalog, String courseCode, Set<String> completedCourses, String semester) {
+  //    PrereqTreeNode prereqTree = catalog.getPrereqTree(courseCode, semester);
+  //    if (prereqTree == null || prereqTree.isEmpty()) return true;
+  //
+  //    for (String prereq : prereqs) {
+  //      if (!completedCourses.contains(prereq.toUpperCase())) {
+  //        return false;
+  //      }
+  //    }
+  //
+  //    return true;
+  //  }
+  public static boolean checkPrerequisites(
+      CourseCatalog catalog, String courseCode, Set<String> completedCourses, String semester) {
+    PrereqTreeNode prereqTree = catalog.getPrereqTree(courseCode, semester);
+    if (prereqTree == null || prereqTree.isEmpty()) return true;
 
-  return evaluateTree(prereqTree, completedCourses);
-}
+    return evaluateTree(prereqTree, completedCourses, catalog);
+  }
 
-  private static boolean evaluateTree(PrereqTreeNode node, Set<String> completed) {
+  private static boolean evaluateTree(
+      PrereqTreeNode node, Set<String> completed, CourseCatalog catalog) {
     if (node.isLeaf()) {
-      return completed.contains(node.getValue().toUpperCase());
+      String course = node.courseCode.toUpperCase();
+
+      // Base case: course has been completed
+      if (completed.contains(course)) return true;
+
+      // Recursive case: try to see if prereqs of this course are met
+      PrereqTreeNode subTree = catalog.getPrereqTree(course, /* semester is unknown */ null);
+      if (subTree == null || subTree.isEmpty())
+        return false; // no prereqs known = cannot fulfill this
+      return evaluateTree(subTree, completed, catalog);
     }
 
+    // Internal nodes: AND / OR
     if (node.type == PrereqTreeNode.Type.AND) {
       for (PrereqTreeNode child : node.children) {
-        if (!evaluateTree(child, completed)) return false;
+        if (!evaluateTree(child, completed, catalog)) return false;
       }
       return true;
     } else if (node.type == PrereqTreeNode.Type.OR) {
       for (PrereqTreeNode child : node.children) {
-        if (evaluateTree(child, completed)) return true;
+        if (evaluateTree(child, completed, catalog)) return true;
       }
       return false;
     }
 
-    return false; // should not happen
+    return false; // fallback
   }
 }

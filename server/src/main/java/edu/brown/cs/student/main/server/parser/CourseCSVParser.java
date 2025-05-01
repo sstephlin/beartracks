@@ -1,17 +1,17 @@
-//package edu.brown.cs.student.main.server.parser;
+// package edu.brown.cs.student.main.server.parser;
 //
-//import java.io.BufferedReader;
-//import java.io.FileNotFoundException;
-//import java.io.IOException;
-//import java.io.InputStream;
-//import java.io.InputStreamReader;
-//import java.util.Arrays;
-//import java.util.HashMap;
-//import java.util.Map;
-//import java.util.Stack;
-//import java.util.UUID;
+// import java.io.BufferedReader;
+// import java.io.FileNotFoundException;
+// import java.io.IOException;
+// import java.io.InputStream;
+// import java.io.InputStreamReader;
+// import java.util.Arrays;
+// import java.util.HashMap;
+// import java.util.Map;
+// import java.util.Stack;
+// import java.util.UUID;
 //
-//public class CourseCSVParser {
+// public class CourseCSVParser {
 //
 //  public static CourseCatalog parse(String filepath) throws IOException {
 //    CourseCatalog catalog = new CourseCatalog();
@@ -111,7 +111,7 @@
 //    }
 //    return root;
 //  }
-//}
+// }
 
 package edu.brown.cs.student.main.server.parser;
 
@@ -123,15 +123,13 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 import java.util.UUID;
 
 public class CourseCSVParser {
 
   /**
-   * Parse the CSV file into a CourseCatalog. Each line is a course with columns that
-   * represent different semesters and their prerequisites. Square brackets mean AND;
-   * curly braces mean OR.
+   * Parse the CSV file into a CourseCatalog. Each line is a course with columns that represent
+   * different semesters and their prerequisites. Square brackets mean AND; curly braces mean OR.
    */
   public static CourseCatalog parse(String filepath) throws IOException {
     CourseCatalog catalog = new CourseCatalog();
@@ -193,31 +191,29 @@ public class CourseCSVParser {
     }
     br.close();
 
-//    // PRINTING TREE
-//    for (String code : catalog.courseMap.keySet()) {
-//      CourseInfo info = catalog.courseMap.get(code);
-//      System.out.println(code + ": " + info.courseName);
-//      for (String sem : info.semesterToTreeId.keySet()) {
-//        String treeId = info.semesterToTreeId.get(sem);
-//        System.out.println("  " + sem + ":");
-//        if (treeId == null) {
-//          System.out.println("    No prerequisites");
-//        } else {
-//          PrereqTreeNode tree = catalog.treeMap.get(treeId);
-//          System.out.print(tree.toPrettyString("    "));
-//        }
-//      }
-//    }
-    System.out.println(catalog.getPrereqTree("CSCI 0200", "Spring 22"));
+    //    // PRINTING TREE
+    //    for (String code : catalog.courseMap.keySet()) {
+    //      CourseInfo info = catalog.courseMap.get(code);
+    //      System.out.println(code + ": " + info.courseName);
+    //      for (String sem : info.semesterToTreeId.keySet()) {
+    //        String treeId = info.semesterToTreeId.get(sem);
+    //        System.out.println("  " + sem + ":");
+    //        if (treeId == null) {
+    //          System.out.println("    No prerequisites");
+    //        } else {
+    //          PrereqTreeNode tree = catalog.treeMap.get(treeId);
+    //          System.out.print(tree.toPrettyString("    "));
+    //        }
+    //      }
+    //    }
+    //    System.out.println(catalog.getPrereqTree("CSCI 0200", "Spring 22"));
     return catalog;
   }
 
   /**
-   * Recursively parse a string that may be:
-   *  - a single token (e.g. "CSCI 0112" or "CSCI 0190*")
-   *  - an AND group in square brackets "[ ... ]"
-   *  - an OR group in curly braces "{ ... }"
-   * Nested structures are allowed.
+   * Recursively parse a string that may be: - a single token (e.g. "CSCI 0112" or "CSCI 0190*") -
+   * an AND group in square brackets "[ ... ]" - an OR group in curly braces "{ ... }" Nested
+   * structures are allowed.
    */
   private static PrereqTreeNode parseTree(String str) {
     str = str.trim();
@@ -229,12 +225,12 @@ public class CourseCSVParser {
     // If the string starts with a bracket, see if there's a matching bracket at the end
     if ((first == '[' || first == '{') && str.length() > 1) {
       int matchingIndex = findMatchingBracket(str, 0);
-      // If the matching bracket is the last character, then the entire string is one bracketed group
+      // If the matching bracket is the last character, then the entire string is one bracketed
+      // group
       if (matchingIndex == str.length() - 1) {
         // Determine AND vs. OR
-        PrereqTreeNode.Type type = (first == '[')
-            ? PrereqTreeNode.Type.AND
-            : PrereqTreeNode.Type.OR;
+        PrereqTreeNode.Type type =
+            (first == '[') ? PrereqTreeNode.Type.AND : PrereqTreeNode.Type.OR;
         // Strip off the outer brackets
         String inside = str.substring(1, str.length() - 1).trim();
         return parseBracketGroup(inside, type);
@@ -246,8 +242,8 @@ public class CourseCSVParser {
   }
 
   /**
-   * Parse the contents inside a bracket group (square or curly) as a top-level list
-   * of comma-separated entries. Each entry can itself be bracketed or a single token.
+   * Parse the contents inside a bracket group (square or curly) as a top-level list of
+   * comma-separated entries. Each entry can itself be bracketed or a single token.
    */
   private static PrereqTreeNode parseBracketGroup(String contents, PrereqTreeNode.Type type) {
     PrereqTreeNode node = new PrereqTreeNode(type);
@@ -279,8 +275,8 @@ public class CourseCSVParser {
   }
 
   /**
-   * Finds the index of the matching closing bracket for the bracket at str[start].
-   * Returns -1 if not found. This handles nested brackets.
+   * Finds the index of the matching closing bracket for the bracket at str[start]. Returns -1 if
+   * not found. This handles nested brackets.
    */
   private static int findMatchingBracket(String str, int start) {
     if (start >= str.length()) {
@@ -303,4 +299,3 @@ public class CourseCSVParser {
     return -1;
   }
 }
-

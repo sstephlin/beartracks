@@ -57,5 +57,4 @@ public class PrereqTreeNode {
   public String getValue() {
     return this.courseCode;
   }
-
 }
