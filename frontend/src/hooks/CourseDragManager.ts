@@ -18,9 +18,20 @@ export function CourseDragManager(initialCourses: CourseItem[]) {
     e: React.DragEvent,
     course: { courseCode: string; courseTitle: string; semesterId: string }
   ) => {
+
+    const courseToMove = courses.find(c =>
+      c.courseCode === course.courseCode && c.semesterId === course.semesterId
+    );
+
+    if (courseToMove) {
+      e.dataTransfer.setData("courseId", courseToMove.id);
+    }
+
     e.dataTransfer.setData("courseCode", course.courseCode);
     e.dataTransfer.setData("courseTitle", course.courseTitle);
     e.dataTransfer.setData("semesterId", course.semesterId);
+
+    setDraggedCourse(courseToMove?.id || null);
 
     const target = e.currentTarget as HTMLElement;
     setTimeout(() => {
@@ -42,15 +53,24 @@ export function CourseDragManager(initialCourses: CourseItem[]) {
   const handleDrop = (e: React.DragEvent, targetSemesterId: string) => {
     e.preventDefault();
     const courseId = e.dataTransfer.getData("courseId");
+    const courseCode = e.dataTransfer.getData("courseCode");
+    const courseTitle = e.dataTransfer.getData("courseTitle");
+    const sourceSemesterId = e.dataTransfer.getData("semesterId");
 
-    if (courseId && draggedCourse) {
+    if (courseId || (courseCode && sourceSemesterId)) {
       setCourses((prevCourses) =>
-        prevCourses.map((course) =>
-          course.id === courseId
+        prevCourses.map((course) => {
+          const isMatch = courseId
+            ? course.id === courseId
+            : (course.courseCode === courseCode && course.semesterId === sourceSemesterId);
+          
+          return isMatch
             ? { ...course, semesterId: targetSemesterId }
-            : course
-        )
+            : course;
+        })
       );
+
+      console.log(`Moved course from ${sourceSemesterId} to ${targetSemesterId}`);
     }
   };
 
