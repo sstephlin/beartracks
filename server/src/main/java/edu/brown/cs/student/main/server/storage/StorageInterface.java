@@ -22,5 +22,8 @@ public interface StorageInterface {
   Set<String> getAllUserCourses(String userId) throws ExecutionException, InterruptedException;
 
   String getCapstoneCourse(String uid);
+
+  void updateIsCapstoneField(String collectionPath, String docId, String fieldName, Boolean newValue);
+
   void updateDocument(DocumentReference ref, Map<String,Object> updates);
 }
