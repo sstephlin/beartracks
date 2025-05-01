@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CourseItem } from "../types";
+import { useEffect } from "react";
 
 type Course = CourseItem;
 
@@ -18,9 +19,9 @@ export function CourseDragManager(initialCourses: CourseItem[]) {
     e: React.DragEvent,
     course: { courseCode: string; courseTitle: string; semesterId: string }
   ) => {
-
-    const courseToMove = courses.find(c =>
-      c.courseCode === course.courseCode && c.semesterId === course.semesterId
+    const courseToMove = courses.find(
+      (c) =>
+        c.courseCode === course.courseCode && c.semesterId === course.semesterId
     );
 
     if (courseToMove) {
@@ -62,20 +63,35 @@ export function CourseDragManager(initialCourses: CourseItem[]) {
         prevCourses.map((course) => {
           const isMatch = courseId
             ? course.id === courseId
-            : (course.courseCode === courseCode && course.semesterId === sourceSemesterId);
-          
-          return isMatch
-            ? { ...course, semesterId: targetSemesterId }
-            : course;
+            : course.courseCode === courseCode &&
+              course.semesterId === sourceSemesterId;
+
+          return isMatch ? { ...course, semesterId: targetSemesterId } : course;
         })
       );
 
-      console.log(`Moved course from ${sourceSemesterId} to ${targetSemesterId}`);
+      console.log(
+        `Moved course from ${sourceSemesterId} to ${targetSemesterId}`
+      );
     }
   };
 
   const getCoursesForSemester = (semesterId: string) => {
     return courses.filter((course) => course.semesterId === semesterId);
+  };
+
+  const getLatestSemester = () => {
+    const terms = ["Spring", "Summer", "Fall", "Winter"];
+    return courses
+      .map((c) => c.semesterId)
+      .sort((a, b) => {
+        const [termA, yearA] = a.split(" ");
+        const [termB, yearB] = b.split(" ");
+        const yDiff = parseInt(yearA) - parseInt(yearB);
+        return yDiff !== 0
+          ? yDiff
+          : terms.indexOf(termA) - terms.indexOf(termB);
+      })[courses.length - 1]; // latest semester
   };
 
   const addCourse = (
@@ -95,6 +111,49 @@ export function CourseDragManager(initialCourses: CourseItem[]) {
 
     setCourses((prev) => [...prev, newCourse]);
   };
+
+  const buildSemesterMap = () => {
+    const semesterMap: {
+      [semester: string]: { id: string; courseCode: string }[];
+    } = {};
+
+    for (const course of courses) {
+      if (!semesterMap[course.semesterId]) {
+        semesterMap[course.semesterId] = [];
+      }
+
+      semesterMap[course.semesterId].push({
+        id: course.id,
+        courseCode: course.courseCode,
+      });
+    }
+
+    return semesterMap;
+  };
+
+  const refreshPrereqStatuses = async () => {
+    const semesterMap = buildSemesterMap();
+    const currentSemester = getLatestSemester();
+    if (!currentSemester) return;
+
+    const response = await fetch("http://localhost:1234/refresh", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        semesterMap,
+        currentSemester,
+      }),
+    });
+
+    const result = await response.json();
+    for (const { id, prereqMet } of result) {
+      setPrereqStatus(id, prereqMet);
+    }
+  };
+
+  useEffect(() => {
+    refreshPrereqStatuses();
+  }, [courses]);
 
   return {
     courses,
