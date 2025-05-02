@@ -1,6 +1,5 @@
 package edu.brown.cs.student.main.server.handlers;
 
-import edu.brown.cs.student.main.server.concentrationRequirements.CSCapstoneCourses;
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.parser.CourseInfo;
 import java.util.ArrayList;
@@ -45,7 +44,6 @@ public class SearchCourseHandler implements Route {
     } else {
       responseMap.put("result", "success");
       responseMap.put("courses", matchedCourses);
-      responseMap.put("capstone_courses", CSCapstoneCourses.ALL);
     }
 
     response.type("application/json");
