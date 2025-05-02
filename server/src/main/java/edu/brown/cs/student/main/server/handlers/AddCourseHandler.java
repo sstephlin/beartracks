@@ -52,10 +52,10 @@ public class AddCourseHandler implements Route {
       boolean skipCheck = skip != null && skip.equalsIgnoreCase("true");
 
       Map<String, Object> courseData = new HashMap<>();
-       courseData.put("code", courseCode);
-       courseData.put("title", courseTitle);
-       courseData.put("prereqsMet", prereqsMet); 
-       courseData.put("isCapstone", false);
+      courseData.put("code", courseCode);
+      courseData.put("title", courseTitle);
+      courseData.put("prereqsMet", prereqsMet);
+      courseData.put("isCapstone", false);
 
       storageHandler.addDocument(
           uid + "/semesters/" + semesterKey, "courses", courseCode, courseData);

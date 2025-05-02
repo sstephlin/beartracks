@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import SemesterBox from "./SemesterBox";
 import CourseDrag from "./CourseDrag";
+import RightClick from "./RightClick.tsx";
 import { CarouselMover } from "../hooks/CarouselMover.ts";
 import { CourseDragManager } from "../hooks/CourseDragManager.ts";
 import "../styles/Carousel.css";
@@ -8,6 +9,7 @@ import "../styles/SemesterBox.css";
 import { useUser } from "@clerk/clerk-react";
 import { checkPrereqs } from "../utils/prereqUtils";
 import { CourseItem } from "../types";
+import RightClickComponent from "./RightClick.tsx";
 
 interface CarouselProps {
   viewCount: number;
@@ -64,45 +66,46 @@ export default function Carousel({
     setPrereqStatus,
   } = CourseDragManager([]);
 
-  const [boxIds, setBoxIds] = useState<string[]>(["box1"]);
+  const [boxIds, setBoxIds] = useState<number[]>([1]);
   const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
   const [boxSelections, setBoxSelections] = useState<{
     [boxId: string]: string;
   }>({});
+  const [menuPosition, setMenuPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
 
-  // useEffect(() => {
-  //   const handleRemoveCourse = async (e: any) => {
-  //     const { courseCode, semesterId } = e.detail;
-  //     console.log(
-  //       "Removing courseCode:",
-  //       courseCode,
-  //       "semesterId:",
-  //       semesterId
-  //     );
+  const handleRightClick = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    boxId: string
+  ) => {
+    event.preventDefault(); // Prevent the default browser right-click menu
 
-  //     setCourses((prev) =>
-  //       prev.filter(
-  //         (course) =>
-  //           !(
-  //             course.courseCode === courseCode &&
-  //             course.semesterId === semesterId
-  //           )
-  //       )
-  //     );
+    // Get the bounding rectangle of the clicked div (specific to the box clicked)
+    const rect = event.currentTarget.getBoundingClientRect();
 
-  //     if (!user?.id) return;
-  //     for (const c of courses) {
-  //       const met = await checkPrereqs(user.id, c.courseCode, c.semesterId);
-  //       setPrereqStatus(c.id, met);
-  //     }
-  //   };
+    // Calculate mouse position relative to the div
+    const xPos = event.clientX - rect.left; // Adjust for scroll
+    const yPos = event.clientY - rect.top; // Adjust for scroll
 
-  //   window.addEventListener("removeCourse", handleRemoveCourse);
+    // Optional: Add checks to prevent menu from going off-screen
+    // const maxX = window.innerWidth - 220; // Menu width (220px)
+    // const maxY = window.innerHeight - 150; // Menu height (150px)
 
-  //   return () => {
-  //     window.removeEventListener("removeCourse", handleRemoveCourse);
-  //   };
-  // }, [courses, user?.id, setPrereqStatus, setCourses]);
+    // Set the menu position based on mouse position
+    setMenuPosition({
+      x: xPos,
+      y: yPos,
+      // x: Math.min(xPos, maxX), // Ensure menu is within the viewport bounds
+      // y: Math.min(yPos, maxY),
+    });
+
+    console.log(`Right-clicked on box: ${boxId}`); // Debug which box was clicked
+    console.log(rect);
+    console.log("pos", xPos, yPos);
+    console.log("mouse", event.clientX, event.clientY);
+  };
 
   useEffect(() => {
     const handleRemoveCourse = async (e: any) => {
@@ -131,7 +134,7 @@ export default function Carousel({
     return () => {
       window.removeEventListener("removeCourse", handleRemoveCourse);
     };
-  }, [user?.id, setPrereqStatus, setCourses]); // <-- note: NO `courses` here
+  }, [user?.id, setPrereqStatus, setCourses]);
 
   const getAvailableSemesters = () =>
     allSemesters.filter((sem) => !usedSemesters.includes(sem));
@@ -194,7 +197,6 @@ export default function Carousel({
         setPrereqStatus(newCourse.id, met);
       }
 
-      // 🔁 Backend fetch to persist (NO skipCheck)
       const [term, year] = semesterId.split(" ");
       const uid = user?.id;
       if (!uid || !term || !year) return;
@@ -276,9 +278,31 @@ export default function Carousel({
     }
   };
 
-  const handleAddSemester = () => {
-    const newBoxId = `box${boxIds.length + 1}`;
-    setBoxIds((prevBoxIds) => [...prevBoxIds, newBoxId]);
+  const handleAddRightSemester = (currSemNum: number) => {
+    const index = boxIds.indexOf(currSemNum);
+    if (index === -1) return boxIds; // invalid semester id
+    const newID = Math.max(...boxIds) + 1;
+
+    const newBoxIds = [...boxIds];
+    newBoxIds.splice(index + 1, 0, newID);
+    setBoxIds(newBoxIds);
+    console.log("right");
+  };
+
+  const handleAddLeftSemester = (currSemNum: number) => {
+    const index = boxIds.indexOf(currSemNum);
+    if (index === -1) return boxIds; // invalid semester id
+    const newID = Math.max(...boxIds) + 1;
+
+    const newBoxIds = [...boxIds];
+    newBoxIds.splice(index, 0, newID);
+    setBoxIds(newBoxIds);
+    console.log("left");
+  };
+
+  const handleDeleteSemester = (semToDelete: number) => {
+    setBoxIds((prevBoxIds) => prevBoxIds.filter((id) => id !== semToDelete));
+    console.log("delete");
   };
 
   const boxWidth = expanded ? 270 : 320;
@@ -314,6 +338,7 @@ export default function Carousel({
                 if (selected) handleSemesterDrop(e, selected);
               }}
               expanded={expanded}
+              onRightClick={handleRightClick}
             >
               {(boxSelections[boxId] &&
                 getCoursesForSemester(boxSelections[boxId]).map((course) => (
@@ -332,7 +357,6 @@ export default function Carousel({
                   />
                 ))) ||
                 null}
-
               {boxSelections[boxId] &&
                 Array(emptySlots[boxSelections[boxId]] || 0)
                   .fill(0)
@@ -350,7 +374,6 @@ export default function Carousel({
                       }
                     />
                   ))}
-
               {boxSelections[boxId] && (
                 <button
                   className="add-course-button"
@@ -359,11 +382,23 @@ export default function Carousel({
                   + New course
                 </button>
               )}
+              {/* Render the context menu if the position is set */}
+              {menuPosition && (
+                <RightClick
+                  position={menuPosition}
+                  onAddRightSemester={() => handleAddRightSemester(boxId)}
+                  onAddLeftSemester={() => handleAddLeftSemester(boxId)}
+                  onDeleteSemester={() => handleDeleteSemester(boxId)}
+                />
+              )}
             </SemesterBox>
           ))}
 
           <div className={`add-box ${expanded ? "expanded" : "collapsed"}`}>
-            <button className="add-button" onClick={handleAddSemester}>
+            <button
+              className="add-button"
+              onClick={() => handleAddRightSemester(boxIds.length)}
+            >
               <div className="add-button-plus">+</div>
               <div>New Semester</div>
             </button>
