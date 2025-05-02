@@ -68,6 +68,7 @@ export default function Carousel({
 
   const [boxIds, setBoxIds] = useState<number[]>([1]);
   const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
+  const [selectedBoxId, setSelectedBoxId] = useState<number | null>(null);
   const [boxSelections, setBoxSelections] = useState<{
     [boxId: string]: string;
   }>({});
@@ -78,27 +79,36 @@ export default function Carousel({
 
   const handleRightClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    boxId: string
+    boxId: number
   ) => {
-    event.preventDefault(); // Prevent the default browser right-click menu
+    // event.prevent
+    // const handleRightClick = (
+    event.preventDefault();
 
-    // Get the bounding rectangle of the clicked div (specific to the box clicked)
-    const rect = event.currentTarget.getBoundingClientRect();
-
-    // Calculate mouse position relative to the div
-    const xPos = event.clientX - rect.left; // Adjust for scroll
-    const yPos = event.clientY - rect.top; // Adjust for scroll
-
-    // Optional: Add checks to prevent menu from going off-screen
-    // const maxX = window.innerWidth - 220; // Menu width (220px)
-    // const maxY = window.innerHeight - 150; // Menu height (150px)
-
-    // Set the menu position based on mouse position
+    setSelectedBoxId(boxId);
     setMenuPosition({
-      x: xPos,
-      y: yPos,
-      // x: Math.min(xPos, maxX), // Ensure menu is within the viewport bounds
-      // y: Math.min(yPos, maxY),
+      x: event.pageX,
+      y: event.pageY,
+
+      // Prevent the default browser right-click menu
+
+      // // Get the bounding rectangle of the clicked div (specific to the box clicked)
+      // const rect = event.currentTarget.getBoundingClientRect();
+
+      // // Calculate mouse position relative to the div
+      // const xPos = event.pageX; // Adjust for scroll
+      // const yPos = event.pageY; // Adjust for scroll
+
+      // // Optional: Add checks to prevent menu  from going off-screen
+      // // const maxX = window.innerWidth - 220; // Menu width (220px)
+      // // const maxY = window.innerHeight - 150; // Menu height (150px)
+
+      // // Set the menu position based on mouse position
+      // setMenuPosition({
+      //   x: xPos,
+      //   y: yPos,
+      //   // x: Math.min(xPos, maxX), // Ensure menu is within the viewport bounds
+      //   // y: Math.min(yPos, maxY),
     });
 
     console.log(`Right-clicked on box: ${boxId}`); // Debug which box was clicked
@@ -338,7 +348,7 @@ export default function Carousel({
                 if (selected) handleSemesterDrop(e, selected);
               }}
               expanded={expanded}
-              onRightClick={handleRightClick}
+              onRightClick={(e) => handleRightClick(e, boxId)}
             >
               {(boxSelections[boxId] &&
                 getCoursesForSemester(boxSelections[boxId]).map((course) => (
@@ -357,6 +367,7 @@ export default function Carousel({
                   />
                 ))) ||
                 null}
+
               {boxSelections[boxId] &&
                 Array(emptySlots[boxSelections[boxId]] || 0)
                   .fill(0)
@@ -374,6 +385,7 @@ export default function Carousel({
                       }
                     />
                   ))}
+
               {boxSelections[boxId] && (
                 <button
                   className="add-course-button"
@@ -381,15 +393,6 @@ export default function Carousel({
                 >
                   + New course
                 </button>
-              )}
-              {/* Render the context menu if the position is set */}
-              {menuPosition && (
-                <RightClick
-                  position={menuPosition}
-                  onAddRightSemester={() => handleAddRightSemester(boxId)}
-                  onAddLeftSemester={() => handleAddLeftSemester(boxId)}
-                  onDeleteSemester={() => handleDeleteSemester(boxId)}
-                />
               )}
             </SemesterBox>
           ))}
@@ -404,6 +407,16 @@ export default function Carousel({
             </button>
           </div>
         </div>
+
+        {/* Context menu rendered globally once */}
+        {menuPosition && selectedBoxId !== null && (
+          <RightClickComponent
+            position={menuPosition}
+            onAddRightSemester={() => handleAddRightSemester(selectedBoxId)}
+            onAddLeftSemester={() => handleAddLeftSemester(selectedBoxId)}
+            onDeleteSemester={() => handleDeleteSemester(selectedBoxId)}
+          />
+        )}
       </div>
 
       <button
