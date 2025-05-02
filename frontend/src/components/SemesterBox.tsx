@@ -6,14 +6,14 @@ interface SemesterBoxProps {
   boxId: number;
   selectedSemester: string;
   availableSemesters: string[];
-  onSemesterSelect: (boxId: string, semester: string) => void;
+  onSemesterSelect: (boxId: number, semester: string) => void;
   expanded: boolean;
   children?: React.ReactNode;
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent) => void;
   onRightClick?: (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    boxId: string
+    boxId: number
   ) => void; // Accept boxId as part of the event handler
 }
 
