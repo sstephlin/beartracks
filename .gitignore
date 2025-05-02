@@ -22,4 +22,4 @@ playwright/.cache/
 .DS_Store
 
 # firebase json
-**/resources/
+**/resources/Python: Select Interpreter
