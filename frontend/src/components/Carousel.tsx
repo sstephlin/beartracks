@@ -81,40 +81,12 @@ export default function Carousel({
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
     boxId: number
   ) => {
-    // event.prevent
-    // const handleRightClick = (
     event.preventDefault();
-
     setSelectedBoxId(boxId);
     setMenuPosition({
       x: event.pageX,
       y: event.pageY,
-
-      // Prevent the default browser right-click menu
-
-      // // Get the bounding rectangle of the clicked div (specific to the box clicked)
-      // const rect = event.currentTarget.getBoundingClientRect();
-
-      // // Calculate mouse position relative to the div
-      // const xPos = event.pageX; // Adjust for scroll
-      // const yPos = event.pageY; // Adjust for scroll
-
-      // // Optional: Add checks to prevent menu  from going off-screen
-      // // const maxX = window.innerWidth - 220; // Menu width (220px)
-      // // const maxY = window.innerHeight - 150; // Menu height (150px)
-
-      // // Set the menu position based on mouse position
-      // setMenuPosition({
-      //   x: xPos,
-      //   y: yPos,
-      //   // x: Math.min(xPos, maxX), // Ensure menu is within the viewport bounds
-      //   // y: Math.min(yPos, maxY),
     });
-
-    console.log(`Right-clicked on box: ${boxId}`); // Debug which box was clicked
-    console.log(rect);
-    console.log("pos", xPos, yPos);
-    console.log("mouse", event.clientX, event.clientY);
   };
 
   useEffect(() => {
@@ -177,6 +149,15 @@ export default function Carousel({
       console.error("Network error while adding semester:", err);
     }
   };
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setMenuPosition(null);
+      setSelectedBoxId(null);
+    };
+
+    window.addEventListener("click", handleClickOutside);
+    return () => window.removeEventListener("click", handleClickOutside);
+  }, []);
 
   const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
     e.preventDefault();
