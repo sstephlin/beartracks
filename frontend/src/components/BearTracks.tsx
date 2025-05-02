@@ -26,7 +26,7 @@ export default function BearTracks(props: BearTracksProps) {
 
     try {
       const response = await fetch(
-        `http://localhost:1234/search-course?query=${encodeURIComponent(query)}`
+        `http://localhost:3232/search-course?query=${encodeURIComponent(query)}`
       );
       const data = await response.json();
 
@@ -69,7 +69,7 @@ export default function BearTracks(props: BearTracksProps) {
       const [term, year] = semesterId.split(" ");
       if (!uid) return;
 
-      const url = `http://localhost:1234/remove-course?uid=${uid}&code=${encodeURIComponent(
+      const url = `http://localhost:3232/remove-course?uid=${uid}&code=${encodeURIComponent(
         courseCode
       )}&title=${encodeURIComponent(courseTitle)}&term=${term}&year=${year}`;
 
