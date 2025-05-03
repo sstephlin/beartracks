@@ -52,10 +52,13 @@ public class CheckUserRequirementsHandler implements Route {
       Map<String, List<String>> requirementOptions = new HashMap<>();
       // these names correspond to the names of the keys in the CSABDegreeRequirements or
       // CSScBDegreeRequirements requirements map
-      List<String> requirementNames = List.of(
-          "Intro Part 1", "Intro Part 2",
-          "Foundations AI", "Foundations Systems", "Foundations Theory"
-      );
+      List<String> requirementNames =
+          List.of(
+              "Intro Part 1",
+              "Intro Part 2",
+              "Foundations AI",
+              "Foundations Systems",
+              "Foundations Theory");
 
       // for each requirement category, look up each prereq category key
       for (String req : requirementNames) {

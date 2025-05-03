@@ -5,7 +5,6 @@ import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -42,8 +41,8 @@ public class AddCourseHandler implements Route {
 
       // Get completed courses and check prerequisites
       Map<String, List<String>> semesterToCourses = storageHandler.getAllSemestersAndCourses(uid);
-//      Set<String> completedCourses =
-//          AddCourseHandlerHelper.getCompletedCourses(semesterToCourses, semesterKey);
+      //      Set<String> completedCourses =
+      //          AddCourseHandlerHelper.getCompletedCourses(semesterToCourses, semesterKey);
       Map<String, String> courseToSemester = new HashMap<>();
       for (Map.Entry<String, List<String>> entry : semesterToCourses.entrySet()) {
         for (String c : entry.getValue()) {

@@ -1,10 +1,10 @@
-//package edu.brown.cs.student.main.server.handlers;
+// package edu.brown.cs.student.main.server.handlers;
 //
-//import edu.brown.cs.student.main.server.parser.CourseCatalog;
-//import edu.brown.cs.student.main.server.parser.PrereqTreeNode;
-//import java.util.*;
+// import edu.brown.cs.student.main.server.parser.CourseCatalog;
+// import edu.brown.cs.student.main.server.parser.PrereqTreeNode;
+// import java.util.*;
 //
-//public class AddCourseHandlerHelper {
+// public class AddCourseHandlerHelper {
 //
 //  // Assumes semester keys are like "Fall 22", "Spring 23", etc.
 //  public static Set<String> getCompletedCourses(
@@ -87,13 +87,12 @@
 //
 //    return false; // fallback
 //  }
-//}
+// }
 
 package edu.brown.cs.student.main.server.handlers;
 
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.parser.PrereqTreeNode;
-
 import java.util.*;
 
 public class AddCourseHandlerHelper {
@@ -104,9 +103,9 @@ public class AddCourseHandlerHelper {
   public static boolean checkPrerequisites(
       CourseCatalog catalog,
       String courseCode,
-      String targetSemester,  // when the course is being taken
+      String targetSemester, // when the course is being taken
       Map<String, String> courseToSemester // all courseCode -> semester
-  ) {
+      ) {
     PrereqTreeNode prereqTree = catalog.getPrereqTree(courseCode, targetSemester);
     if (prereqTree == null || prereqTree.isEmpty()) {
       return true;
@@ -119,8 +118,7 @@ public class AddCourseHandlerHelper {
       PrereqTreeNode node,
       String targetSemester,
       Map<String, String> courseToSemester,
-      CourseCatalog catalog
-  ) {
+      CourseCatalog catalog) {
     if (node.isLeaf()) {
       String prereqCode = node.courseCode.toUpperCase();
       String prereqSemester = courseToSemester.get(prereqCode);
@@ -174,4 +172,3 @@ public class AddCourseHandlerHelper {
     return Integer.compare(termA, termB);
   }
 }
-
