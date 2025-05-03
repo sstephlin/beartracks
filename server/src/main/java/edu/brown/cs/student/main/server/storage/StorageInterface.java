@@ -25,5 +25,7 @@ public interface StorageInterface {
 
   String getCapstoneCourse(String uid);
 
-  void updateDocument(DocumentReference ref, Map<String, Object> updates);
+  void updateIsCapstoneField(String uid, String semester, String courseCode, boolean isCapstone);
+
+  void updateDocument(DocumentReference ref, Map<String,Object> updates);
 }

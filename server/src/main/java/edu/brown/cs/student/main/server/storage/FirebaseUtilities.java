@@ -247,4 +247,25 @@ public class FirebaseUtilities implements StorageInterface {
     // Firestore’s update() will merge these fields into the existing document
     ref.update(updates);
   }
+
+  /**
+   *  updates the user's capstone course that stored in Firestore
+   *
+   * @param uid
+   * @param semester
+   * @param courseCode
+   * @param isCapstone
+   */
+  @Override
+  public void updateIsCapstoneField(String uid, String semester, String courseCode, boolean isCapstone) {
+    Firestore db = FirestoreClient.getFirestore();
+    String fullPath = "users/" + uid + "/semesters/" + semester + "/courses";
+    DocumentReference docRef = db.collection(fullPath).document(courseCode);
+
+    Map<String, Object> updates = new HashMap<>();
+    updates.put("isCapstone", isCapstone);
+
+    System.out.println("Updating path: " + fullPath + ", doc: " + courseCode);
+    docRef.set(updates, SetOptions.merge());
+  }
 }
