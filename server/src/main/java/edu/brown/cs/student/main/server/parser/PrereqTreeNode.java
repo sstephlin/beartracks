@@ -45,4 +45,16 @@ public class PrereqTreeNode {
     }
     return sb.toString();
   }
+
+  public boolean isLeaf() {
+    return this.type == Type.COURSE;
+  }
+
+  public boolean isEmpty() {
+    return this.type != Type.COURSE && (children == null || children.isEmpty());
+  }
+
+  public String getValue() {
+    return this.courseCode;
+  }
 }

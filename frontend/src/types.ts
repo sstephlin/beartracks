@@ -1,8 +1,9 @@
 export interface CourseItem {
   id: string;
   courseCode: string;
-  courseTitle: string;
+  title: string;
   semesterId: string;
   isEditing?: boolean;
-  prereqMet: boolean;
+  prereqsMet: boolean;
+  isCapstone?: boolean;
 }

@@ -7,7 +7,7 @@ export async function checkPrereqs(
 ): Promise<boolean> {
   const [term, year] = semesterId.split(" ");
   const resp = await fetch(
-    `http://localhost:1234/check-prereqs?uid=${encodeURIComponent(
+    `http://localhost:3232/check-prereqs?uid=${encodeURIComponent(
       uid
     )}&code=${encodeURIComponent(courseCode)}&term=${encodeURIComponent(
       term

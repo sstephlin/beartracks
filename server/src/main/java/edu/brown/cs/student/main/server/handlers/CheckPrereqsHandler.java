@@ -19,28 +19,61 @@ public class CheckPrereqsHandler implements Route {
     this.catalog = catalog;
   }
 
-  @Override
-  public Object handle(Request request, Response response) throws Exception {
-    String uid = request.queryParams("uid");
-    String courseCode = request.queryParams("code");
-    String term = request.queryParams("term");
-    String year = request.queryParams("year");
-    String semesterKey = term + " " + year;
+//  @Override
+//  public Object handle(Request request, Response response) throws Exception {
+//    String uid = request.queryParams("uid");
+//    String courseCode = request.queryParams("code");
+//    String term = request.queryParams("term");
+//    String year = request.queryParams("year");
+//    String semesterKey = term + " " + year;
+//
+//    // Build completed courses set for this user up to *before* semesterKey
+//    Map<String, List<String>> semMap = storageHandler.getAllSemestersAndCourses(uid);
+//    System.out.println("semMap" + semMap);
+//    Set<String> completed =
+//        AddCourseHandlerHelper.getCompletedCourses(
+//            semMap, semesterKey);
+//    System.out.println("completed:" + completed);
+//    Map<String, String> courseToSemester = new HashMap<>();
+//    for (Map.Entry<String, List<String>> entry : semMap.entrySet()) {
+//      for (String c : entry.getValue()) {
+//        courseToSemester.put(c.toUpperCase(), entry.getKey());
+//      }
+//    }
+//    boolean met =
+//        AddCourseHandlerHelper.checkPrerequisites(
+//            catalog, courseCode, completed, semesterKey, courseToSemester);
+//
+//    Map<String, Object> out = new HashMap<>();
+//    out.put("response_type", "success");
+//    out.put("prereqsMet", met); // NEW
+//    response.type("application/json");
+//    return Utils.toMoshiJson(out);
+//  }
+@Override
+public Object handle(Request request, Response response) throws Exception {
+  String uid = request.queryParams("uid");
+  String courseCode = request.queryParams("code");
+  String term = request.queryParams("term");
+  String year = request.queryParams("year");
+  String semesterKey = term + " " + year;
 
-    // Build completed courses set for this user up to *before* semesterKey
-    Map<String, List<String>> semMap = storageHandler.getAllSemestersAndCourses(uid);
-    Set<String> completed =
-        AddCourseHandlerHelper.getCompletedCourses(
-            semMap, semesterKey); // CHANGE: factor out the same helper from AddCourseHandler
-
-    boolean met =
-        AddCourseHandlerHelper.checkPrerequisites(
-            catalog, courseCode, completed, semesterKey); // CHANGE: shared logic
-
-    Map<String, Object> out = new HashMap<>();
-    out.put("response_type", "success");
-    out.put("prereqsMet", met); // NEW
-    response.type("application/json");
-    return Utils.toMoshiJson(out);
+  Map<String, List<String>> semMap = storageHandler.getAllSemestersAndCourses(uid);
+  Map<String, String> courseToSemester = new HashMap<>();
+  for (Map.Entry<String, List<String>> entry : semMap.entrySet()) {
+    for (String c : entry.getValue()) {
+      courseToSemester.put(c.toUpperCase(), entry.getKey());
+    }
   }
+
+  boolean met = AddCourseHandlerHelper.checkPrerequisites(
+      catalog, courseCode, semesterKey, courseToSemester);
+
+  Map<String, Object> out = new HashMap<>();
+  out.put("response_type", "success");
+  out.put("prereqsMet", met);
+  response.type("application/json");
+  return Utils.toMoshiJson(out);
+}
+
 }
