@@ -73,7 +73,6 @@ public class CSRequirementChecker {
           fulfillingCourses = checkTechnicalCourses();
           break;
         case "Electives":
-          System.out.println("Available before electives: " + getAvailableCourses());
           fulfillingCourses = checkElectives();
           break;
         case "Capstone":
@@ -312,8 +311,6 @@ public class CSRequirementChecker {
   public int countCoursesCompleted() {
     int completedCourses = 0;
     Map<String, List<String>> requirementResults = this.checkAllRequirements();
-    System.out.println("User courses: " + userCourses);
-    System.out.println("Used courses: " + usedCourses);
 
     // Loop over each requirement and its corresponding list of fulfilling courses that a user has
     // taken
