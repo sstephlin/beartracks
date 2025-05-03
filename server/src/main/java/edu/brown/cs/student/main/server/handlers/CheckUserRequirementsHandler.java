@@ -56,6 +56,7 @@ public class CheckUserRequirementsHandler implements Route {
           List.of(
               "Intro Part 1",
               "Intro Part 2",
+              "Math Foundation",
               "Foundations AI",
               "Foundations Systems",
               "Foundations Theory");
@@ -64,7 +65,7 @@ public class CheckUserRequirementsHandler implements Route {
       for (String req : requirementNames) {
         RequirementRule rule = requirements.get(req);
         if (rule != null) {
-          requirementOptions.put(req, rule.getAcceptableCourses());
+          requirementOptions.put(req, rule.getAcceptableCourses()); // get acceptable courses AND substitutions??
         }
       }
 

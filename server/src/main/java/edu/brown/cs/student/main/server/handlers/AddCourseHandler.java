@@ -1,5 +1,6 @@
 package edu.brown.cs.student.main.server.handlers;
 
+import com.google.cloud.firestore.DocumentReference;
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
@@ -52,6 +53,8 @@ public class AddCourseHandler implements Route {
       boolean prereqsMet =
           AddCourseHandlerHelper.checkPrerequisites(
               catalog, courseCode, semesterKey, courseToSemester);
+
+      this.storageHandler.updatePrereqsMet(uid, semesterKey, courseCode, prereqsMet);
 
       String skip = request.queryParams("skipCheck");
       boolean skipCheck = skip != null && skip.equalsIgnoreCase("true");

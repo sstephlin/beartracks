@@ -28,4 +28,7 @@ public interface StorageInterface {
   void updateIsCapstoneField(String uid, String semester, String courseCode, boolean isCapstone);
 
   void updateDocument(DocumentReference ref, Map<String, Object> updates);
+
+  void updatePrereqsMet(String uid, String semester, String courseCode, boolean prereqsMet);
+
 }

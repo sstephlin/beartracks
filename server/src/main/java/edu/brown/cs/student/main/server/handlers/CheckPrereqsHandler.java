@@ -65,13 +65,15 @@ public class CheckPrereqsHandler implements Route {
       }
     }
 
-    boolean met =
+    boolean prereqsMet =
         AddCourseHandlerHelper.checkPrerequisites(
             catalog, courseCode, semesterKey, courseToSemester);
 
+    this.storageHandler.updatePrereqsMet(uid, semesterKey, courseCode, prereqsMet);
+
     Map<String, Object> out = new HashMap<>();
     out.put("response_type", "success");
-    out.put("prereqsMet", met);
+    out.put("prereqsMet", prereqsMet);
     response.type("application/json");
     return Utils.toMoshiJson(out);
   }

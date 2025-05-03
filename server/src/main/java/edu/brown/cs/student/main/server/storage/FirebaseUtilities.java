@@ -269,4 +269,27 @@ public class FirebaseUtilities implements StorageInterface {
     System.out.println("Updating path: " + fullPath + ", doc: " + courseCode);
     docRef.set(updates, SetOptions.merge());
   }
+
+  @Override
+  public void updatePrereqsMet(String uid, String semester, String courseCode, boolean prereqsMet) {
+
+    if (uid == null || semester == null || courseCode == null) {
+      throw new IllegalArgumentException("uid, semester, and courseCode must be non-null.");
+    }
+
+    DocumentReference docRef =
+        db.collection("users")
+            .document(uid)
+            .collection("semesters")
+            .document(semester)
+            .collection("courses")
+            .document(courseCode);
+
+//    Map<String, Object> updates = new HashMap<>();
+//    updates.put("prereqsMet", prereqsMet);
+//
+//    docRef.update(updates).get(); // Waits for update to complete (can be omitted if async preferred)
+
+    docRef.update("prereqsMet", prereqsMet);
+  }
 }

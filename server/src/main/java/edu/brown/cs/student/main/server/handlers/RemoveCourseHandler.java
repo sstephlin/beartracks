@@ -66,19 +66,20 @@ public class RemoveCourseHandler implements Route {
             }
           }
 
-          boolean met =
+          boolean prereqsMet =
               AddCourseHandlerHelper.checkPrerequisites(catalog, code, sem, courseToSemester);
 
-          // write it back to Firestore
-          DocumentReference dref =
-              db.collection("users")
-                  .document(uid)
-                  .collection("semesters")
-                  .document(sem)
-                  .collection("courses")
-                  .document(code);
-          // merge the single field
-          dref.update("prereqsMet", met);
+//          // write it back to Firestore
+//          DocumentReference dref =
+//              db.collection("users")
+//                  .document(uid)
+//                  .collection("semesters")
+//                  .document(sem)
+//                  .collection("courses")
+//                  .document(code);
+//          // merge the single field
+//          dref.update("prereqsMet", met);
+          this.storageHandler.updatePrereqsMet(uid, semesterKey, courseCode, prereqsMet);
         }
       }
 
