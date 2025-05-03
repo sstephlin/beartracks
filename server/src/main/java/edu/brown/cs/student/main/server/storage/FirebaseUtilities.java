@@ -16,6 +16,8 @@ import java.util.concurrent.ExecutionException;
 
 public class FirebaseUtilities implements StorageInterface {
 
+  private final Firestore db;
+
   public FirebaseUtilities() throws IOException {
     String workingDirectory = System.getProperty("user.dir");
     Path firebaseConfigPath =
@@ -29,6 +31,7 @@ public class FirebaseUtilities implements StorageInterface {
             .build();
 
     FirebaseApp.initializeApp(options);
+    this.db = FirestoreClient.getFirestore();
   }
 
   @Override
@@ -39,7 +42,6 @@ public class FirebaseUtilities implements StorageInterface {
           "addDocument: uid, collection_id, doc_id, or data cannot be null");
     }
 
-    Firestore db = FirestoreClient.getFirestore();
     CollectionReference collectionRef =
         db.collection("users").document(uid).collection(collection_id);
     collectionRef.document(doc_id).set(data);
@@ -68,8 +70,6 @@ public class FirebaseUtilities implements StorageInterface {
 
   // Recursively deletes all documents in a collection
   private ApiFuture<List<WriteResult>> deleteCollection(CollectionReference collection) {
-    Firestore db = FirestoreClient.getFirestore();
-
     ApiFuture<QuerySnapshot> future = collection.get();
     return ApiFutures.transformAsync(
         future,
@@ -97,8 +97,6 @@ public class FirebaseUtilities implements StorageInterface {
 
   public Set<String> getAllUserCourses(String userId)
       throws ExecutionException, InterruptedException {
-
-    Firestore db = FirestoreClient.getFirestore();
     CollectionReference semestersRef =
         db.collection("users").document(userId).collection("semesters");
 
@@ -130,46 +128,73 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public Map<String, List<String>> getAllSemestersAndCourses(String uid)
-      throws InterruptedException, ExecutionException, IllegalArgumentException {
-    if (uid == null) {
-      throw new IllegalArgumentException("getAllSemestersAndCourses: uid cannot be null");
-    }
-
-    Firestore db = FirestoreClient.getFirestore();
-    Map<String, List<String>> semesterToCourses = new HashMap<>();
+  public Map<String, List<Map<String, Object>>> getAllSemestersAndCourses(
+      String uid, boolean includeTitle) throws Exception {
+    Map<String, List<Map<String, Object>>> result = new HashMap<>();
 
     CollectionReference semestersRef = db.collection("users").document(uid).collection("semesters");
-    ApiFuture<QuerySnapshot> semestersFuture = semestersRef.get();
-    List<QueryDocumentSnapshot> semesterDocs = semestersFuture.get().getDocuments();
+    ApiFuture<QuerySnapshot> semestersSnapshot = semestersRef.get();
+
+    for (DocumentSnapshot semesterDoc : semestersSnapshot.get().getDocuments()) {
+      String semester = semesterDoc.getId();
+      List<Map<String, Object>> courseList = new ArrayList<>();
+
+      CollectionReference coursesRef = semestersRef.document(semester).collection("courses");
+      List<QueryDocumentSnapshot> courses = coursesRef.get().get().getDocuments();
+
+      for (QueryDocumentSnapshot courseDoc : courses) {
+        Map<String, Object> courseMap = new HashMap<>();
+        courseMap.put("courseCode", courseDoc.getId()); // course code as doc ID
+
+        if (includeTitle) {
+          courseMap.put("title", courseDoc.getString("title")); // nullable
+          courseMap.put(
+              "prereqsMet",
+              courseDoc.getBoolean("prereqsMet") != null
+                  ? courseDoc.getBoolean("prereqsMet")
+                  : false);
+          courseMap.put(
+              "isCapstone",
+              courseDoc.getBoolean("isCapstone") != null
+                  ? courseDoc.getBoolean("isCapstone")
+                  : false);
+        }
+        courseList.add(courseMap);
+      }
+      result.put(semester, courseList);
+    }
+    return result;
+  }
+
+  @Override
+  public Map<String, List<String>> getAllSemestersAndCourses(String uid) throws Exception {
+    Map<String, List<String>> result = new HashMap<>();
+
+    CollectionReference semestersRef = db.collection("users").document(uid).collection("semesters");
+
+    List<QueryDocumentSnapshot> semesterDocs = semestersRef.get().get().getDocuments();
 
     for (QueryDocumentSnapshot semesterDoc : semesterDocs) {
-      String semesterKey = semesterDoc.getId();
-      CollectionReference coursesRef = semesterDoc.getReference().collection("courses");
-      ApiFuture<QuerySnapshot> coursesFuture = coursesRef.get();
-      List<QueryDocumentSnapshot> courseDocs = coursesFuture.get().getDocuments();
-
+      String semester = semesterDoc.getId();
       List<String> courseCodes = new ArrayList<>();
+
+      CollectionReference coursesRef = semesterDoc.getReference().collection("courses");
+      List<QueryDocumentSnapshot> courseDocs = coursesRef.get().get().getDocuments();
+
       for (QueryDocumentSnapshot courseDoc : courseDocs) {
-        String courseCode = (String) courseDoc.get("code");
-        if (courseCode != null) {
-          courseCodes.add(courseCode);
-        }
+        courseCodes.add(courseDoc.getId()); // assume courseCode is stored as document ID
       }
-      semesterToCourses.put(semesterKey, courseCodes);
+
+      result.put(semester, courseCodes);
     }
 
-    return semesterToCourses;
+    return result;
   }
 
   @Override
   public String getView(String uid) throws Exception {
     DocumentReference docRef =
-        FirestoreClient.getFirestore()
-            .collection("users")
-            .document(uid)
-            .collection("view")
-            .document("current");
+        db.collection("users").document(uid).collection("view").document("current");
 
     DocumentSnapshot snapshot = docRef.get().get();
     if (snapshot.exists() && snapshot.getString("view") != null) {
@@ -181,11 +206,7 @@ public class FirebaseUtilities implements StorageInterface {
   @Override
   public String getConcentration(String uid) throws Exception {
     DocumentReference docRef =
-        FirestoreClient.getFirestore()
-            .collection("users")
-            .document(uid)
-            .collection("concentration")
-            .document("current");
+        db.collection("users").document(uid).collection("concentration").document("current");
 
     DocumentSnapshot snapshot = docRef.get().get();
     if (snapshot.exists() && snapshot.getString("concentration") != null) {
@@ -197,7 +218,6 @@ public class FirebaseUtilities implements StorageInterface {
   @Override
   public String getCapstoneCourse(String uid) {
     try {
-      Firestore db = FirestoreClient.getFirestore();
       CollectionReference semestersRef =
           db.collection("users").document(uid).collection("semesters");
       ApiFuture<QuerySnapshot> semestersFuture = semestersRef.get();
