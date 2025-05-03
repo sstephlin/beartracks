@@ -471,7 +471,7 @@ export default function Carousel({
           <div className={`add-box ${expanded ? "expanded" : "collapsed"}`}>
             <button
               className="add-button"
-              onClick={() => handleAddRightSemester(boxIds[-1])}
+              onClick={() => handleAddRightSemester(boxIds[boxIds.length - 1])}
             >
               <div className="add-button-plus">+</div>
               <div>New Semester</div>
