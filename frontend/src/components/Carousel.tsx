@@ -368,6 +368,7 @@ export default function Carousel({
             c.semesterId
           );
           setPrereqStatus(c.id, result);
+          console.log("checking prereq for course", c, "result: ", result);
         });
 
         return updated;

@@ -59,16 +59,19 @@ public Object handle(Request request, Response response) throws Exception {
   String semesterKey = term + " " + year;
 
   Map<String, List<String>> semMap = storageHandler.getAllSemestersAndCourses(uid);
+  System.out.println("semMap: " + semMap);
   Map<String, String> courseToSemester = new HashMap<>();
   for (Map.Entry<String, List<String>> entry : semMap.entrySet()) {
     for (String c : entry.getValue()) {
       courseToSemester.put(c.toUpperCase(), entry.getKey());
     }
   }
+  System.out.println("all courses with sem: " + courseToSemester.values());
 
   boolean met = AddCourseHandlerHelper.checkPrerequisites(
       catalog, courseCode, semesterKey, courseToSemester);
 
+  System.out.println("courseCode: " + courseCode + " met:" + met);
   Map<String, Object> out = new HashMap<>();
   out.put("response_type", "success");
   out.put("prereqsMet", met);
