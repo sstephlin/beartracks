@@ -25,7 +25,7 @@ public class AddCourseHandler implements Route {
     try {
       String uid = request.queryParams("uid");
       String courseCode = request.queryParams("code");
-      String courseTitle = request.queryParams("title");
+      String title = request.queryParams("title");
       String term = request.queryParams("term");
       String year = request.queryParams("year");
 
@@ -59,7 +59,7 @@ public class AddCourseHandler implements Route {
 
       Map<String, Object> courseData = new HashMap<>();
       courseData.put("code", courseCode);
-      courseData.put("title", courseTitle);
+      courseData.put("title", title);
       courseData.put("prereqsMet", prereqsMet);
       courseData.put("isCapstone", false);
 

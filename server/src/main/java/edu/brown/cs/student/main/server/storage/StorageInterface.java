@@ -12,14 +12,16 @@ public interface StorageInterface {
 
   void deleteDocument(DocumentReference doc);
 
-  Map<String, List<String>> getAllSemestersAndCourses(String uid)
-      throws InterruptedException, ExecutionException, IllegalArgumentException;
+  Map<String, List<String>> getAllSemestersAndCourses(String uid) throws Exception;
 
   String getView(String uid) throws Exception;
 
   String getConcentration(String uid) throws Exception;
 
   Set<String> getAllUserCourses(String userId) throws ExecutionException, InterruptedException;
+
+  Map<String, List<Map<String, Object>>> getAllSemestersAndCourses(String uid, boolean includeTitle)
+      throws Exception;
 
   String getCapstoneCourse(String uid);
 

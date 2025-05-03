@@ -57,7 +57,7 @@ export default function BearTracks(props: BearTracksProps) {
 
     const semesterId = e.dataTransfer.getData("semesterId");
     const courseCode = e.dataTransfer.getData("courseCode");
-    const courseTitle = e.dataTransfer.getData("courseTitle");
+    const title = e.dataTransfer.getData("title");
 
     if (courseCode && semesterId) {
       window.dispatchEvent(
@@ -71,7 +71,7 @@ export default function BearTracks(props: BearTracksProps) {
 
       const url = `http://localhost:3232/remove-course?uid=${uid}&code=${encodeURIComponent(
         courseCode
-      )}&title=${encodeURIComponent(courseTitle)}&term=${term}&year=${year}`;
+      )}&title=${encodeURIComponent(title)}&term=${term}&year=${year}`;
 
       try {
         await fetch(url, { method: "POST" });
@@ -121,7 +121,6 @@ export default function BearTracks(props: BearTracksProps) {
         setViewCount={setViewCount}
         draggedSearchCourse={draggedSearchCourse}
         expanded={props.expanded}
-        uid={uid}
       />
     </div>
   );

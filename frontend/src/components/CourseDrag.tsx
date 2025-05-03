@@ -2,16 +2,17 @@ import React, { useState } from "react";
 import "../styles/SemesterBox.css";
 
 interface CourseDragProps {
-  prereqMet?: boolean;
   id: string;
   courseCode: string;
   courseTitle?: string;
   semesterId: string;
   isEmpty: boolean;
   isEditing?: boolean;
+  prereqsMet: boolean;
+  isCapstone: boolean;
   onDragStart?: (
     e: React.DragEvent,
-    course: { courseCode: string; courseTitle: string; semesterId: string }
+    course: { courseCode: string; title: string; semesterId: string }
   ) => void;
   onDragEnd?: (e: React.DragEvent) => void;
   onDragOver?: (e: React.DragEvent) => void;
@@ -26,13 +27,14 @@ export default function CourseDrag({
   semesterId,
   isEmpty,
   isEditing = false,
+  isCapstone,
+  prereqsMet,
   onDragStart,
   onDragEnd,
   onDragOver,
   onDrop,
   onSaveCourse,
-  prereqMet = true,
-}: CourseDragProps) {
+}: CourseDragProps & { isCapstone?: boolean }) {
   const [code, setCode] = useState(courseCode);
   const [title, setTitle] = useState(courseTitle || "");
 
@@ -46,13 +48,13 @@ export default function CourseDrag({
     if (onDragStart) {
       onDragStart(e, {
         courseCode,
-        courseTitle: courseTitle || "",
+        title: title || "",
         semesterId,
       });
     }
 
     e.dataTransfer.setData("courseCode", courseCode);
-    e.dataTransfer.setData("courseTitle", courseTitle || "");
+    e.dataTransfer.setData("title", title || "");
     e.dataTransfer.setData("semesterId", semesterId);
   };
 
@@ -61,8 +63,9 @@ export default function CourseDrag({
       className={`
         course-slot 
         ${isEmpty ? "empty" : "filled"} 
-        ${!isEmpty ? (prereqMet ? "pr-met" : "pr-not-met") : ""}
-      `} // CHANGE: add prereq classes
+        ${!isEmpty ? (prereqsMet ? "pr-met" : "pr-not-met") : ""}
+        ${isCapstone ? "capstone" : ""}
+      `}
       draggable={!isEmpty && !isEditing}
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
@@ -90,7 +93,7 @@ export default function CourseDrag({
       ) : (
         <div className="course-filled">
           <div className="course-code">{courseCode}</div>
-          {courseTitle && <div className="course-title">{courseTitle}</div>}
+          {title && <div className="course-title">{title}</div>}
         </div>
       )}
     </div>
