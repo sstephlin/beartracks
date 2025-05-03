@@ -190,6 +190,24 @@ public class CourseCSVParser {
       catalog.addCourse(courseCode, info);
     }
     br.close();
+
+    //    // PRINTING TREE
+    //    for (String code : catalog.courseMap.keySet()) {
+    //      CourseInfo info = catalog.courseMap.get(code);
+    //      System.out.println(code + ": " + info.courseName);
+    //      for (String sem : info.semesterToTreeId.keySet()) {
+    //        String treeId = info.semesterToTreeId.get(sem);
+    //        System.out.println("  " + sem + ":");
+    //        if (treeId == null) {
+    //          System.out.println("    No prerequisites");
+    //        } else {
+    //          PrereqTreeNode tree = catalog.treeMap.get(treeId);
+    //          System.out.print(tree.toPrettyString("    "));
+    //        }
+    //      }
+    //    }
+    System.out.println(catalog.getPrereqTree("CSCI 1230", "Fall 22"));
+
     return catalog;
   }
 

@@ -40,6 +40,7 @@ public class CheckUserRequirementsHandler implements Route {
 
       // Step 3: Pick the correct requirement rules
       Map<String, RequirementRule> requirements;
+
       if (concentration.equalsIgnoreCase("Computer Science AB")) {
         requirements = CSABDegreeRequirements.requirements;
       } else if (concentration.equalsIgnoreCase("Computer Science ScB")) {
@@ -48,15 +49,48 @@ public class CheckUserRequirementsHandler implements Route {
         throw new IllegalArgumentException("Unsupported concentration: " + concentration);
       }
 
+      Map<String, List<String>> requirementOptions = new HashMap<>();
+      // these names correspond to the names of the keys in the CSABDegreeRequirements or
+      // CSScBDegreeRequirements requirements map
+      List<String> requirementNames =
+          List.of(
+              "Intro Part 1",
+              "Intro Part 2",
+              "Foundations AI",
+              "Foundations Systems",
+              "Foundations Theory");
+
+      // for each requirement category, look up each prereq category key
+      for (String req : requirementNames) {
+        RequirementRule rule = requirements.get(req);
+        if (rule != null) {
+          requirementOptions.put(req, rule.getAcceptableCourses());
+        }
+      }
+
+      if (concentration.equalsIgnoreCase("Computer Science AB")) {
+        requirementOptions.put("2 Technical CSCI 1000-level courses", List.of());
+        requirementOptions.put("2 Electives", List.of());
+        requirementOptions.put("Capstone", List.of());
+      } else if (concentration.equalsIgnoreCase("Computer Science ScB")) {
+        requirementOptions.put("5 Technical CSCI 1000-level courses", List.of());
+        requirementOptions.put("4 Electives", List.of());
+        requirementOptions.put("Capstone", List.of());
+      } else {
+        throw new IllegalArgumentException("Unsupported concentration: " + concentration);
+      }
+
+      // instantiate checker that checks user's courses WITH concentration requirements
       CSRequirementChecker checker =
-          new CSRequirementChecker(this.storageHandler, uid, userCourses, requirements);
+          new CSRequirementChecker(this.storageHandler, uid, userCourses, concentration);
       Map<String, List<String>> requirementResults = checker.checkAllRequirements();
 
       int coursesCompleted = checker.countCoursesCompleted();
       int totalRequired = checker.getTotalCoursesRequired();
 
       responseMap.put("response_type", "success");
-      responseMap.put("requirements_breakdown", requirementResults);
+      responseMap.put("requirements_options", requirementOptions);
+      responseMap.put("user_requirements_breakdown", requirementResults);
       responseMap.put("courses_completed", coursesCompleted);
       responseMap.put("total_required", totalRequired); // 10 for AB, 16 for ScB
 

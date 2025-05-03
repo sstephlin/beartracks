@@ -5,7 +5,6 @@ import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -25,7 +24,7 @@ public class AddCourseHandler implements Route {
     try {
       String uid = request.queryParams("uid");
       String courseCode = request.queryParams("code");
-      String courseTitle = request.queryParams("title");
+      String title = request.queryParams("title");
       String term = request.queryParams("term");
       String year = request.queryParams("year");
 
@@ -42,18 +41,24 @@ public class AddCourseHandler implements Route {
 
       // Get completed courses and check prerequisites
       Map<String, List<String>> semesterToCourses = storageHandler.getAllSemestersAndCourses(uid);
-      Set<String> completedCourses =
-          AddCourseHandlerHelper.getCompletedCourses(semesterToCourses, semesterKey);
+      //      Set<String> completedCourses =
+      //          AddCourseHandlerHelper.getCompletedCourses(semesterToCourses, semesterKey);
+      Map<String, String> courseToSemester = new HashMap<>();
+      for (Map.Entry<String, List<String>> entry : semesterToCourses.entrySet()) {
+        for (String c : entry.getValue()) {
+          courseToSemester.put(c.toUpperCase(), entry.getKey());
+        }
+      }
       boolean prereqsMet =
           AddCourseHandlerHelper.checkPrerequisites(
-              catalog, courseCode, completedCourses, semesterKey);
+              catalog, courseCode, semesterKey, courseToSemester);
 
       String skip = request.queryParams("skipCheck");
       boolean skipCheck = skip != null && skip.equalsIgnoreCase("true");
 
       Map<String, Object> courseData = new HashMap<>();
       courseData.put("code", courseCode);
-      courseData.put("title", courseTitle);
+      courseData.put("title", title);
       courseData.put("prereqsMet", prereqsMet);
       courseData.put("isCapstone", false);
 

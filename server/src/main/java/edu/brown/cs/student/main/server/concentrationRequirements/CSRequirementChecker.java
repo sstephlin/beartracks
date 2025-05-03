@@ -9,40 +9,81 @@ import java.util.Map;
 import java.util.Set;
 
 public class CSRequirementChecker {
+
   private StorageInterface storageHandler;
   private String uid;
   private Set<String> userCourses;
   private Map<String, RequirementRule> requirements;
   private Set<String> usedCourses = new HashSet<>();
+  private String concentration;
 
   public CSRequirementChecker(
-      StorageInterface storageHandler,
-      String uid,
-      Set<String> userCourses,
-      Map<String, RequirementRule> requirements) {
+      StorageInterface storageHandler, String uid, Set<String> userCourses, String concentration)
+      throws Exception {
     this.storageHandler = storageHandler;
     this.uid = uid;
     this.userCourses = userCourses;
-    this.requirements = requirements;
+    //    this.concentration = this.storageHandler.getConcentration(uid);
+    this.concentration = concentration;
+
+    if (this.concentration == null) {
+      throw new IllegalArgumentException("No concentration found for user: " + uid);
+    }
+
+    // Set requirements based on concentration
+    switch (this.concentration) {
+      case "Computer Science AB":
+        this.requirements = CSABDegreeRequirements.requirements;
+        break;
+      case "Computer Science ScB":
+        this.requirements = CSScBDegreeRequirements.requirements;
+        break;
+      default:
+        throw new IllegalArgumentException("Unknown concentration: " + concentration);
+    }
   }
 
-  // New method: returns a Map of requirement name -> list of fulfilling courses
+  // New method: returns map of requirement name to list of USER'S courses that fulfill that
+  // requirement
   public Map<String, List<String>> checkAllRequirements() {
     Map<String, List<String>> results = new HashMap<>();
 
-    for (String requirementName : requirements.keySet()) {
+    List<String> requirementsList =
+        List.of(
+            "Capstone", // Must come before electives and technicals
+            "Intro Part 1",
+            "Intro Part 2",
+            "Foundations AI",
+            "Foundations Systems",
+            "Foundations Theory",
+            "Math Foundation",
+            "Calculus",
+            "Technical Courses",
+            "Electives");
+
+    for (String requirementName : requirementsList) {
+      if (!this.requirements.containsKey(requirementName)) {
+        continue;
+      }
+
       List<String> fulfillingCourses;
 
-      if (requirementName.equals("Technical Courses")) {
-        fulfillingCourses = checkTechnicalCourses();
-      } else if (requirementName.equals("Electives")) {
-        fulfillingCourses = checkElectives();
-      } else if (requirementName.equals("Capstone")) {
-        fulfillingCourses = checkCapstone();
-      } else if (requirementName.equals("Intro Part 2")) {
-        fulfillingCourses = checkIntroPart2();
-      } else {
-        fulfillingCourses = checkStandardRequirement(requirementName);
+      switch (requirementName) {
+        case "Technical Courses":
+          fulfillingCourses = checkTechnicalCourses();
+          break;
+        case "Electives":
+          System.out.println("Available before electives: " + getAvailableCourses());
+          fulfillingCourses = checkElectives();
+          break;
+        case "Capstone":
+          fulfillingCourses = checkCapstone(); // called first
+          break;
+        case "Intro Part 2":
+          fulfillingCourses = checkIntroPart2();
+          break;
+        default:
+          fulfillingCourses = checkStandardRequirement(requirementName);
       }
 
       results.put(requirementName, fulfillingCourses);
@@ -51,9 +92,9 @@ public class CSRequirementChecker {
     return results;
   }
 
-  // Modified: now returns list of courses instead of boolean
+  // standard requirements = Intro Part 1 and 2, Foundations
   private List<String> checkStandardRequirement(String requirementName) {
-    RequirementRule rule = requirements.get(requirementName);
+    RequirementRule rule = this.requirements.get(requirementName);
     List<String> matchedCourses = new ArrayList<>();
 
     if (rule == null) {
@@ -66,7 +107,7 @@ public class CSRequirementChecker {
     for (String course : rule.getAcceptableCourses()) {
       if (availableCourses.contains(course)) {
         matchedCourses.add(course);
-        usedCourses.add(course);
+        this.usedCourses.add(course);
         matches++;
         if (matches >= rule.getHowManyNeeded()) {
           break;
@@ -78,7 +119,7 @@ public class CSRequirementChecker {
       for (String sub : rule.getSubstitutions()) {
         if (availableCourses.contains(sub)) {
           matchedCourses.add(sub);
-          usedCourses.add(sub);
+          this.usedCourses.add(sub);
           break;
         }
       }
@@ -99,9 +140,9 @@ public class CSRequirementChecker {
           int number = Integer.parseInt(course.replaceAll("[^0-9]", ""));
           if (number >= 1000 && !course.equals("CSCI 1970")) {
             matchedCourses.add(course);
-            usedCourses.add(course);
+            this.usedCourses.add(course);
             count++;
-            if (count >= requirements.get("Technical Courses").getHowManyNeeded()) {
+            if (count >= this.requirements.get("Technical Courses").getHowManyNeeded()) {
               break;
             }
           }
@@ -115,7 +156,7 @@ public class CSRequirementChecker {
   }
 
   /**
-   * checks all the possible elective courses user could take (linear algebra, approved non-cs
+   * checks all the possible elective courses user could take (linear algebra, approved non-cs)
    *
    * @return
    */
@@ -128,25 +169,25 @@ public class CSRequirementChecker {
     int nonCsCoursesUsed = 0;
     int nonTechnicalArtsCoursesUsed = 0;
 
-    int nonCsLimit = (requirements.size() == 10) ? 1 : 3; // AB: 1, ScB: 3
-    int nonTechnicalArtsLimit = (requirements.size() == 10) ? 1 : 3; // AB: 1, ScB: 3
+    int nonCsLimit = (this.requirements.size() == 10) ? 1 : 3; // AB: 1, ScB: 3
+    int nonTechnicalArtsLimit = (this.requirements.size() == 10) ? 1 : 3; // AB: 1, ScB: 3
 
     Set<String> linearAlgebraCourses = Set.of("MATH 0520", "MATH 0540", "APMA 0260");
     Set<String> specialElectives =
-        new HashSet<>(requirements.get("Electives").getAcceptableCourses());
+        new HashSet<>(this.requirements.get("Electives").getAcceptableCourses());
     Set<String> availableCourses = getAvailableCourses();
 
     for (String course : availableCourses) {
       if (linearAlgebraCourses.contains(course)) {
         if (!linearAlgebraUsed) {
           matchedCourses.add(course);
-          usedCourses.add(course);
+          this.usedCourses.add(course);
           electivesSatisfied++;
           linearAlgebraUsed = true;
         }
       } else if (specialElectives.contains(course)) {
         matchedCourses.add(course);
-        usedCourses.add(course);
+        this.usedCourses.add(course);
         electivesSatisfied++;
       } else if (course.startsWith("CSCI")) {
         try {
@@ -156,7 +197,7 @@ public class CSRequirementChecker {
                 course)) { // check if there are any arts/policy/humanitise CS courses
               if (nonTechnicalArtsCoursesUsed < nonTechnicalArtsLimit) {
                 matchedCourses.add(course);
-                usedCourses.add(course);
+                this.usedCourses.add(course);
                 electivesSatisfied++;
                 nonTechnicalArtsCoursesUsed++;
               }
@@ -165,12 +206,12 @@ public class CSRequirementChecker {
                 csci1970Count++;
                 if (csci1970Count <= 2) {
                   matchedCourses.add(course);
-                  usedCourses.add(course);
+                  this.usedCourses.add(course);
                   electivesSatisfied++;
                 }
               } else {
                 matchedCourses.add(course);
-                usedCourses.add(course);
+                this.usedCourses.add(course);
                 electivesSatisfied++;
               }
             }
@@ -181,29 +222,18 @@ public class CSRequirementChecker {
       } else if (isAllowedNonCSCourse(course)) { // Handle non-CS department courses
         if (nonCsCoursesUsed < nonCsLimit) {
           matchedCourses.add(course);
-          usedCourses.add(course);
+          this.usedCourses.add(course);
           electivesSatisfied++;
           nonCsCoursesUsed++;
         }
       }
 
-      if (electivesSatisfied >= requirements.get("Electives").getHowManyNeeded()) {
+      if (electivesSatisfied >= this.requirements.get("Electives").getHowManyNeeded()) {
         break;
       }
     }
 
     return matchedCourses;
-  }
-
-  /**
-   * helper method for checkCapstone that looks for a capstone
-   *
-   * @param courseCode
-   * @return
-   */
-  private boolean isUserMarkedCapstone(String courseCode) {
-    String selectedCapstone = storageHandler.getCapstoneCourse(uid);
-    return selectedCapstone != null && selectedCapstone.equals(courseCode);
   }
 
   /**
@@ -215,46 +245,43 @@ public class CSRequirementChecker {
   private List<String> checkCapstone() {
     List<String> matchedCourses = new ArrayList<>();
 
-    // Use your shared constant
+    // only 3 capstone courses on C@B that a user can add
     Set<String> autoCapstones = new HashSet<>(CSCapstoneCourses.AUTO_ACCEPTED);
 
-    // This should be passed into the RequirementChecker (not hardcoded inside)
-    String userSelectedCapstone = storageHandler.getCapstoneCourse(uid);
+    // OR get which course the user chose to be their capstone
+    String userSelectedCapstone = this.storageHandler.getCapstoneCourse(uid);
 
-    for (String course : userCourses) {
-      if (autoCapstones.contains(course)) {
+    for (String course : this.userCourses) {
+      // 1. either the user chose one of the 3 special capstone courses
+      // 2. OR the user marked a course as their capstone course on the frontend
+      if (autoCapstones.contains(course)
+          || (userSelectedCapstone != null && course.equals(userSelectedCapstone))) {
         matchedCourses.add(course);
-        usedCourses.add(course);
-        break;
-      }
-      if (userSelectedCapstone != null && course.equals(userSelectedCapstone)) {
-        matchedCourses.add(course);
-        usedCourses.add(course);
         break;
       }
     }
 
-    return matchedCourses;
+    return matchedCourses; // empty if case 1 doesn't apply or user didn't choose a capstone course
+    // yet
   }
 
-  // Modified: now returns list
   private List<String> checkIntroPart2() {
     List<String> matchedCourses = new ArrayList<>();
 
-    if (userCourses.contains("CSCI 0200") && !usedCourses.contains("CSCI 0200")) {
+    if (this.userCourses.contains("CSCI 0200") && !this.usedCourses.contains("CSCI 0200")) {
       matchedCourses.add("CSCI 0200");
-      usedCourses.add("CSCI 0200");
+      this.usedCourses.add("CSCI 0200");
       return matchedCourses;
     }
 
-    if (userCourses.contains("CSCI 0190")) {
+    if (this.userCourses.contains("CSCI 0190")) {
       for (String course : getAvailableCourses()) {
         if (course.startsWith("CSCI")) {
           try {
             int number = Integer.parseInt(course.replaceAll("[^0-9]", ""));
             if (number >= 200) {
               matchedCourses.add(course);
-              usedCourses.add(course);
+              this.usedCourses.add(course);
               return matchedCourses;
             }
           } catch (NumberFormatException e) {
@@ -268,30 +295,32 @@ public class CSRequirementChecker {
   }
 
   private Set<String> getAvailableCourses() {
-    Set<String> available = new HashSet<>(userCourses);
-    available.removeAll(usedCourses);
-    return available;
-  }
+    Set<String> available = new HashSet<>(this.userCourses);
 
-  private boolean allowsCapstoneReuse() {
-    return requirements.size() > 10;
-  }
-
-  private int getNonTechnicalLimit() {
-    if (requirements.size() == 10) {
-      return 1;
-    } else {
-      return 3;
+    // Remove all used courses EXCEPT the capstone course, so it can overlap
+    String capstone = this.storageHandler.getCapstoneCourse(uid);
+    for (String used : this.usedCourses) {
+      if (!used.equals(capstone)) {
+        available.remove(used);
+      }
     }
+
+    return available;
   }
 
   // ex: 6/16 for Sc.B
   public int countCoursesCompleted() {
     int completedCourses = 0;
     Map<String, List<String>> requirementResults = this.checkAllRequirements();
+    System.out.println("User courses: " + userCourses);
+    System.out.println("Used courses: " + usedCourses);
 
-    for (Map.Entry<String, List<String>> entry : requirementResults.entrySet()) {
-      List<String> fulfillingCourses = entry.getValue();
+    // Loop over each requirement and its corresponding list of fulfilling courses that a user has
+    // taken
+    for (String requirementName : requirementResults.keySet()) {
+      List<String> fulfillingCourses = requirementResults.get(requirementName);
+
+      // Add the number of fulfilling courses to the total, if any
       if (fulfillingCourses != null) {
         completedCourses += fulfillingCourses.size();
       }
@@ -301,12 +330,16 @@ public class CSRequirementChecker {
   }
 
   // based on requirements size, we know if user is AB or ScB
+  //  public int getTotalCoursesRequired() {
+  //    if (this.concentration == "Computer Science AB") {
+  //      return 10; // AB requirements
+  //    } else {
+  //      return 16; // ScB requirements
+  //    }
+  //  }
+
   public int getTotalCoursesRequired() {
-    if (requirements.size() == 10) {
-      return 10; // AB requirements
-    } else {
-      return 16; // ScB requirements
-    }
+    return "Computer Science AB".equalsIgnoreCase(concentration) ? 10 : 16;
   }
 
   // electives: courses OUTSIDE of cs that count
