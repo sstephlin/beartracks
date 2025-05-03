@@ -59,7 +59,16 @@ public class RemoveCourseHandler implements Route {
         Set<String> completed = AddCourseHandlerHelper.getCompletedCourses(allSemesters, sem);
 
         for (String code : codes) {
-          boolean met = AddCourseHandlerHelper.checkPrerequisites(catalog, code, completed, sem);
+          Map<String, String> courseToSemester = new HashMap<>();
+          for (Map.Entry<String, List<String>> entry : allSemesters.entrySet()) {
+            for (String c : entry.getValue()) {
+              courseToSemester.put(c.toUpperCase(), entry.getKey());
+            }
+          }
+
+          boolean met =
+              AddCourseHandlerHelper.checkPrerequisites(
+                  catalog, code, completed, sem, courseToSemester);
 
           // write it back to Firestore
           DocumentReference dref =

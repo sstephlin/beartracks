@@ -148,7 +148,7 @@ export default function Carousel({
 
     try {
       const response = await fetch(
-        `http://localhost:1234/add-semester?uid=${uid}&term=${term}&year=${year}`,
+        `http://localhost:3232/add-semester?uid=${uid}&term=${term}&year=${year}`,
         {
           method: "POST",
         }
@@ -201,7 +201,7 @@ export default function Carousel({
 
       try {
         const response = await fetch(
-          `http://localhost:1234/add-course?uid=${uid}&code=${encodeURIComponent(
+          `http://localhost:3232/add-course?uid=${uid}&code=${encodeURIComponent(
             newCourse.courseCode
           )}&title=${encodeURIComponent(
             newCourse.courseTitle
@@ -259,7 +259,7 @@ export default function Carousel({
 
     try {
       const response = await fetch(
-        `http://localhost:1234/add-course?uid=${uid}&code=${encodeURIComponent(
+        `http://localhost:3232/add-course?uid=${uid}&code=${encodeURIComponent(
           courseCode
         )}&title=${encodeURIComponent(
           courseTitle

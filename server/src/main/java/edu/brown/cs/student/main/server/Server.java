@@ -1,6 +1,7 @@
 package edu.brown.cs.student.main.server;
 
-import static spark.Spark.after;
+import static spark.Spark.before;
+import static spark.Spark.options;
 
 import edu.brown.cs.student.main.server.handlers.AddCourseHandler;
 import edu.brown.cs.student.main.server.handlers.AddSemesterHandler;
@@ -22,21 +23,38 @@ import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.io.IOException;
-import spark.Filter;
 import spark.Spark;
 
 public class Server {
 
   public static void setUpServer() {
-    int port = 1234;
+    int port = 3232;
     Spark.port(port);
 
-    after(
-        (Filter)
-            (request, response) -> {
-              response.header("Access-Control-Allow-Origin", "*");
-              response.header("Access-Control-Allow-Methods", "*");
-            });
+    // Enable CORS
+    options(
+        "/*",
+        (request, response) -> {
+          String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
+          if (accessControlRequestHeaders != null) {
+            response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
+          }
+
+          String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
+          if (accessControlRequestMethod != null) {
+            response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
+          }
+
+          return "OK";
+        });
+
+    before(
+        (request, response) -> {
+          response.header(
+              "Access-Control-Allow-Origin", "*"); // or restrict to "http://localhost:8000"
+          response.header("Access-Control-Allow-Headers", "*");
+          response.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+        });
 
     StorageInterface firebaseUtils;
     try {

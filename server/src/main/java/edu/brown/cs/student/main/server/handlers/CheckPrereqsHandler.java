@@ -32,10 +32,15 @@ public class CheckPrereqsHandler implements Route {
     Set<String> completed =
         AddCourseHandlerHelper.getCompletedCourses(
             semMap, semesterKey); // CHANGE: factor out the same helper from AddCourseHandler
-
+    Map<String, String> courseToSemester = new HashMap<>();
+    for (Map.Entry<String, List<String>> entry : semMap.entrySet()) {
+      for (String c : entry.getValue()) {
+        courseToSemester.put(c.toUpperCase(), entry.getKey());
+      }
+    }
     boolean met =
         AddCourseHandlerHelper.checkPrerequisites(
-            catalog, courseCode, completed, semesterKey); // CHANGE: shared logic
+            catalog, courseCode, completed, semesterKey, courseToSemester);
 
     Map<String, Object> out = new HashMap<>();
     out.put("response_type", "success");
