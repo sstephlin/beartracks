@@ -20,10 +20,33 @@ export function CourseDragManager(
   const [draggedCourse, setDraggedCourse] = useState<string | null>(null);
   const [emptySlots, setEmptySlots] = useState<{ [key: string]: number }>({});
 
+  // const setPrereqStatus = (id: string, met: boolean) => {
+  //   setCourses((prev) =>
+  //     prev.map((c) => (c.id === id ? { ...c, prereqsMet: met } : c))
+  //   );
+  // };
+
   const setPrereqStatus = (id: string, met: boolean) => {
-    setCourses((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, prereqMet: met } : c))
-    );
+    setCourses((prev) => {
+      const updated = prev.map((c) =>
+        c.id === id ? { ...c, prereqsMet: met } : c
+      );
+
+      const course = updated.find((c) => c.id === id);
+      if (!course || !uid) return updated;
+
+      const [term, year] = course.semesterId.split(" ");
+      fetch(
+        `http://localhost:3232/add-course?uid=${uid}&code=${encodeURIComponent(
+          course.courseCode
+        )}&title=${encodeURIComponent(
+          course.title
+        )}&term=${term}&year=${year}&prereqsMet=${met}`,
+        { method: "POST" }
+      );
+
+      return updated;
+    });
   };
 
   const handleDragStart = (

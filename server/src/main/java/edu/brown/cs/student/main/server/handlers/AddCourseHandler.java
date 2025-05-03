@@ -42,8 +42,8 @@ public class AddCourseHandler implements Route {
 
       // Get completed courses and check prerequisites
       Map<String, List<String>> semesterToCourses = storageHandler.getAllSemestersAndCourses(uid);
-      Set<String> completedCourses =
-          AddCourseHandlerHelper.getCompletedCourses(semesterToCourses, semesterKey);
+//      Set<String> completedCourses =
+//          AddCourseHandlerHelper.getCompletedCourses(semesterToCourses, semesterKey);
       Map<String, String> courseToSemester = new HashMap<>();
       for (Map.Entry<String, List<String>> entry : semesterToCourses.entrySet()) {
         for (String c : entry.getValue()) {
@@ -52,7 +52,7 @@ public class AddCourseHandler implements Route {
       }
       boolean prereqsMet =
           AddCourseHandlerHelper.checkPrerequisites(
-              catalog, courseCode, completedCourses, semesterKey, courseToSemester);
+              catalog, courseCode, semesterKey, courseToSemester);
 
       String skip = request.queryParams("skipCheck");
       boolean skipCheck = skip != null && skip.equalsIgnoreCase("true");

@@ -72,7 +72,7 @@ export default function BearTracks(props: BearTracksProps) {
       const url = `http://localhost:3232/remove-course?uid=${uid}&code=${encodeURIComponent(
         courseCode
       )}&title=${encodeURIComponent(title)}&term=${term}&year=${year}`;
-
+      console.log("🗑 Dropped to trash:", { courseCode, semesterId });
       try {
         await fetch(url, { method: "POST" });
       } catch (error) {

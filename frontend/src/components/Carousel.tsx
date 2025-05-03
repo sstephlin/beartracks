@@ -4,7 +4,7 @@ import CourseDrag from "./CourseDrag";
 import { CarouselMover } from "../hooks/CarouselMover";
 import { CourseDragManager } from "../hooks/CourseDragManager";
 import { CourseItem } from "../types";
-import { useUser } from "@clerk/clerk-react";
+import { SignOutButton, useUser } from "@clerk/clerk-react";
 import { checkPrereqs } from "../utils/prereqUtils";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
@@ -101,7 +101,19 @@ export default function Carousel({
 
           let boxCounter = 1;
 
-          for (const [semester, courseList] of Object.entries(semestersData)) {
+          const termOrder = ["Spring", "Summer", "Fall", "Winter"];
+
+          const sortedSemesters = Object.entries(semestersData).sort(
+            ([a], [b]) => {
+              const [termA, yearA] = a.split(" ");
+              const [termB, yearB] = b.split(" ");
+              const yearDiff = parseInt(yearA) - parseInt(yearB);
+              if (yearDiff !== 0) return yearDiff;
+              return termOrder.indexOf(termA) - termOrder.indexOf(termB);
+            }
+          );
+
+          for (const [semester, courseList] of sortedSemesters) {
             const boxId = `box${boxCounter}`;
             newBoxIds.push(boxId);
             newBoxSelections[boxId] = semester;
@@ -159,48 +171,207 @@ export default function Carousel({
     }
   };
 
+  // const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
+  //   e.preventDefault();
+  //   const searchCourseRaw = e.dataTransfer.getData("searchCourse");
+  //   const courseId = e.dataTransfer.getData("courseId");
+  //   if (!user?.id) return;
+  //   if (searchCourseRaw) {
+  //     const searchCourse = JSON.parse(searchCourseRaw);
+  //     const met = await checkPrereqs(
+  //       user.id,
+  //       searchCourse.courseCode,
+  //       semesterId
+  //     );
+
+  //     const newCourse: CourseItem = {
+  //       id: `course-${Date.now()}`,
+  //       courseCode: searchCourse.courseCode,
+  //       title: searchCourse.courseName,
+  //       semesterId,
+  //       isEditing: false,
+  //       prereqsMet: met,
+  //     };
+
+  //     addCourse(semesterId, newCourse);
+
+  //     setTimeout(() => {
+  //       setCourses((prev) => {
+  //         const updated = prev.map((course) => {
+  //           if (course.id === newCourse.id) {
+  //             // ✅ update prereqMet for the new course
+  //             return { ...course, prereqMet: true };
+  //           }
+  //           return course;
+  //         });
+
+  //         // ✅ also re-check all other courses
+  //         updated.forEach(async (course) => {
+  //           const met = await checkPrereqs(
+  //             user!.id,
+  //             course.courseCode,
+  //             course.semesterId
+  //           );
+  //           setPrereqStatus(course.id, met);
+  //         });
+
+  //         return updated;
+  //       });
+  //     }, 0);
+
+  //     const [term, year] = semesterId.split(" ");
+  //     try {
+  //       await fetch(
+  //         `http://localhost:3232/add-course?uid=${
+  //           user?.id
+  //         }&code=${encodeURIComponent(
+  //           newCourse.courseCode
+  //         )}&title=${encodeURIComponent(
+  //           newCourse.title
+  //         )}&term=${term}&year=${year}`,
+  //         { method: "POST" }
+  //       );
+  //     } catch (err) {
+  //       console.error("Error saving course:", err);
+  //     }
+  //   } else if (courseId) {
+  //     handleDrop(e, semesterId);
+  //   }
+  // };
+  // const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
+  //   e.preventDefault();
+  //   if (!user?.id) return;
+
+  //   const searchCourseRaw = e.dataTransfer.getData("searchCourse");
+  //   const courseId = e.dataTransfer.getData("courseId");
+
+  //   if (searchCourseRaw) {
+  //     const searchCourse = JSON.parse(searchCourseRaw);
+
+  //     // Check prereqs before creating the course
+  //     const met = await checkPrereqs(
+  //       user.id,
+  //       searchCourse.courseCode,
+  //       semesterId
+  //     );
+
+  //     const newCourse: CourseItem = {
+  //       id: `course-${Date.now()}`,
+  //       courseCode: searchCourse.courseCode,
+  //       title: searchCourse.courseName,
+  //       semesterId,
+  //       isEditing: false,
+  //       prereqsMet: met,
+  //     };
+
+  //     setCourses((prev) => {
+  //       const updated = [...prev, newCourse];
+
+  //       updated.forEach(async (course) => {
+  //         const met = await checkPrereqs(
+  //           user!.id,
+  //           course.courseCode,
+  //           course.semesterId
+  //         );
+  //         setPrereqStatus(course.id, met);
+  //       });
+
+  //       console.log(
+  //         "🔍 Rechecking courses:",
+  //         updated.map((c) => c.courseCode)
+  //       );
+  //       return updated;
+  //     });
+  //   } else if (courseId) {
+  //     handleDrop(e, semesterId);
+  //   }
+  // };
+  // const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
+  //   e.preventDefault();
+  //   if (!user?.id) return;
+
+  //   const searchCourseRaw = e.dataTransfer.getData("searchCourse");
+  //   const courseId = e.dataTransfer.getData("courseId");
+
+  //   if (searchCourseRaw) {
+  //     const searchCourse = JSON.parse(searchCourseRaw);
+
+  //     const met = await checkPrereqs(
+  //       user.id,
+  //       searchCourse.courseCode,
+  //       semesterId
+  //     );
+
+  //     const newCourse: CourseItem = {
+  //       id: `course-${Date.now()}`,
+  //       courseCode: searchCourse.courseCode,
+  //       title: searchCourse.courseName,
+  //       semesterId,
+  //       isEditing: false,
+  //       prereqsMet: met,
+  //     };
+
+  //     addCourse(semesterId, newCourse);
+
+  //     setTimeout(() => {
+  //       const current = [...courses, newCourse];
+  //       console.log(
+  //         "🔁 Rechecking (post-add):",
+  //         current.map((c) => c.courseCode)
+  //       );
+
+  //       current.forEach(async (course) => {
+  //         const met = await checkPrereqs(
+  //           user.id!,
+  //           course.courseCode,
+  //           course.semesterId
+  //         );
+  //         setPrereqStatus(course.id, met);
+  //       });
+  //     }, 0);
+  //   } else if (courseId) {
+  //     handleDrop(e, semesterId);
+  //   }
+  // };
   const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
     e.preventDefault();
+    if (!user?.id) return;
+
     const searchCourseRaw = e.dataTransfer.getData("searchCourse");
     const courseId = e.dataTransfer.getData("courseId");
 
     if (searchCourseRaw) {
       const searchCourse = JSON.parse(searchCourseRaw);
+
+      const met = await checkPrereqs(
+        user.id,
+        searchCourse.courseCode,
+        semesterId
+      );
+
       const newCourse: CourseItem = {
         id: `course-${Date.now()}`,
         courseCode: searchCourse.courseCode,
         title: searchCourse.courseName,
         semesterId,
         isEditing: false,
-        prereqsMet: false,
+        prereqsMet: met,
       };
 
-      addCourse(semesterId, newCourse);
+      setCourses((prevCourses) => {
+        const updated = [...prevCourses, newCourse];
+        // Re-check everything with the updated courses array
+        updated.forEach(async (c) => {
+          const result = await checkPrereqs(
+            user.id!,
+            c.courseCode,
+            c.semesterId
+          );
+          setPrereqStatus(c.id, result);
+        });
 
-      if (user?.id) {
-        const met = await checkPrereqs(
-          user.id,
-          newCourse.courseCode,
-          semesterId
-        );
-        setPrereqStatus(newCourse.id, met);
-      }
-
-      const [term, year] = semesterId.split(" ");
-      try {
-        await fetch(
-          `http://localhost:3232/add-course?uid=${
-            user?.id
-          }&code=${encodeURIComponent(
-            newCourse.courseCode
-          )}&title=${encodeURIComponent(
-            newCourse.title
-          )}&term=${term}&year=${year}`,
-          { method: "POST" }
-        );
-      } catch (err) {
-        console.error("Error saving course:", err);
-      }
+        return updated;
+      });
     } else if (courseId) {
       handleDrop(e, semesterId);
     }
@@ -237,6 +408,90 @@ export default function Carousel({
       console.error("Error updating course:", err);
     }
   };
+
+  // useEffect(() => {
+  //   const handleRemoveCourse = (e: any) => {
+  //     const { courseCode, semesterId } = e.detail;
+
+  //     console.log("📥 removeCourse event received:", courseCode, semesterId);
+
+  //     if (!user?.id) return;
+
+  //     // setCourses((prev) => {
+  //     //   const updated = prev.filter(
+  //     //     (c) => !(c.courseCode === courseCode && c.semesterId === semesterId)
+  //     //   );
+
+  //     //   // Re-check prereqs for all remaining courses
+  //     //   updated.forEach(async (course) => {
+  //     //     const met = await checkPrereqs(
+  //     //       user.id!,
+  //     //       course.courseCode,
+  //     //       course.semesterId
+  //     //     );
+  //     //     setPrereqStatus(course.id, met);
+  //     //   });
+
+  //     //   return updated;
+  //     // });
+  //     setCourses((prev) => {
+  //       const updated = prev.filter(
+  //         (c) => !(c.courseCode === courseCode && c.semesterId === semesterId)
+  //       );
+
+  //       // Schedule recheck for next tick so state is updated
+  //       setTimeout(() => {
+  //         console.log(
+  //           "🔁 Rechecking after removal:",
+  //           updated.map((c) => c.courseCode)
+  //         );
+  //         updated.forEach(async (course) => {
+  //           const met = await checkPrereqs(
+  //             user!.id,
+  //             course.courseCode,
+  //             course.semesterId
+  //           );
+  //           setPrereqStatus(course.id, met);
+  //         });
+  //       }, 0);
+
+  //       return updated;
+  //     });
+  //   };
+
+  //   window.addEventListener("removeCourse", handleRemoveCourse);
+  //   return () => window.removeEventListener("removeCourse", handleRemoveCourse);
+  // }, [user?.id, setCourses, setPrereqStatus]);
+
+  useEffect(() => {
+    const handleRemoveCourse = (e: any) => {
+      const { courseCode, semesterId } = e.detail;
+
+      console.log("📥 removeCourse event received:", courseCode, semesterId);
+      if (!user?.id) return;
+
+      setCourses((prev) => {
+        const updated = prev.filter(
+          (c) => !(c.courseCode === courseCode && c.semesterId === semesterId)
+        );
+
+        // Re-check everything after removing
+        updated.forEach(async (course) => {
+          const met = await checkPrereqs(
+            user!.id,
+            course.courseCode,
+            course.semesterId
+          );
+          setPrereqStatus(course.id, met);
+        });
+
+        return updated;
+      });
+    };
+
+    window.addEventListener("removeCourse", handleRemoveCourse);
+    return () => window.removeEventListener("removeCourse", handleRemoveCourse);
+  }, [user?.id, setCourses, setPrereqStatus]);
 
   const handleAddSemester = () => {
     const newBoxId = `box${boxIds.length + 1}`;
