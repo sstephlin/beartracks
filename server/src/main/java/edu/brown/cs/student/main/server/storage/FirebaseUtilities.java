@@ -68,28 +68,6 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
-  @Override
-  public void updatePrereqsMet(String uid, String semester, String courseCode, boolean prereqsMet)
-      throws ExecutionException, InterruptedException {
-
-    if (uid == null || semester == null || courseCode == null) {
-      throw new IllegalArgumentException("uid, semester, and courseCode must be non-null.");
-    }
-
-    DocumentReference docRef =
-        db.collection("users")
-            .document(uid)
-            .collection("semesters")
-            .document(semester)
-            .collection("courses")
-            .document(courseCode);
-
-    Map<String, Object> updates = new HashMap<>();
-    updates.put("prereqsMet", prereqsMet);
-
-    docRef.update(updates).get(); // Waits for update to complete (can be omitted if async preferred)
-  }
-
   // Recursively deletes all documents in a collection
   private ApiFuture<List<WriteResult>> deleteCollection(CollectionReference collection) {
     ApiFuture<QuerySnapshot> future = collection.get();
@@ -265,9 +243,22 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public void updateDocument(DocumentReference ref, Map<String, Object> updates) {
-    // Firestore’s update() will merge these fields into the existing document
-    ref.update(updates);
+  public void updatePrereqsMet(String uid, String semester, String courseCode, boolean prereqsMet) {
+
+    if (uid == null || semester == null || courseCode == null) {
+      throw new IllegalArgumentException("uid, semester, and courseCode must be non-null.");
+    }
+
+    DocumentReference docRef =
+        db.collection("users")
+            .document(uid)
+            .collection("semesters")
+            .document(semester)
+            .collection("courses")
+            .document(courseCode);
+
+    docRef.update("prereqsMet", prereqsMet);
+    System.out.println(courseCode + " updated to " + prereqsMet);
   }
 
   /**
