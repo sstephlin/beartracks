@@ -249,7 +249,7 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   /**
-   *  updates the user's capstone course that stored in Firestore
+   * updates the user's capstone course that stored in Firestore
    *
    * @param uid
    * @param semester
@@ -257,7 +257,8 @@ public class FirebaseUtilities implements StorageInterface {
    * @param isCapstone
    */
   @Override
-  public void updateIsCapstoneField(String uid, String semester, String courseCode, boolean isCapstone) {
+  public void updateIsCapstoneField(
+      String uid, String semester, String courseCode, boolean isCapstone) {
     Firestore db = FirestoreClient.getFirestore();
     String fullPath = "users/" + uid + "/semesters/" + semester + "/courses";
     DocumentReference docRef = db.collection(fullPath).document(courseCode);

@@ -1,6 +1,5 @@
 package edu.brown.cs.student.main.server.concentrationRequirements;
 
-import edu.brown.cs.student.main.server.concentrationRequirements.CSCapstoneCourses;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,12 +17,13 @@ public class CSRequirementChecker {
   private Set<String> usedCourses = new HashSet<>();
   private String concentration;
 
-  public CSRequirementChecker(StorageInterface storageHandler, String uid, Set<String> userCourses, String concentration)
+  public CSRequirementChecker(
+      StorageInterface storageHandler, String uid, Set<String> userCourses, String concentration)
       throws Exception {
     this.storageHandler = storageHandler;
     this.uid = uid;
     this.userCourses = userCourses;
-//    this.concentration = this.storageHandler.getConcentration(uid);
+    //    this.concentration = this.storageHandler.getConcentration(uid);
     this.concentration = concentration;
 
     if (this.concentration == null) {
@@ -43,22 +43,23 @@ public class CSRequirementChecker {
     }
   }
 
-  // New method: returns map of requirement name to list of USER'S courses that fulfill that requirement
+  // New method: returns map of requirement name to list of USER'S courses that fulfill that
+  // requirement
   public Map<String, List<String>> checkAllRequirements() {
     Map<String, List<String>> results = new HashMap<>();
 
-    List<String> requirementsList = List.of(
-        "Capstone",  // Must come before electives and technicals
-        "Intro Part 1",
-        "Intro Part 2",
-        "Foundations AI",
-        "Foundations Systems",
-        "Foundations Theory",
-        "Math Foundation",
-        "Calculus",
-        "Technical Courses",
-        "Electives"
-    );
+    List<String> requirementsList =
+        List.of(
+            "Capstone", // Must come before electives and technicals
+            "Intro Part 1",
+            "Intro Part 2",
+            "Foundations AI",
+            "Foundations Systems",
+            "Foundations Theory",
+            "Math Foundation",
+            "Calculus",
+            "Technical Courses",
+            "Electives");
 
     for (String requirementName : requirementsList) {
       if (!this.requirements.containsKey(requirementName)) {
@@ -72,7 +73,6 @@ public class CSRequirementChecker {
           fulfillingCourses = checkTechnicalCourses();
           break;
         case "Electives":
-          System.out.println("Available before electives: " + getAvailableCourses());
           fulfillingCourses = checkElectives();
           break;
         case "Capstone":
@@ -156,6 +156,7 @@ public class CSRequirementChecker {
 
   /**
    * checks all the possible elective courses user could take (linear algebra, approved non-cs)
+   *
    * @return
    */
   private List<String> checkElectives() {
@@ -191,7 +192,8 @@ public class CSRequirementChecker {
         try {
           int number = Integer.parseInt(course.replaceAll("[^0-9]", ""));
           if (number >= 1000) {
-            if (ARTS_POLICY_HUM_CS_COURSES.contains(course)) { // check if there are any arts/policy/humanitise CS courses
+            if (ARTS_POLICY_HUM_CS_COURSES.contains(
+                course)) { // check if there are any arts/policy/humanitise CS courses
               if (nonTechnicalArtsCoursesUsed < nonTechnicalArtsLimit) {
                 matchedCourses.add(course);
                 this.usedCourses.add(course);
@@ -234,8 +236,8 @@ public class CSRequirementChecker {
   }
 
   /**
-   * checks that a user's courses includes a capstone course (either one of the 3 special
-   * capstone classes OR if the user checkmarks it separately)
+   * checks that a user's courses includes a capstone course (either one of the 3 special capstone
+   * classes OR if the user checkmarks it separately)
    *
    * @return a list of the first capstone-eligible course that a user has taken
    */
@@ -251,13 +253,15 @@ public class CSRequirementChecker {
     for (String course : this.userCourses) {
       // 1. either the user chose one of the 3 special capstone courses
       // 2. OR the user marked a course as their capstone course on the frontend
-      if (autoCapstones.contains(course) || (userSelectedCapstone != null && course.equals(userSelectedCapstone))) {
+      if (autoCapstones.contains(course)
+          || (userSelectedCapstone != null && course.equals(userSelectedCapstone))) {
         matchedCourses.add(course);
         break;
       }
     }
 
-    return matchedCourses; // empty if case 1 doesn't apply or user didn't choose a capstone course yet
+    return matchedCourses; // empty if case 1 doesn't apply or user didn't choose a capstone course
+    // yet
   }
 
   private List<String> checkIntroPart2() {
@@ -307,10 +311,9 @@ public class CSRequirementChecker {
   public int countCoursesCompleted() {
     int completedCourses = 0;
     Map<String, List<String>> requirementResults = this.checkAllRequirements();
-    System.out.println("User courses: " + userCourses);
-    System.out.println("Used courses: " + usedCourses);
 
-    // Loop over each requirement and its corresponding list of fulfilling courses that a user has taken
+    // Loop over each requirement and its corresponding list of fulfilling courses that a user has
+    // taken
     for (String requirementName : requirementResults.keySet()) {
       List<String> fulfillingCourses = requirementResults.get(requirementName);
 
@@ -324,48 +327,106 @@ public class CSRequirementChecker {
   }
 
   // based on requirements size, we know if user is AB or ScB
-//  public int getTotalCoursesRequired() {
-//    if (this.concentration == "Computer Science AB") {
-//      return 10; // AB requirements
-//    } else {
-//      return 16; // ScB requirements
-//    }
-//  }
+  //  public int getTotalCoursesRequired() {
+  //    if (this.concentration == "Computer Science AB") {
+  //      return 10; // AB requirements
+  //    } else {
+  //      return 16; // ScB requirements
+  //    }
+  //  }
 
   public int getTotalCoursesRequired() {
     return "Computer Science AB".equalsIgnoreCase(concentration) ? 10 : 16;
   }
 
   // electives: courses OUTSIDE of cs that count
-  public static final Set<String> ALLOWED_NON_CS_COURSES = Set.of(
-      "APMA 1160", "APMA 1690", "APMA 1170", "APMA 1200", "APMA 1210",
-      "APMA 1360", "APMA 1650", "APMA 1655", "APMA 1660", "APMA 1670",
-      "APMA 1710", "APMA 1720", "APMA 1740", "APMA 1910", "APMA 1930W", "APMA 1930X",
-      "PHP2630", "PHP2650",
-      "CLPS 1211", "CLPS 1291", "CLPS 1342", "CLPS 1350", "CLPS 1491", "CLPS 1520", "CLPS 1950",
-      "DATA 1030", "DATA 1340", "DATA 1080",
-      "DEVL 1810",
-      "EEPS 1340", "EEPS 1720",
-      "ECON 1490", "ECON 1870",
-      "ENGN 1010", "ENGN 1570", "ENGN 1580", "ENGN 1600", "ENGN 1610", "ENGN 1630",
-      "ENGN 1640", "ENGN 1650", "ENGN 1660", "ENGN 1800", "ENGN 1931J", "ENGN 1931T", "ENGN 2520",
-      "IAPA 1701A", "IAPA 1801",
-      "MUSC 1210",
-      "NEUR 1440", "NEUR 1660",
-      "PHIL 1630", "PHIL 1635", "PHIL 1880", "PHIL 1855",
-      "PHYS 1600", "PHYS 2550",
-      "PHP 1855",
-      "PLCY 1702X"
-  );
+  public static final Set<String> ALLOWED_NON_CS_COURSES =
+      Set.of(
+          "APMA 1160",
+          "APMA 1690",
+          "APMA 1170",
+          "APMA 1200",
+          "APMA 1210",
+          "APMA 1360",
+          "APMA 1650",
+          "APMA 1655",
+          "APMA 1660",
+          "APMA 1670",
+          "APMA 1710",
+          "APMA 1720",
+          "APMA 1740",
+          "APMA 1910",
+          "APMA 1930W",
+          "APMA 1930X",
+          "PHP2630",
+          "PHP2650",
+          "CLPS 1211",
+          "CLPS 1291",
+          "CLPS 1342",
+          "CLPS 1350",
+          "CLPS 1491",
+          "CLPS 1520",
+          "CLPS 1950",
+          "DATA 1030",
+          "DATA 1340",
+          "DATA 1080",
+          "DEVL 1810",
+          "EEPS 1340",
+          "EEPS 1720",
+          "ECON 1490",
+          "ECON 1870",
+          "ENGN 1010",
+          "ENGN 1570",
+          "ENGN 1580",
+          "ENGN 1600",
+          "ENGN 1610",
+          "ENGN 1630",
+          "ENGN 1640",
+          "ENGN 1650",
+          "ENGN 1660",
+          "ENGN 1800",
+          "ENGN 1931J",
+          "ENGN 1931T",
+          "ENGN 2520",
+          "IAPA 1701A",
+          "IAPA 1801",
+          "MUSC 1210",
+          "NEUR 1440",
+          "NEUR 1660",
+          "PHIL 1630",
+          "PHIL 1635",
+          "PHIL 1880",
+          "PHIL 1855",
+          "PHYS 1600",
+          "PHYS 2550",
+          "PHP 1855",
+          "PLCY 1702X");
 
   // electives: Arts/Policy/Humanities courses (non-technical CSCI courses)
-  public static final Set<String> ARTS_POLICY_HUM_CS_COURSES = Set.of(
-      "CSCI 1250", "CSCI 1280", "CSCI 1360", "CSCI 1370", "CSCI 1800", "CSCI 1805",
-      "CSCI 1860", "CSCI 1870", "CSCI 1952B", "CSCI 1952X", "CSCI 2002", "CSCI 2402C",
-      "CSCI 2952S", "CSCI 2999A",
-      "APMA 1910", "DEVL 1810", "IAPA 1701A", "IAPA 1801", "PLCY 1702X",
-      "ENGN 1800", "ENGN 1931J" // ENGN 1800/1931J counts as arts/policy too
-  );
+  public static final Set<String> ARTS_POLICY_HUM_CS_COURSES =
+      Set.of(
+          "CSCI 1250",
+          "CSCI 1280",
+          "CSCI 1360",
+          "CSCI 1370",
+          "CSCI 1800",
+          "CSCI 1805",
+          "CSCI 1860",
+          "CSCI 1870",
+          "CSCI 1952B",
+          "CSCI 1952X",
+          "CSCI 2002",
+          "CSCI 2402C",
+          "CSCI 2952S",
+          "CSCI 2999A",
+          "APMA 1910",
+          "DEVL 1810",
+          "IAPA 1701A",
+          "IAPA 1801",
+          "PLCY 1702X",
+          "ENGN 1800",
+          "ENGN 1931J" // ENGN 1800/1931J counts as arts/policy too
+          );
 
   /**
    * checks if a non CSCI course is approved to count as an elective

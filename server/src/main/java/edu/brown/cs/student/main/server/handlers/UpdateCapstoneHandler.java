@@ -1,12 +1,11 @@
 package edu.brown.cs.student.main.server.handlers;
 
 import edu.brown.cs.student.main.server.storage.StorageInterface;
+import java.util.HashMap;
+import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class UpdateCapstoneHandler implements Route {
   private final StorageInterface storageHandler;
@@ -21,7 +20,7 @@ public class UpdateCapstoneHandler implements Route {
 
     try {
       String uid = request.queryParams("uid");
-      String semester = request.queryParams("semester");  // e.g. "Fall 2024"
+      String semester = request.queryParams("semester"); // e.g. "Fall 2024"
       String courseCode = request.queryParams("courseCode"); // e.g. "CSCI 1470"
 
       if (uid == null || semester == null || courseCode == null) {
@@ -32,7 +31,7 @@ public class UpdateCapstoneHandler implements Route {
       String previousCapstone = storageHandler.getCapstoneCourse(uid);
 
       if (previousCapstone != null && !previousCapstone.equals(courseCode)) {
-        storageHandler.updateIsCapstoneField(uid, semester, previousCapstone,false);
+        storageHandler.updateIsCapstoneField(uid, semester, previousCapstone, false);
       }
 
       // 2. Mark new course as capstone

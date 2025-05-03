@@ -122,6 +122,19 @@ export default function BearTracks(props: BearTracksProps) {
         draggedSearchCourse={draggedSearchCourse}
         expanded={props.expanded}
       />
+      <div className="display-view">
+        {[2, 4].map((value) => (
+          <button
+            key={value}
+            onClick={() => setViewCount(value)}
+            className={`display-view-button ${
+              viewCount === value ? "selected" : "unselected"
+            }`}
+          >
+            {value}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 package edu.brown.cs.student.main.server.handlers;
+
 import edu.brown.cs.student.main.server.concentrationRequirements.CSCapstoneCourses;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.ArrayList;
@@ -10,9 +11,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-/**
- * Returns a list of capstone-eligible courses that a user has added to their course plan
- */
+/** Returns a list of capstone-eligible courses that a user has added to their course plan */
 public class CheckCapstoneHandler implements Route {
 
   private final StorageInterface storageHandler;

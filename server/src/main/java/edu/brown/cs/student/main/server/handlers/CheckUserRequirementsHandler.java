@@ -52,10 +52,13 @@ public class CheckUserRequirementsHandler implements Route {
       Map<String, List<String>> requirementOptions = new HashMap<>();
       // these names correspond to the names of the keys in the CSABDegreeRequirements or
       // CSScBDegreeRequirements requirements map
-      List<String> requirementNames = List.of(
-          "Intro Part 1", "Intro Part 2",
-          "Foundations AI", "Foundations Systems", "Foundations Theory"
-      );
+      List<String> requirementNames =
+          List.of(
+              "Intro Part 1",
+              "Intro Part 2",
+              "Foundations AI",
+              "Foundations Systems",
+              "Foundations Theory");
 
       // for each requirement category, look up each prereq category key
       for (String req : requirementNames) {
@@ -70,6 +73,7 @@ public class CheckUserRequirementsHandler implements Route {
         requirementOptions.put("2 Electives", List.of());
         requirementOptions.put("Capstone", List.of());
       } else if (concentration.equalsIgnoreCase("Computer Science ScB")) {
+        requirementOptions.put("Calculus", requirements.get("Calculus").getAcceptableCourses());
         requirementOptions.put("5 Technical CSCI 1000-level courses", List.of());
         requirementOptions.put("4 Electives", List.of());
         requirementOptions.put("Capstone", List.of());
