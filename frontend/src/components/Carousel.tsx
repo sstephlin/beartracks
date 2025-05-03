@@ -186,7 +186,7 @@ export default function Carousel({
   const getAvailableSemesters = () =>
     allSemesters.filter((s) => !usedSemesters.includes(s));
 
-  const handleSemesterSelect = async (boxId: number, semester: string) => {
+  const handleSemesterSelect = async (boxId: string, semester: string) => {
     setBoxSelections((prev) => ({ ...prev, [boxId]: semester }));
     setUsedSemesters((prev) => [...prev, semester]);
     setSelectedSemester(semester);

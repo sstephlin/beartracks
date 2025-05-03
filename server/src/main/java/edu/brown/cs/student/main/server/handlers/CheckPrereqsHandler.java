@@ -64,7 +64,6 @@ public class CheckPrereqsHandler implements Route {
         courseToSemester.put(c.toUpperCase(), entry.getKey());
       }
     }
-
     boolean met =
         AddCourseHandlerHelper.checkPrerequisites(
             catalog, courseCode, semesterKey, courseToSemester);
@@ -75,5 +74,4 @@ public class CheckPrereqsHandler implements Route {
     response.type("application/json");
     return Utils.toMoshiJson(out);
   }
-}
 }

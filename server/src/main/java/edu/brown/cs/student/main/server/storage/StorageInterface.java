@@ -11,6 +11,8 @@ public interface StorageInterface {
   void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data);
 
   void deleteDocument(DocumentReference doc);
+  void updatePrereqsMet(String uid, String semester, String courseCode, boolean prereqsMet)
+      throws ExecutionException, InterruptedException;
 
   Map<String, List<String>> getAllSemestersAndCourses(String uid) throws Exception;
 

@@ -61,6 +61,7 @@ public class AddCourseHandler implements Route {
       courseData.put("title", title);
       courseData.put("prereqsMet", prereqsMet);
       courseData.put("isCapstone", false);
+      System.out.println("course " + courseCode + " prereqsMet:" + prereqsMet);
 
       storageHandler.addDocument(
           uid + "/semesters/" + semesterKey, "courses", courseCode, courseData);
