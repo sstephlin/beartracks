@@ -206,7 +206,7 @@ public class CourseCSVParser {
     //        }
     //      }
     //    }
-    System.out.println(catalog.getPrereqTree("CSCI 1230", "Fall 22"));
+//    System.out.println(catalog.getPrereqTree("CSCI 1230", "Fall 22"));
 
     return catalog;
   }

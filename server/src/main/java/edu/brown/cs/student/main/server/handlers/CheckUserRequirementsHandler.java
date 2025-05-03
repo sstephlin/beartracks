@@ -74,7 +74,6 @@ public class CheckUserRequirementsHandler implements Route {
         requirementOptions.put("2 Electives", List.of());
         requirementOptions.put("Capstone", List.of());
       } else if (concentration.equalsIgnoreCase("Computer Science ScB")) {
-        requirementOptions.put("Calculus", requirements.get("Calculus").getAcceptableCourses());
         requirementOptions.put("5 Technical CSCI 1000-level courses", List.of());
         requirementOptions.put("4 Electives", List.of());
         requirementOptions.put("Capstone", List.of());

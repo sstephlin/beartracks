@@ -20,12 +20,6 @@ export function CourseDragManager(
   const [draggedCourse, setDraggedCourse] = useState<string | null>(null);
   const [emptySlots, setEmptySlots] = useState<{ [key: string]: number }>({});
 
-  // const setPrereqStatus = (id: string, met: boolean) => {
-  //   setCourses((prev) =>
-  //     prev.map((c) => (c.id === id ? { ...c, prereqsMet: met } : c))
-  //   );
-  // };
-
   const setPrereqStatus = (id: string, met: boolean) => {
     setCourses((prev) => {
       const updated = prev.map((c) =>
@@ -39,9 +33,7 @@ export function CourseDragManager(
       fetch(
         `http://localhost:3232/add-course?uid=${uid}&code=${encodeURIComponent(
           course.courseCode
-        )}&title=${encodeURIComponent(
-          course.title
-        )}&term=${term}&year=${year}&prereqsMet=${met}`,
+        )}&title=${encodeURIComponent(course.title)}&term=${term}&year=${year}`,
         { method: "POST" }
       );
 
