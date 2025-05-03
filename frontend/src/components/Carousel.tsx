@@ -186,7 +186,7 @@ export default function Carousel({
   const getAvailableSemesters = () =>
     allSemesters.filter((s) => !usedSemesters.includes(s));
 
-  const handleSemesterSelect = async (boxId: number, semester: string) => {
+  const handleSemesterSelect = async (boxId: string, semester: string) => {
     setBoxSelections((prev) => ({ ...prev, [boxId]: semester }));
     setUsedSemesters((prev) => [...prev, semester]);
     setSelectedSemester(semester);
@@ -470,7 +470,7 @@ export default function Carousel({
           <div className={`add-box ${expanded ? "expanded" : "collapsed"}`}>
             <button
               className="add-button"
-              onClick={() => handleAddRightSemester(boxIds[-1])}
+              onClick={() => handleAddRightSemester(boxIds[boxIds.length - 1])}
             >
               <div className="add-button-plus">+</div>
               <div>New Semester</div>
