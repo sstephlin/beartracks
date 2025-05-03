@@ -3,6 +3,8 @@
   flex-direction: column;
   width: 80vw;
   padding-top: 2vh;
+  align-items: center;
+  /* justify-content: center; */
 }
 
 .searchbar-and-trash-container {
@@ -110,4 +112,41 @@
   100% {
     transform: rotate(0deg);
   }
+}
+
+.display-view {
+  display: flex;
+  border: 2px solid #1e3a8a; /* blue outline */
+  border-radius: 9999px;
+  overflow: hidden;
+  width: 120px;
+  height: 40px;
+  background-color: white;
+  align-items: center;
+}
+
+.display-view-button {
+  flex: 1;
+  border: none;
+  background-color: white;
+  color: #1e3a8a;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+.display-view-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.display-view-button.selected {
+  background-color: #213333;
+  color: white;
+  height: 120%;
+  align-items: center;
+}
+
+.display-view-button.unselected {
+  background-color: white;
+  color: #213333;
 }

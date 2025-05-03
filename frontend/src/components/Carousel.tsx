@@ -121,7 +121,7 @@ export default function Carousel({
   const getAvailableSemesters = () =>
     allSemesters.filter((sem) => !usedSemesters.includes(sem));
 
-  const handleSemesterSelect = async (boxId: string, semester: string) => {
+  const handleSemesterSelect = async (boxId: number, semester: string) => {
     setBoxSelections((prev) => ({ ...prev, [boxId]: semester }));
     setUsedSemesters((prev) => [...prev, semester]);
 
@@ -299,7 +299,9 @@ export default function Carousel({
   const boxWidth = expanded ? 270 : 320;
 
   return (
-    <div className="carousel-outer-wrapper">
+    <div
+      className={`carousel-outer-wrapper ${viewCount === 2 ? "two" : "four"}`}
+    >
       <button
         className="carousel-button left"
         onClick={prev}
@@ -322,7 +324,7 @@ export default function Carousel({
               boxId={boxId}
               selectedSemester={boxSelections[boxId] || ""}
               availableSemesters={getAvailableSemesters()}
-              onSemesterSelect={handleSemesterSelect}
+              onSemesterSelect={() => handleSemesterSelect(boxId, "")}
               onDragOver={handleDragOver}
               onDrop={(e) => {
                 const selected = boxSelections[boxId];
