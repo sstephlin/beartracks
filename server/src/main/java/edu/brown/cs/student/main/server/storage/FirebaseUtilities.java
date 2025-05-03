@@ -147,7 +147,7 @@ public class FirebaseUtilities implements StorageInterface {
         courseMap.put("courseCode", courseDoc.getId()); // course code as doc ID
 
         if (includeTitle) {
-          courseMap.put("title", courseDoc.getString("title")); // nullable
+          courseMap.put("title", courseDoc.getString("title"));
           courseMap.put(
               "prereqsMet",
               courseDoc.getBoolean("prereqsMet") != null
