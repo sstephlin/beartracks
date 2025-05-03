@@ -65,9 +65,21 @@ public class CheckUserRequirementsHandler implements Route {
         }
       }
 
-      // instantiate checker
+      if (concentration.equalsIgnoreCase("Computer Science AB")) {
+        requirementOptions.put("2 Technical CSCI 1000-level courses", List.of());
+        requirementOptions.put("2 Electives", List.of());
+        requirementOptions.put("Capstone", List.of());
+      } else if (concentration.equalsIgnoreCase("Computer Science ScB")) {
+        requirementOptions.put("5 Technical CSCI 1000-level courses", List.of());
+        requirementOptions.put("4 Electives", List.of());
+        requirementOptions.put("Capstone", List.of());
+      } else {
+        throw new IllegalArgumentException("Unsupported concentration: " + concentration);
+      }
+
+      // instantiate checker that checks user's courses WITH concentration requirements
       CSRequirementChecker checker =
-          new CSRequirementChecker(this.storageHandler, uid, userCourses, requirements);
+          new CSRequirementChecker(this.storageHandler, uid, userCourses, concentration);
       Map<String, List<String>> requirementResults = checker.checkAllRequirements();
 
       int coursesCompleted = checker.countCoursesCompleted();
