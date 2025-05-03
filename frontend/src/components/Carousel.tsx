@@ -8,9 +8,9 @@ import { SignOutButton, useUser } from "@clerk/clerk-react";
 import { checkPrereqs } from "../utils/prereqUtils";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
-import { useUser } from "@clerk/clerk-react";
-import { checkPrereqs } from "../utils/prereqUtils";
-import { CourseItem } from "../types";
+// import { useUser } from "@clerk/clerk-react";
+// import { checkPrereqs } from "../utils/prereqUtils";
+// import { CourseItem } from "../types";
 import RightClickComponent from "./RightClick.tsx";
 
 interface CarouselProps {
@@ -18,7 +18,7 @@ interface CarouselProps {
   setViewCount: React.Dispatch<React.SetStateAction<number>>;
   draggedSearchCourse: any | null;
   expanded: boolean;
-  uid: string | undefined;
+  // uid: string | undefined;
 }
 
 const allSemesters = [
@@ -56,8 +56,14 @@ export default function Carousel({
   draggedSearchCourse,
   expanded,
 }: CarouselProps) {
-  const [boxIds, setBoxIds] = useState<string[]>([]);
+  // const [boxIds, setBoxIds] = useState<number[]>([]);
+  // const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
+  // const [boxSelections, setBoxSelections] = useState<{
+  //   [boxId: string]: string;
+  // }>({});
+  const [boxIds, setBoxIds] = useState<string[]>(["1"]);
   const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
+  const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
   const [boxSelections, setBoxSelections] = useState<{
     [boxId: string]: string;
   }>({});
@@ -79,14 +85,13 @@ export default function Carousel({
     getCoursesForSemester,
     addCourse,
     setPrereqStatus,
-  } = CourseDragManager([]);
+  } = CourseDragManager(user?.id ?? "", {
+    setSelectedSemester,
+    setUsedSemesters,
+    courses,
+    setCourses,
+  });
 
-  const [boxIds, setBoxIds] = useState<number[]>([1]);
-  const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
-  const [selectedBoxId, setSelectedBoxId] = useState<number | null>(null);
-  const [boxSelections, setBoxSelections] = useState<{
-    [boxId: string]: string;
-  }>({});
   const [menuPosition, setMenuPosition] = useState<{
     x: number;
     y: number;
@@ -94,7 +99,7 @@ export default function Carousel({
 
   const handleRightClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    boxId: number
+    boxId: string
   ) => {
     event.preventDefault();
     setSelectedBoxId(boxId);
@@ -370,10 +375,10 @@ export default function Carousel({
     return () => window.removeEventListener("removeCourse", handleRemoveCourse);
   }, [user?.id, setCourses, setPrereqStatus]);
 
-  const handleAddRightSemester = (currSemNum: number) => {
-    const index = boxIds.indexOf(currSemNum);
+  const handleAddRightSemester = (currSemNum: string) => {
+    const index = boxIds.indexOf(`${currSemNum}`);
     if (index === -1) return boxIds; // invalid semester id
-    const newID = Math.max(...boxIds) + 1;
+    const newID = (Math.max(...boxIds.map(Number)) + 1).toString();
 
     const newBoxIds = [...boxIds];
     newBoxIds.splice(index + 1, 0, newID);
@@ -381,10 +386,10 @@ export default function Carousel({
     console.log("right");
   };
 
-  const handleAddLeftSemester = (currSemNum: number) => {
-    const index = boxIds.indexOf(currSemNum);
+  const handleAddLeftSemester = (currSemNum: string) => {
+    const index = boxIds.indexOf(`${currSemNum}`);
     if (index === -1) return boxIds; // invalid semester id
-    const newID = Math.max(...boxIds) + 1;
+    const newID = (Math.max(...boxIds.map(Number)) + 1).toString();
 
     const newBoxIds = [...boxIds];
     newBoxIds.splice(index, 0, newID);
@@ -392,7 +397,7 @@ export default function Carousel({
     console.log("left");
   };
 
-  const handleDeleteSemester = (semToDelete: number) => {
+  const handleDeleteSemester = (semToDelete: string) => {
     setBoxIds((prevBoxIds) => prevBoxIds.filter((id) => id !== semToDelete));
     console.log("delete");
   };
@@ -463,7 +468,7 @@ export default function Carousel({
           <div className={`add-box ${expanded ? "expanded" : "collapsed"}`}>
             <button
               className="add-button"
-              onClick={() => handleAddRightSemester(boxIds.length)}
+              onClick={() => handleAddRightSemester(boxIds[-1])}
             >
               <div className="add-button-plus">+</div>
               <div>New Semester</div>
