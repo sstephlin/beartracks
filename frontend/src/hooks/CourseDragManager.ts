@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CourseItem } from "../types";
+import { checkPrereqs } from "../utils/prereqUtils";
 
 type Course = CourseItem;
 
@@ -20,25 +21,50 @@ export function CourseDragManager(
   const [draggedCourse, setDraggedCourse] = useState<string | null>(null);
   const [emptySlots, setEmptySlots] = useState<{ [key: string]: number }>({});
 
-  const setPrereqStatus = (id: string, met: boolean) => {
-    setCourses((prev) => {
+  const recheckAllPrereqs = async () => {
+    if (!uid) return;
+
+    // Get the current mapping of courses to semesters
+    const courseToSemesterMap: Record<string, string> = {};
+    courses.forEach((course) => {
+      courseToSemesterMap[course.courseCode.toUpperCase()] = course.semesterId;
+    });
+
+    // Check prerequisites for each course
+    for (const course of courses) {
+      const result = await checkPrereqs(
+        uid,
+        course.courseCode,
+        course.semesterId
+      );
+      setPrereqStatus(course.id, result);
+      console.log(`Rechecking ${course.courseCode}: result=${result}`);
+    }
+  };
+
+  const setPrereqStatus = async (id: string, met: boolean) => {
+    const updatedCourses = await setCourses((prev) => {
       const updated = prev.map((c) =>
         c.id === id ? { ...c, prereqsMet: met } : c
       );
 
-      const course = updated.find((c) => c.id === id);
-      if (!course || !uid) return updated;
+      return updated;
+    });
 
-      const [term, year] = course.semesterId.split(" ");
-      fetch(
+    const course = courses.find((c) => c.id === id); // use external state since setCourses is async-like
+    if (!course || !uid) return;
+
+    const [term, year] = course.semesterId.split(" ");
+    try {
+      await fetch(
         `http://localhost:3232/add-course?uid=${uid}&code=${encodeURIComponent(
           course.courseCode
         )}&title=${encodeURIComponent(course.title)}&term=${term}&year=${year}`,
         { method: "POST" }
       );
-
-      return updated;
-    });
+    } catch (err) {
+      console.error("Failed to sync prereqsMet to backend:", err);
+    }
   };
 
   const handleDragStart = (
@@ -99,6 +125,10 @@ export function CourseDragManager(
       console.log(
         `Moved course from ${sourceSemesterId} to ${targetSemesterId}`
       );
+
+      setTimeout(() => {
+        recheckAllPrereqs();
+      }, 100);
     }
   };
 
@@ -106,7 +136,7 @@ export function CourseDragManager(
     return courses.filter((course) => course.semesterId === semesterId);
   };
 
-  const addCourse = (
+  const addCourse = async (
     semesterId: string,
     course?: Partial<CourseItem>,
     source: "search" | "new" = "search"
@@ -121,6 +151,11 @@ export function CourseDragManager(
     };
 
     setCourses((prev) => [...prev, newCourse]);
+
+    // After adding a course, recheck all prerequisites
+    setTimeout(() => {
+      recheckAllPrereqs();
+    }, 100); // Small delay to ensure state is updated
   };
 
   const buildSemesterMap = () => {
@@ -164,5 +199,6 @@ export function CourseDragManager(
     getCoursesForSemester,
     addCourse,
     buildSemesterMap,
+    recheckAllPrereqs,
   };
 }
