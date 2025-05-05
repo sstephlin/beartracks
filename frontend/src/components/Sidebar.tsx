@@ -23,37 +23,75 @@ export default function Sidebar(props: SidebarProps) {
   const { user } = useUser();
   const uid = user?.id;
   const dropdownRef = useRef<HTMLSelectElement | null>(null); // Create a reference for dropdown
+
   const handleDegreeSubmit = () => {
     if (dropdownRef.current) {
       props.setDegree(dropdownRef.current.value);
     }
-    fetch(
-      `http://localhost:3232/store-concentration-requirement?uid=${uid}&concentration=${props.degree}`
-    )
-      .then((response) => response.json())
-      .then((json) => {
-        console.log(json.result);
-        if (json.result === "success") {
-          props.setErrorMessage(null);
-          // props.setBroadbandData(json.responseMap["broadband percentage"]);
-          props.setMatchingRows([
-            ["dateTime", "county", "state", "broadband percentage"],
-            [
-              json.responseMap["dateTime"],
-              county,
-              state,
-              json.responseMap["broadband percentage"],
-            ],
-          ]);
-        } else {
-          props.setErrorMessage(json.result);
+    //set concentration for this user
+    try {
+      fetch(
+        `http://localhost:3232/store-concentration?uid=${uid}&concentration=${props.degree}`,
+        {
+          method: "POST",
         }
-      });
+      );
+      console.log("stored");
+    } catch (err) {
+      console.error("Network error while adding semester:", err);
+    }
+    displayConcentrationRequirements();
     console.log(props.degree);
   };
-  //set concentration for this user
+  async function getUserConcentration(): Promise<string> {
+    if (!user?.id) {
+      console.log("no user id");
+      return "";
+    }
+    try {
+      const response = await fetch(
+        `http://localhost:3232/get-concentration?uid=${uid}`
+      );
+      const data = await response.json();
+      props.setDegree(data.concentration);
+      console.log("concentration", props.degree);
+      return props.degree;
+    } catch (err) {
+      console.error("Network error while adding semester:", err);
+      return "";
+    }
+  }
 
   // get concentration requirements for this user
+  async function displayConcentrationRequirements() {
+    const concentration = await getUserConcentration();
+    if (
+      concentration == "Computer Science Sc.B." ||
+      concentration === "Computer Science A.B"
+    ) {
+      props.setDegree(concentration);
+    }
+    const fetchData = async () => {
+      if (!user?.id) {
+        console.log("no user id");
+        return;
+      }
+      try {
+        const response = await fetch(
+          `http://localhost:3232/check-concentration-requirements?uid=${user.id}`
+        );
+        const data = await response.json();
+        const semestersData = data.requirements_options;
+
+        console.log("data", data);
+        console.log("requirements", semestersData);
+      } catch (err) {
+        console.error("Fetch failed:", err);
+      }
+    };
+    fetchData();
+  }
+
   useEffect(() => {
     console.log("effect");
     const fetchData = async () => {

@@ -41,9 +41,9 @@ public class CheckUserRequirementsHandler implements Route {
       // Step 3: Pick the correct requirement rules
       Map<String, RequirementRule> requirements;
 
-      if (concentration.equalsIgnoreCase("Computer Science AB")) {
+      if (concentration.equalsIgnoreCase("Computer Science A.B.")) {
         requirements = CSABDegreeRequirements.requirements;
-      } else if (concentration.equalsIgnoreCase("Computer Science ScB")) {
+      } else if (concentration.equalsIgnoreCase("Computer Science Sc.B.")) {
         requirements = CSScBDegreeRequirements.requirements;
       } else {
         throw new IllegalArgumentException("Unsupported concentration: " + concentration);
@@ -68,11 +68,11 @@ public class CheckUserRequirementsHandler implements Route {
         }
       }
 
-      if (concentration.equalsIgnoreCase("Computer Science AB")) {
+      if (concentration.equalsIgnoreCase("Computer Science A.B.")) {
         requirementOptions.put("2 Technical CSCI 1000-level courses", List.of());
         requirementOptions.put("2 Electives", List.of());
         requirementOptions.put("Capstone", List.of());
-      } else if (concentration.equalsIgnoreCase("Computer Science ScB")) {
+      } else if (concentration.equalsIgnoreCase("Computer Science Sc.B.")) {
         requirementOptions.put("Calculus", requirements.get("Calculus").getAcceptableCourses());
         requirementOptions.put("5 Technical CSCI 1000-level courses", List.of());
         requirementOptions.put("4 Electives", List.of());

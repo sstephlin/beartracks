@@ -107,6 +107,7 @@ export default function Carousel({
       x: event.pageX,
       y: event.pageY,
     });
+    console.log("boxid", boxId);
   };
 
   useEffect(() => {
@@ -149,7 +150,7 @@ export default function Carousel({
           );
 
           for (const [semester, courseList] of sortedSemesters) {
-            const boxId = `box${boxCounter}`;
+            const boxId = `${boxCounter}`;
             newBoxIds.push(boxId);
             newBoxSelections[boxId] = semester;
             newUsedSemesters.push(semester);
@@ -292,60 +293,6 @@ export default function Carousel({
     }
   };
 
-  // useEffect(() => {
-  //   const handleRemoveCourse = (e: any) => {
-  //     const { courseCode, semesterId } = e.detail;
-
-  //     console.log("📥 removeCourse event received:", courseCode, semesterId);
-
-  //     if (!user?.id) return;
-
-  //     // setCourses((prev) => {
-  //     //   const updated = prev.filter(
-  //     //     (c) => !(c.courseCode === courseCode && c.semesterId === semesterId)
-  //     //   );
-
-  //     //   // Re-check prereqs for all remaining courses
-  //     //   updated.forEach(async (course) => {
-  //     //     const met = await checkPrereqs(
-  //     //       user.id!,
-  //     //       course.courseCode,
-  //     //       course.semesterId
-  //     //     );
-  //     //     setPrereqStatus(course.id, met);
-  //     //   });
-
-  //     //   return updated;
-  //     // });
-  //     setCourses((prev) => {
-  //       const updated = prev.filter(
-  //         (c) => !(c.courseCode === courseCode && c.semesterId === semesterId)
-  //       );
-
-  //       // Schedule recheck for next tick so state is updated
-  //       setTimeout(() => {
-  //         console.log(
-  //           "🔁 Rechecking after removal:",
-  //           updated.map((c) => c.courseCode)
-  //         );
-  //         updated.forEach(async (course) => {
-  //           const met = await checkPrereqs(
-  //             user!.id,
-  //             course.courseCode,
-  //             course.semesterId
-  //           );
-  //           setPrereqStatus(course.id, met);
-  //         });
-  //       }, 0);
-
-  //       return updated;
-  //     });
-  //   };
-
-  //   window.addEventListener("removeCourse", handleRemoveCourse);
-  //   return () => window.removeEventListener("removeCourse", handleRemoveCourse);
-  // }, [user?.id, setCourses, setPrereqStatus]);
-
   useEffect(() => {
     const handleRemoveCourse = (e: any) => {
       const { courseCode, semesterId } = e.detail;
@@ -377,9 +324,15 @@ export default function Carousel({
   }, [user?.id, setCourses, setPrereqStatus]);
 
   const handleAddRightSemester = (currSemNum: string) => {
-    const index = boxIds.indexOf(`${currSemNum}`);
-    if (index === -1) return boxIds; // invalid semester id
-    const newID = (Math.max(...boxIds.map(Number)) + 1).toString();
+    let newID = "";
+    let index = boxIds.indexOf(`${currSemNum}`);
+    if (currSemNum === "0") {
+      newID = "1";
+      index = 0;
+    } else if (index === -1) return boxIds; // invalid semester id
+    else {
+      newID = (Math.max(...boxIds.map(Number)) + 1).toString();
+    }
 
     const newBoxIds = [...boxIds];
     newBoxIds.splice(index + 1, 0, newID);
@@ -395,7 +348,8 @@ export default function Carousel({
     const newBoxIds = [...boxIds];
     newBoxIds.splice(index, 0, newID);
     setBoxIds(newBoxIds);
-    console.log("left");
+    console.log("newId", Math.max(...boxIds.map(Number)) + 1);
+    console.log("newIds", newBoxIds);
   };
 
   const handleDeleteSemester = (semToDelete: string) => {
@@ -471,7 +425,11 @@ export default function Carousel({
           <div className={`add-box ${expanded ? "expanded" : "collapsed"}`}>
             <button
               className="add-button"
-              onClick={() => handleAddRightSemester(boxIds[boxIds.length - 1])}
+              onClick={() =>
+                handleAddRightSemester(
+                  boxIds.length >= 1 ? boxIds[boxIds.length - 1] : "0"
+                )
+              }
             >
               <div className="add-button-plus">+</div>
               <div>New Semester</div>

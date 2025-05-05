@@ -76,4 +76,3 @@ public class CheckPrereqsHandler implements Route {
     return Utils.toMoshiJson(out);
   }
 }
-}

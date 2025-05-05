@@ -32,10 +32,10 @@ public class CSRequirementChecker {
 
     // Set requirements based on concentration
     switch (this.concentration) {
-      case "Computer Science AB":
+      case "Computer Science A.B.":
         this.requirements = CSABDegreeRequirements.requirements;
         break;
-      case "Computer Science ScB":
+      case "Computer Science Sc.B.":
         this.requirements = CSScBDegreeRequirements.requirements;
         break;
       default:
