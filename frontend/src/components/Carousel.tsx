@@ -146,7 +146,7 @@ export default function Carousel({
           );
 
           for (const [semester, courseList] of sortedSemesters) {
-            const boxId = `box${boxCounter}`;
+            const boxId = `${boxCounter}`;
             newBoxIds.push(boxId);
             newBoxSelections[boxId] = semester;
             newUsedSemesters.push(semester);
@@ -212,6 +212,58 @@ export default function Carousel({
     return () => window.removeEventListener("click", handleClickOutside);
   }, []);
 
+  // const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
+  //   e.preventDefault();
+  //   if (!user?.id) return;
+
+  //   const searchCourseRaw = e.dataTransfer.getData("searchCourse");
+  //   const courseId = e.dataTransfer.getData("courseId");
+
+  //   if (searchCourseRaw) {
+  //     const searchCourse = JSON.parse(searchCourseRaw);
+
+  //     const met = await checkPrereqs(
+  //       user.id,
+  //       searchCourse.courseCode,
+  //       semesterId
+  //     );
+
+  //     const newCourse: CourseItem = {
+  //       id: `course-${Date.now()}`,
+  //       courseCode: searchCourse.courseCode,
+  //       title: searchCourse.courseName,
+  //       semesterId,
+  //       isEditing: false,
+  //       prereqsMet: met,
+  //     };
+
+  //     setCourses((prevCourses) => {
+  //       const updated = [...prevCourses, newCourse];
+  //       return updated;
+  //     });
+
+  //     // Recheck all prerequisites after adding a new course
+  //     setTimeout(() => {
+  //       // Re-check everything with the updated courses array
+  //       if (recheckAllPrereqs) {
+  //         recheckAllPrereqs([...courses]);
+  //       } else {
+  //         courses.forEach(async (c) => {
+  //           const result = await checkPrereqs(
+  //             user.id!,
+  //             c.courseCode,
+  //             c.semesterId
+  //           );
+  //           setPrereqStatus(c.id, result);
+  //           console.log("checking prereq for course", c, "result: ", result);
+  //         });
+  //       }
+  //     }, 100);
+  //   } else if (courseId) {
+  //     handleDrop(e, semesterId);
+  //   }
+  // };
+
   const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
     e.preventDefault();
     if (!user?.id) return;
@@ -222,6 +274,7 @@ export default function Carousel({
     if (searchCourseRaw) {
       const searchCourse = JSON.parse(searchCourseRaw);
 
+      // Check prerequisites first
       const met = await checkPrereqs(
         user.id,
         searchCourse.courseCode,
@@ -237,29 +290,40 @@ export default function Carousel({
         prereqsMet: met,
       };
 
-      setCourses((prevCourses) => {
-        const updated = [...prevCourses, newCourse];
-        return updated;
+      // Get the updated state using a promise
+      const updatedCourses = await new Promise<CourseItem[]>((resolve) => {
+        setCourses((prevCourses) => {
+          const updated = [...prevCourses, newCourse];
+          resolve(updated);
+          return updated;
+        });
       });
 
-      // Recheck all prerequisites after adding a new course
-      setTimeout(() => {
-        // Re-check everything with the updated courses array
-        if (recheckAllPrereqs) {
-          recheckAllPrereqs();
-        } else {
-          courses.forEach(async (c) => {
-            const result = await checkPrereqs(
-              user.id!,
-              c.courseCode,
-              c.semesterId
-            );
-            setPrereqStatus(c.id, result);
-            console.log("checking prereq for course", c, "result: ", result);
-          });
-        }
-      }, 100);
+      // Immediately sync with backend for search results
+      const [term, year] = semesterId.split(" ");
+      try {
+        await fetch(
+          `http://localhost:3232/add-course?uid=${
+            user.id
+          }&code=${encodeURIComponent(
+            searchCourse.courseCode
+          )}&title=${encodeURIComponent(
+            searchCourse.courseName
+          )}&term=${term}&year=${year}`,
+          { method: "POST" }
+        );
+
+        console.log("✅ Added course from search to semester in backend");
+
+        // Now recheck all prerequisites with the updated courses
+        setTimeout(() => {
+          recheckAllPrereqs(updatedCourses);
+        }, 100);
+      } catch (err) {
+        console.error("Failed to sync course to backend:", err);
+      }
     } else if (courseId) {
+      // This is for moving existing courses between semesters
       handleDrop(e, semesterId);
     }
   };
@@ -269,39 +333,84 @@ export default function Carousel({
     courseCode: string,
     title: string
   ) => {
-    setCourses((prev) =>
-      prev.map((c) =>
-        c.id === id ? { ...c, courseCode, title, isEditing: false } : c
-      )
-    );
+    // Get the updated state using a promise
+    const updatedCourses = await new Promise<CourseItem[]>((resolve) => {
+      setCourses((prev) => {
+        const updated = prev.map((c) =>
+          c.id === id ? { ...c, courseCode, title, isEditing: false } : c
+        );
+        resolve(updated);
+        return updated;
+      });
+    });
 
-    const course = courses.find((c) => c.id === id);
+    const course = updatedCourses.find((c) => c.id === id);
     if (!course || !user?.id) return;
 
     const [term, year] = course.semesterId.split(" ");
 
     try {
+      // Sync to backend
       await fetch(
         `http://localhost:3232/add-course?uid=${
           user.id
         }&code=${encodeURIComponent(courseCode)}&title=${encodeURIComponent(
           title
-        )}&term=${term}&year=${year}&skipCheck=true`,
+        )}&term=${term}&year=${year}`,
         {
           method: "POST",
         }
       );
 
-      // Recheck all prerequisites after saving a course
+      console.log("✅ Saved course to backend:", courseCode);
+
+      // Now recheck all prerequisites with the updated courses
       setTimeout(() => {
-        if (recheckAllPrereqs) {
-          recheckAllPrereqs();
-        }
+        recheckAllPrereqs(updatedCourses);
       }, 100);
     } catch (err) {
       console.error("Error updating course:", err);
     }
   };
+
+  // const handleSaveCourse = async (
+  //   id: string,
+  //   courseCode: string,
+  //   title: string
+  // ) => {
+  //   setCourses((prev) =>
+  //     prev.map((c) =>
+  //       c.id === id ? { ...c, courseCode, title, isEditing: false } : c
+  //     )
+  //   );
+
+  //   const course = courses.find((c) => c.id === id);
+  //   if (!course || !user?.id) return;
+
+  //   const [term, year] = course.semesterId.split(" ");
+
+  //   try {
+  //     await fetch(
+  //       `http://localhost:3232/add-course?uid=${
+  //         user.id
+  //       }&code=${encodeURIComponent(courseCode)}&title=${encodeURIComponent(
+  //         title
+  //       )}&term=${term}&year=${year}&skipCheck=true`,
+  //       {
+  //         method: "POST",
+  //       }
+  //     );
+
+  //     // Recheck all prerequisites after saving a course
+  //     setTimeout(() => {
+  //       if (recheckAllPrereqs) {
+  //         recheckAllPrereqs([...courses]);
+  //       }
+  //     }, 100);
+  //   } catch (err) {
+  //     console.error("Error updating course:", err);
+  //   }
+  // };
 
   useEffect(() => {
     const handleRemoveCourse = (e: any) => {
@@ -314,36 +423,42 @@ export default function Carousel({
         const updated = prev.filter(
           (c) => !(c.courseCode === courseCode && c.semesterId === semesterId)
         );
+
+        // Recheck all prerequisites after course removal
+        // BUT use the updated courses array that no longer includes the deleted course
+        setTimeout(() => {
+          if (recheckAllPrereqs) {
+            recheckAllPrereqs(updated);
+          } else {
+            updated.forEach(async (course) => {
+              const result = await checkPrereqs(
+                user!.id,
+                course.courseCode,
+                course.semesterId
+              );
+              setPrereqStatus(course.id, result);
+            });
+          }
+        }, 100);
+
         return updated;
       });
-
-      // Recheck all prerequisites after course removal
-      setTimeout(() => {
-        // Re-check everything after removing
-        if (recheckAllPrereqs) {
-          recheckAllPrereqs();
-        } else {
-          courses.forEach(async (course) => {
-            const result = await checkPrereqs(
-              user!.id,
-              course.courseCode,
-              course.semesterId
-            );
-            setPrereqStatus(course.id, result);
-          });
-        }
-      }, 100);
     };
 
     window.addEventListener("removeCourse", handleRemoveCourse);
     return () => window.removeEventListener("removeCourse", handleRemoveCourse);
-  }, [user?.id, setCourses, setPrereqStatus, recheckAllPrereqs, courses]);
+  }, [user?.id, setPrereqStatus, recheckAllPrereqs]);
 
   const handleAddRightSemester = (currSemNum: string) => {
-    console.log("right1");
-    const index = boxIds.indexOf(`${currSemNum}`);
-    if (index === -1) return boxIds; // invalid semester id
-    const newID = (Math.max(...boxIds.map(Number)) + 1).toString();
+    let newID = "";
+    let index = boxIds.indexOf(`${currSemNum}`);
+    if (currSemNum === "0") {
+      newID = "1";
+      index = 0;
+    } else if (index === -1) return boxIds; // invalid semester id
+    else {
+      newID = (Math.max(...boxIds.map(Number)) + 1).toString();
+    }
 
     const newBoxIds = [...boxIds];
     newBoxIds.splice(index + 1, 0, newID);
@@ -442,7 +557,11 @@ export default function Carousel({
                         
             <button
               className="add-button"
-              onClick={() => handleAddRightSemester(boxIds[boxIds.length - 1])}
+              onClick={() =>
+                handleAddRightSemester(
+                  boxIds.length >= 1 ? boxIds[boxIds.length - 1] : "0"
+                )
+              }
             >
                             <div className="add-button-plus">+</div>
                             <div>New Semester</div>
