@@ -62,7 +62,6 @@ public class FirebaseUtilities implements StorageInterface {
 
       // Now delete the document itself
       doc.delete().get();
-
     } catch (Exception e) {
       System.err.println("Error deleting document and its subcollections: " + e.getMessage());
     }
