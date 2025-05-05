@@ -32,6 +32,68 @@
   background-color: #f2f2f2;
 }
 
+/* New enlarged invisible trash zone */
+.enlarged-trash-zone {
+  position: absolute;
+  right: 70px;
+  width: 150px; /* Much wider detection area */
+  height: 150px; /* Much taller detection area */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Uncomment for debugging: */
+  /* background-color: rgba(255, 0, 0, 0.1); */  
+  /* border: 1px dashed #ddd; */
+}
+
+/* Original visible trash area */
+.trash-area {
+  position: relative; /* Changed from absolute to relative */
+  width: 70px;
+  height: 70px;
+  background-color: #f8f8f8;
+  border: 2px solid #aaa;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease; /* Fixed typo: 0.3 to 0.3s */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.trash-area:hover {
+  background-color: #f0f0f0;
+  border-color: #888;
+  transform: scale(1.05);
+}
+
+.trash-hovered {
+  background-color: #ffe0e0;
+  border: 2px solid red;
+  animation: wiggle 0.5s ease-in-out infinite;
+  box-shadow: 0 4px 8px rgba(225, 0, 0, 0.2);
+  /* Removed transform here as it will be handled by the animation */
+}
+
+@keyframes wiggle {
+  0% {
+    transform: rotate(0deg) scale(1.1);
+  }
+  25% {
+    transform: rotate(5deg) scale(1.1);
+  }
+  50% {
+    transform: rotate(0deg) scale(1.1);
+  }
+  75% {
+    transform: rotate(-5deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(0deg) scale(1.1);
+  }
+}
+
 /* Search results */
 .search-results-container {
   display: grid;
@@ -72,42 +134,4 @@
 .course-title {
   font-size: 0.9rem;
   word-wrap: break-word;
-}
-
-.trash-area {
-  position: absolute;
-  right: 100px;
-  background: none;
-  border: 2px solid gray;
-  border-radius: 50%;
-  padding: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, border 0.2s ease;
-}
-
-.trash-hovered {
-  background-color: #ffe0e0;
-  border: 2px solid red;
-}
-
-.trash-hovered {
-  animation: wiggle 0.3s ease-in-out infinite;
-}
-
-@keyframes wiggle {
-  0% {
-    transform: rotate(0deg);
-  }
-  25% {
-    transform: rotate(5deg);
-  }
-  50% {
-    transform: rotate(0deg);
-  }
-  75% {
-    transform: rotate(-5deg);
-  }
-  100% {
-    transform: rotate(0deg);
-  }
 }

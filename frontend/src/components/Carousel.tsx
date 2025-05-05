@@ -69,6 +69,8 @@ export default function Carousel({
   const [boxSelections, setBoxSelections] = useState<{
     [boxId: string]: string;
   }>({});
+  const [showManualAddDisclaimer, setShowManualAddDisclaimer] = useState(false);
+
 
   // useEffect(() => {
   //   const handleRemoveCourse = async (e: any) => {
@@ -354,9 +356,10 @@ export default function Carousel({
               {boxSelections[boxId] && (
                 <button
                   className="add-course-button"
-                  onClick={() =>
-                    addCourse(boxSelections[boxId], undefined, "new")
-                  }
+                  onClick={() => {
+                    addCourse(boxSelections[boxId], undefined, "new");
+                    setShowManualAddDisclaimer(true);
+                  }}
                 >
                   + New course
                 </button>
@@ -380,6 +383,33 @@ export default function Carousel({
       >
         ›
       </button>
+      
+      {showManualAddDisclaimer && (
+  <div
+    className="disclaimer-overlay"
+    onClick={(e) => {
+      if ((e.target as HTMLElement).classList.contains("disclaimer-overlay")) {
+        setShowManualAddDisclaimer(false);
+      }
+    }}
+  >
+    <div className="disclaimer-box">
+      <button
+        className="close-disclaimer"
+        onClick={() => setShowManualAddDisclaimer(false)}
+      >
+        ×
+      </button>
+      <h2>Manual Course Entry</h2>
+      <p>
+        You're manually adding a course. After clicking, you can enter course
+        details like the code and name. Use this for Non-CS courses. Please not that
+        these courses will not be tracked on your prgoression meter. 
+      </p>
+    </div>
+  </div>
+)}
+                  
     </div>
   );
 }

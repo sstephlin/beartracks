@@ -51,6 +51,7 @@ export default function BearTracks(props: BearTracksProps) {
     setDraggedSearchCourse(null);
   };
 
+  // Modified function to handle drop in the larger trash zone
   const handleDropToTrash = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsTrashHovered(false);
@@ -81,21 +82,28 @@ export default function BearTracks(props: BearTracksProps) {
     }
   };
 
+  // Function to check if element is near the trash can
+  const handleDragOverTrashZone = (e: React.DragEvent) => {
+    e.preventDefault();
+    // Always set hover state to true when something is dragged over the trash zone
+    // The actual check for valid data will happen on drop
+    setIsTrashHovered(true);
+  };
+
   return (
     <div className="bear-tracks-container">
       <div className="searchbar-and-trash-container">
         <SearchBar onSearch={handleSearch} />
-        {/* 🧹 Trash area */}
+        {/* Enlarged trash area with the visible trash can in the center */}
         <div
-          className={`trash-area ${isTrashHovered ? "trash-hovered" : ""}`}
-          onDragOver={(e) => {
-            e.preventDefault();
-            setIsTrashHovered(true);
-          }}
+          className="enlarged-trash-zone"
+          onDragOver={handleDragOverTrashZone}
           onDragLeave={() => setIsTrashHovered(false)}
           onDrop={handleDropToTrash}
         >
-          <Trash2 size={30} />
+          <div className={`trash-area ${isTrashHovered ? "trash-hovered" : ""}`}>
+            <Trash2 size={48} strokeWidth={2} />
+          </div>
         </div>
       </div>
 
