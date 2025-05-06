@@ -10,6 +10,7 @@ import edu.brown.cs.student.main.server.handlers.CheckPrereqsHandler;
 import edu.brown.cs.student.main.server.handlers.CheckSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.CheckUserRequirementsHandler;
 import edu.brown.cs.student.main.server.handlers.GetConcentrationHandler;
+import edu.brown.cs.student.main.server.handlers.GetConcentrationRequirementsHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserCoursesHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserCoursesWithTitleHandler;
 import edu.brown.cs.student.main.server.handlers.GetViewHandler;
@@ -82,6 +83,7 @@ public class Server {
       Spark.get("check-prereqs", new CheckPrereqsHandler(firebaseUtils, catalog));
       Spark.post("update-capstone", new UpdateCapstoneHandler(firebaseUtils));
       Spark.get("check-capstones", new CheckCapstoneHandler(firebaseUtils));
+      Spark.get("get-concen-reqs", new GetConcentrationRequirementsHandler(firebaseUtils));
 
       Spark.notFound(
           (request, response) -> {
