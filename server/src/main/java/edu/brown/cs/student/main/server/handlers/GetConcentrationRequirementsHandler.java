@@ -36,6 +36,7 @@ public class GetConcentrationRequirementsHandler implements Route {
       }
 
       Map<String, RequirementRule> requirements;
+
       if (concentration.equalsIgnoreCase("Computer Science AB")) {
         requirements = CSABDegreeRequirements.requirements;
       } else if (concentration.equalsIgnoreCase("Computer Science ScB")) {
