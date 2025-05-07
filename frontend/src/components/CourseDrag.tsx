@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/SemesterBox.css";
 
 interface CourseDragProps {
@@ -18,6 +18,7 @@ interface CourseDragProps {
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent) => void;
   onSaveCourse?: (id: string, code: string, title: string) => void;
+  onToggleCapstone?: (id: string, newValue: boolean) => void;
 }
 
 export default function CourseDrag({
@@ -34,9 +35,13 @@ export default function CourseDrag({
   onDragOver,
   onDrop,
   onSaveCourse,
+  onToggleCapstone,
 }: CourseDragProps & { isCapstone?: boolean }) {
   const [code, setCode] = useState(courseCode);
   const [title, setTitle] = useState(courseTitle || "");
+  const [isChecked, setIsChecked] = useState(isCapstone);
+
+
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && onSaveCourse) {
@@ -57,6 +62,10 @@ export default function CourseDrag({
     e.dataTransfer.setData("title", title || "");
     e.dataTransfer.setData("semesterId", semesterId);
   };
+
+  useEffect(() => {
+    setIsChecked(isCapstone); // sync when isCapstone updates externally
+  }, [isCapstone]);
 
   return (
     <div
@@ -91,9 +100,35 @@ export default function CourseDrag({
           />
         </div>
       ) : (
-        <div className="course-filled">
-          <div className="course-code">
-          {courseCode} {isCapstone && <span className="capstone-star" title="Capstone">⭐️</span>}
+    //     <div className="course-filled">
+    //       <div className="course-code">
+    //         {courseCode}
+    //         {isCapstone && (
+    //           <input
+    //             type="checkbox"
+    //             className="capstone-checkbox"
+    //             title="Capstone"
+    //             // checked={true}
+    //             onChange={(e) => onToggleCapstone?.(id, e.target.checked)}
+    //           />
+    //         )}
+    //       </div>
+    //       {title && <div className="course-title">{title}</div>}
+    //     </div>
+    //   )}
+    // </div>
+    <div className="course-filled">
+          <div className="course-header">
+            <div className="course-code">{courseCode}</div>
+            <input
+              type="checkbox"
+              className="capstone-checkbox"
+              title="Capstone Course"
+              checked={isCapstone}
+              onChange={(e) => {
+                onToggleCapstone?.(id, e.target.checked);
+              }}
+            />
           </div>
           {title && <div className="course-title">{title}</div>}
         </div>

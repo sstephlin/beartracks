@@ -40,12 +40,12 @@ const allSemesters = [
   "Spring 26",
 ];
 
-interface CarouselProps {
-  viewCount: number;
-  setViewCount: React.Dispatch<React.SetStateAction<number>>;
-  draggedSearchCourse: any | null;
-  expanded: boolean;
-}
+// interface CarouselProps {
+//   viewCount: number;
+//   setViewCount: React.Dispatch<React.SetStateAction<number>>;
+//   draggedSearchCourse: any | null;
+//   expanded: boolean;
+// }
 
 export default function Carousel({
   viewCount,
@@ -76,11 +76,21 @@ export default function Carousel({
   const [courseAvailabilityCache, setCourseAvailabilityCache] = useState<{
     [courseCode: string]: string[];
   }>({});
+  const [capstoneCourseId, setCapstoneCourseId] = useState<string | null>(null);
+
 
   const { currentIndex, next, prev, maxIndex } = CarouselMover(
     allSemesters.length,
     viewCount
   );
+
+  // const handleToggleCapstone = (id: string, newValue: boolean) => {
+  //   setCourses((prev) =>
+  //     prev.map((course) =>
+  //       course.id === id ? { ...course, isCapstone: newValue } : course
+  //     )
+  //   );
+  // };
 
   const {
     emptySlots,
@@ -116,6 +126,62 @@ export default function Carousel({
     });
     console.log("boxid", boxId);
   };
+
+  const handleToggleCapstone = async (courseId: string, checked: boolean) => {
+    const course = courses.find((c) => c.id === courseId);
+    if (!course || !user?.id) return;
+  
+    const { courseCode, semesterId } = course;
+    const [term, year] = semesterId.split(" ");
+    const semester = `${term} ${year}`;
+  
+    try {
+      if (checked) {
+        // User marked this course as their capstone
+        await fetch(
+          `http://localhost:3232/update-capstone?uid=${user.id}&semester=${encodeURIComponent(
+            semester
+          )}&courseCode=${encodeURIComponent(courseCode)}`,
+          { method: "POST" }
+        );
+  
+        // Update frontend state: only one course can be capstone
+        setCourses((prev) =>
+          prev.map((c) =>
+            c.semesterId === semester
+              ? { ...c, isCapstone: c.id === courseId }
+              : c
+          )
+        );
+      } else {
+        // User unchecked — clear capstone
+        setCourses((prev) =>
+          prev.map((c) =>
+            c.id === courseId ? { ...c, isCapstone: false } : c
+          )
+        );
+      }
+    } catch (err) {
+      console.error("❌ Failed to update capstone:", err);
+    }
+  };
+
+  useEffect(() => {
+    const fetchCapstones = async () => {
+      if (!user?.id) return;
+      try {
+        const res = await fetch(`http://localhost:3232/check-capstones?uid=${user.id}`);
+        const data = await res.json();
+        if (data.user_capstone_eligible_courses) {
+          setCapstoneCodes(new Set(data.user_capstone_eligible_courses));
+        }
+      } catch (err) {
+        console.error("failed to fetch capstones", err);
+      }
+    };
+    fetchCapstones();
+  }, [user?.id]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -171,6 +237,7 @@ export default function Carousel({
                 isEditing: false,
                 prereqsMet: course.prereqsMet ?? false,
                 isCapstone: course.isCapstone ?? false,
+                
               });
             }
             boxCounter++;
@@ -180,6 +247,11 @@ export default function Carousel({
           setBoxSelections(newBoxSelections);
           setUsedSemesters(newUsedSemesters);
           setCourses(newCourses);
+          const savedCapstone = newCourses.find(c => c.isCapstone);
+          if (savedCapstone) {
+            setCapstoneCourseId(savedCapstone.id);
+          }
+          
         } else {
           console.error("Backend error:", data.error);
         }
@@ -388,30 +460,36 @@ export default function Carousel({
             searchCourse.courseCode
           )}&title=${encodeURIComponent(
             searchCourse.courseName
-          )}&term=${term}&year=${year}`,
+          )}&term=${term}&year=${year}` ,
           { method: "POST" }
         );
 
         console.log("✅ Added course from search to semester in backend");
 
-        // add another fetch to check capstones 
-        //get JSON list, and save it for the user
-        // since we are still in the try block/constant, we can always reference the current course add
-        // use if statement, if added course was in constant, then add a star top right
-        useEffect(() => {
-          const fetchCapstones = async () => {
-            try {
-              const res = await fetch("http://localhost:3232/check-capstones?uid=$");
-              const data = await res.json();
-              if (data.capstones) {
-                setCapstoneCodes(new Set(data.capstones));
-              }
-            } catch (err) {
-              console.error("failed to fetch capstones", err);
-            }
-          };
-          fetchCapstones();
-        }, []);
+        // // add another fetch to check capstones 
+        // //get JSON list, and save it for the user
+        // // since we are still in the try block/constant, we can always reference the current course add
+        // // use if statement, if added course was in constant, then add a star top right
+        // useEffect(() => {
+        //   const fetchCapstones = async () => {
+        //     try {
+        //       const res = await fetch(
+        //         `http://localhost:3232/check-capstones?uid=${user.id}`
+        //       );
+        //       const data = await res.json();
+        //       if (data.user_capstone_eligible_courses) {
+        //         setCapstoneCodes(new Set(data.user_capstone_eligible_courses));
+        //       }
+        //     } catch (err) {
+        //       console.error("failed to fetch capstones", err);
+        //     }
+        //   };
+        //   fetchCapstones();
+        // }, []);
+
+        // if (capstoneCodes.has(searchCourse.courseCode)) {
+
+        // }
 
         // Now recheck all prerequisites with the updated courses
         setTimeout(() => {
@@ -668,7 +746,31 @@ export default function Carousel({
                     onDragEnd={handleCourseDragEnd}
                     onSaveCourse={handleSaveCourse}
                     prereqsMet={course.prereqsMet ?? false}
-                    isCapstone={course.isCapstone ?? false}
+                    isCapstone={course.id === capstoneCourseId}
+                    onToggleCapstone={(id, checked) => {
+                      const newCapstoneId = checked ? id : null;
+                      setCapstoneCourseId(newCapstoneId); // ensure only one selected
+
+                      const updatedCourses = courses.map(c =>
+                        ({ ...c, isCapstone: c.id === newCapstoneId })
+                      );
+                      setCourses(updatedCourses);
+                      
+
+                      // backend call
+                      if (checked) {
+                        const selectedCourse = courses.find(c => c.id === id);
+                        if (selectedCourse) {
+                          const [term, year] = selectedCourse.semesterId.split(" ");
+                          fetch(`http://localhost:3232/update-capstone?uid=${user?.id}&semester=${term} ${year}&courseCode=${selectedCourse.courseCode}`, {
+                            method: "POST"
+                          }).then(res => res.json()).then(data => {
+                            console.log("✅ Updated capstone in backend", data);
+                          });
+                        }
+                      }
+                    }}
+
                   />
                 ))}
               
