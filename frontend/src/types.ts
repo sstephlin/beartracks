@@ -6,4 +6,6 @@ export interface CourseItem {
   isEditing?: boolean;
   prereqsMet: boolean;
   isCapstone?: boolean;
+  showCapstoneCheckbox?: boolean;
+  
 }

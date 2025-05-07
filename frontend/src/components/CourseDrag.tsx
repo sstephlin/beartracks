@@ -10,6 +10,8 @@ interface CourseDragProps {
   isEditing?: boolean;
   prereqsMet: boolean;
   isCapstone: boolean;
+  showCapstoneCheckbox?: boolean;
+  
   onDragStart?: (
     e: React.DragEvent,
     course: { courseCode: string; title: string; semesterId: string }
@@ -36,10 +38,11 @@ export default function CourseDrag({
   onDrop,
   onSaveCourse,
   onToggleCapstone,
+  showCapstoneCheckbox,
 }: CourseDragProps & { isCapstone?: boolean }) {
   const [code, setCode] = useState(courseCode);
   const [title, setTitle] = useState(courseTitle || "");
-  const [isChecked, setIsChecked] = useState(isCapstone);
+  const [isChecked, setIsChecked] = useState<boolean>(!!isCapstone)
 
 
 
@@ -120,15 +123,18 @@ export default function CourseDrag({
     <div className="course-filled">
           <div className="course-header">
             <div className="course-code">{courseCode}</div>
-            <input
-              type="checkbox"
-              className="capstone-checkbox"
-              title="Capstone Course"
-              checked={isCapstone}
-              onChange={(e) => {
-                onToggleCapstone?.(id, e.target.checked);
-              }}
-            />
+            {showCapstoneCheckbox && (
+              <input
+                type="checkbox"
+                className="capstone-checkbox"
+                title="Capstone Course"
+                checked={isChecked}
+                onChange={(e) => {
+                  setIsChecked(e.target.checked)
+                  onToggleCapstone?.(id, e.target.checked);
+                }}
+              />
+            )}
           </div>
           {title && <div className="course-title">{title}</div>}
         </div>

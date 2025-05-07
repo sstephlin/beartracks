@@ -146,12 +146,11 @@ export default function Carousel({
         );
   
         // Update frontend state: only one course can be capstone
-        setCourses((prev) =>
-          prev.map((c) =>
-            c.semesterId === semester
-              ? { ...c, isCapstone: c.id === courseId }
-              : c
-          )
+        setCourses(prev =>
+          prev.map(c => ({
+             ...c, 
+             isCapstone: c.id === courseId,
+          }))
         );
       } else {
         // User unchecked — clear capstone
@@ -251,7 +250,7 @@ export default function Carousel({
           if (savedCapstone) {
             setCapstoneCourseId(savedCapstone.id);
           }
-          
+
         } else {
           console.error("Backend error:", data.error);
         }
@@ -429,7 +428,7 @@ export default function Carousel({
         semesterId
       );
 
-      const isCapstone = capstoneCodes.has(searchCourse.courseCode);
+      const isEligible = capstoneCodes.has(searchCourse.courseCode);
 
       const newCourse: CourseItem = {
         id: `course-${Date.now()}`,
@@ -438,7 +437,8 @@ export default function Carousel({
         semesterId,
         isEditing: false,
         prereqsMet: met,
-        isCapstone,
+        isCapstone: false,
+        showCapstoneCheckbox: isEligible,
       };
 
       // Get the updated state using a promise
@@ -746,7 +746,9 @@ export default function Carousel({
                     onDragEnd={handleCourseDragEnd}
                     onSaveCourse={handleSaveCourse}
                     prereqsMet={course.prereqsMet ?? false}
-                    isCapstone={course.id === capstoneCourseId}
+                    isCapstone={course.isCapstone ?? false}
+                    showCapstoneCheckbox={capstoneCodes.has(course.courseCode)}
+                    
                     onToggleCapstone={(id, checked) => {
                       const newCapstoneId = checked ? id : null;
                       setCapstoneCourseId(newCapstoneId); // ensure only one selected
