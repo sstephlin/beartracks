@@ -516,7 +516,8 @@ export default function Carousel({
               boxId={boxId}
               selectedSemester={boxSelections[boxId] || ""}
               availableSemesters={getAvailableSemesters()}
-              onSemesterSelect={() => handleSemesterSelect(boxId, "")}
+              onSemesterSelect={handleSemesterSelect}
+              // onSemesterSelect={() => handleSemesterSelect(boxId, "")}
               onDragOver={handleDragOver}
               onDrop={(e) =>
                 boxSelections[boxId] &&
