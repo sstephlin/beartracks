@@ -92,7 +92,9 @@ export default function CourseDrag({
         </div>
       ) : (
         <div className="course-filled">
-          <div className="course-code">{courseCode}</div>
+          <div className="course-code">
+          {courseCode} {isCapstone && <span className="capstone-star" title="Capstone">⭐️</span>}
+          </div>
           {title && <div className="course-title">{title}</div>}
         </div>
       )}

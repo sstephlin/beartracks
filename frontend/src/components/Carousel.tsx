@@ -9,6 +9,7 @@ import { checkPrereqs } from "../utils/prereqUtils";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
 import RightClickComponent from "./RightClick.tsx";
+import { Award } from "lucide-react";
 
 interface CarouselProps {
   viewCount: number;
@@ -67,6 +68,7 @@ export default function Carousel({
   const [courses, setCourses] = useState<CourseItem[]>([]);
   const { user } = useUser();
   const [showManualAddDisclaimer, setShowManualAddDisclaimer] = useState(false);
+  const [capstoneCodes, setCapstoneCodes] = useState<Set<string>>(new Set());
 
   const { currentIndex, next, prev, maxIndex } = CarouselMover(
     allSemesters.length,
@@ -283,6 +285,8 @@ export default function Carousel({
         semesterId
       );
 
+      const isCapstone = capstoneCodes.has(searchCourse.courseCode);
+
       const newCourse: CourseItem = {
         id: `course-${Date.now()}`,
         courseCode: searchCourse.courseCode,
@@ -290,6 +294,7 @@ export default function Carousel({
         semesterId,
         isEditing: false,
         prereqsMet: met,
+        isCapstone,
       };
 
       // Get the updated state using a promise
@@ -316,6 +321,25 @@ export default function Carousel({
         );
 
         console.log("✅ Added course from search to semester in backend");
+
+        // add another fetch to check capstones 
+        //get JSON list, and save it for the user
+        // since we are still in the try block/constant, we can always reference the current course add
+        // use if statement, if added course was in constant, then add a star top right
+        useEffect(() => {
+          const fetchCapstones = async () => {
+            try {
+              const res = await fetch("http://localhost:3232/check-capstones?uid=$");
+              const data = await res.json();
+              if (data.capstones) {
+                setCapstoneCodes(new Set(data.capstones));
+              }
+            } catch (err) {
+              console.error("failed to fetch capstones", err);
+            }
+          };
+          fetchCapstones();
+        }, []);
 
         // Now recheck all prerequisites with the updated courses
         setTimeout(() => {
