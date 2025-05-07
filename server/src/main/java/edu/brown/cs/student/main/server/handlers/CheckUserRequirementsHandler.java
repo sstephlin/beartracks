@@ -38,7 +38,6 @@ public class CheckUserRequirementsHandler implements Route {
         throw new IllegalArgumentException("No courses found for user.");
       }
 
-<<<<<<< HEAD
       // Step 3: Pick the correct requirement rules
       Map<String, RequirementRule> requirements;
 
@@ -82,10 +81,8 @@ public class CheckUserRequirementsHandler implements Route {
         throw new IllegalArgumentException("Unsupported concentration: " + concentration);
       }
 
-      // instantiate checker that checks user's courses WITH concentration requirements
-=======
       // Step 3: instantiate checker that checks user's courses WITH concentration requirements
->>>>>>> d86638620280571abb3eb42358b67a68de887ba1
+
       CSRequirementChecker checker =
           new CSRequirementChecker(this.storageHandler, uid, userCourses, concentration);
       Map<String, List<String>> requirementResults = checker.checkAllRequirements();
