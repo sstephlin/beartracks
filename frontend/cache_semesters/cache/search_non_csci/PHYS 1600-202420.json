@@ -1,0 +1,32 @@
+{
+  "srcdb": "202420",
+  "count": 1,
+  "results": [
+    {
+      "key": "6020",
+      "code": "PHYS 1600",
+      "title": "Computational Physics",
+      "crn": "20183",
+      "no": "S01",
+      "total": "2",
+      "schd": "S",
+      "stat": "A",
+      "hide": "",
+      "isCancelled": "",
+      "meets": "TTh 1-2:20p",
+      "mpkey": "2020",
+      "meetingTimes": "[{\"meet_day\":\"1\",\"start_time\":\"1300\",\"end_time\":\"1420\"},{\"meet_day\":\"3\",\"start_time\":\"1300\",\"end_time\":\"1420\"}]",
+      "instr": "A. Hui",
+      "start_date": "2025-01-22",
+      "end_date": "2025-05-16",
+      "permreq": "N",
+      "rpt": "N",
+      "cart_opts": "{\"grade_mode\":{\"cart_field\":\"p_gmod\",\"enabled\":true,\"options\":[{\"value\":\"G\",\"label\":\"Standard ABC/No Credit\",\"default\":true,\"selected\":\"selected\"},{\"value\":\"A\",\"label\":\"Audit\",\"default\":false,\"selected\":\"\"},{\"value\":\"S\",\"label\":\"Satisfactory/No Credit\",\"default\":false,\"selected\":\"\"}]},\"credit_hrs\":{\"cartField\":\"p_hours\",\"enabled\":true,\"options\":[{\"value\":\"1\",\"label\":\"1\",\"default\":true,\"selected\":\"selected\"}]},\"swap_section_with\":{\"enabled\":true,\"options\":[{\"value\":\"\",\"label\":\"Not Applicable\",\"default\":true,\"selected\":\"selected\"}]}}",
+      "linked_crns": "",
+      "rfam": "4499",
+      "lrfam": "",
+      "srcdb": "202420",
+      "changehash": "OwuvJ8pfSZbO76fC1yPDxA"
+    }
+  ]
+}

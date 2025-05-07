@@ -1,10 +1,13 @@
 .carousel-outer-wrapper {
   position: relative;
-  max-width: 100%;
+  width: 80vw;
   overflow: hidden;
   align-items: center;
   display: flex;
   justify-content: center; /* Center the carousel itself */
+}
+.carousel-outer-wrapper.two {
+  width: 43vw;
 }
 
 .carousel-inner-wrapper {

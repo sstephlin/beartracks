@@ -1,0 +1,32 @@
+{
+  "srcdb": "202320",
+  "count": 1,
+  "results": [
+    {
+      "key": "3852",
+      "code": "IAPA 1801",
+      "title": "Science and Technology Policy in the Global South",
+      "crn": "26473",
+      "no": "S01",
+      "total": "1",
+      "schd": "S",
+      "stat": "A",
+      "hide": "",
+      "isCancelled": "",
+      "meets": "T 4-6:30p",
+      "mpkey": "2030",
+      "meetingTimes": "[{\"meet_day\":\"1\",\"start_time\":\"1600\",\"end_time\":\"1830\"}]",
+      "instr": "G. Augusto",
+      "start_date": "2024-01-24",
+      "end_date": "2024-05-17",
+      "permreq": "N",
+      "rpt": "N",
+      "cart_opts": "{\"grade_mode\":{\"cart_field\":\"p_gmod\",\"enabled\":true,\"options\":[{\"value\":\"G\",\"label\":\"Standard ABC/No Credit\",\"default\":true,\"selected\":\"selected\"},{\"value\":\"A\",\"label\":\"Audit\",\"default\":false,\"selected\":\"\"},{\"value\":\"S\",\"label\":\"Satisfactory/No Credit\",\"default\":false,\"selected\":\"\"}]},\"credit_hrs\":{\"cartField\":\"p_hours\",\"enabled\":true,\"options\":[{\"value\":\"1\",\"label\":\"1\",\"default\":true,\"selected\":\"selected\"}]},\"swap_section_with\":{\"enabled\":true,\"options\":[{\"value\":\"\",\"label\":\"Not Applicable\",\"default\":true,\"selected\":\"selected\"}]}}",
+      "linked_crns": "",
+      "rfam": "3624",
+      "lrfam": "",
+      "srcdb": "202320",
+      "changehash": "ycY2xjcZQSOKbh9BF1cJsg"
+    }
+  ]
+}

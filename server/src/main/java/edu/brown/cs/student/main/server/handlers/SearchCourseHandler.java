@@ -1,6 +1,5 @@
 package edu.brown.cs.student.main.server.handlers;
 
-import edu.brown.cs.student.main.server.concentrationRequirements.CSCapstoneCourses;
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.parser.CourseInfo;
 import java.util.ArrayList;
@@ -45,13 +44,19 @@ public class SearchCourseHandler implements Route {
     } else {
       responseMap.put("result", "success");
       responseMap.put("courses", matchedCourses);
-      responseMap.put("capstone_courses", CSCapstoneCourses.ALL);
     }
 
     response.type("application/json");
     return Utils.toMoshiJson(responseMap);
   }
 
+  /**
+   * searches for a course in the course catalog, given the query parameter of the course code
+   *
+   * @param catalog
+   * @param query
+   * @return
+   */
   private List<Map<String, String>> searchCourses(CourseCatalog catalog, String query) {
     List<Map<String, String>> matches = new ArrayList<>();
     String lowerQuery = query.toLowerCase();
@@ -68,6 +73,27 @@ public class SearchCourseHandler implements Route {
         matches.add(courseData);
       }
     }
+
+    // Sort two courses by courseCode (which is the key in the Map<String, String>)
+    matches.sort(
+        (a, b) -> {
+          String codeA = a.get("courseCode");
+          String codeB = b.get("courseCode");
+
+          // Split courseCode into department and number
+          String[] partsA = codeA.split("\\s+");
+          String[] partsB = codeB.split("\\s+");
+
+          String deptA = partsA[0];
+          String deptB = partsB[0];
+
+          int numA = partsA.length > 1 ? Integer.parseInt(partsA[1]) : 0;
+          int numB = partsB.length > 1 ? Integer.parseInt(partsB[1]) : 0;
+
+          int deptCompare = deptA.compareTo(deptB);
+          return deptCompare != 0 ? deptCompare : Integer.compare(numA, numB);
+        });
+
     return matches;
   }
 }

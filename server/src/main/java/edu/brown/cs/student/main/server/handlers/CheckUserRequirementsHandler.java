@@ -38,25 +38,16 @@ public class CheckUserRequirementsHandler implements Route {
         throw new IllegalArgumentException("No courses found for user.");
       }
 
-      // Step 3: Pick the correct requirement rules
-      Map<String, RequirementRule> requirements;
-      if (concentration.equalsIgnoreCase("Computer Science AB")) {
-        requirements = CSABDegreeRequirements.requirements;
-      } else if (concentration.equalsIgnoreCase("Computer Science ScB")) {
-        requirements = CSScBDegreeRequirements.requirements;
-      } else {
-        throw new IllegalArgumentException("Unsupported concentration: " + concentration);
-      }
-
+      // Step 3: instantiate checker that checks user's courses WITH concentration requirements
       CSRequirementChecker checker =
-          new CSRequirementChecker(this.storageHandler, uid, userCourses, requirements);
+          new CSRequirementChecker(this.storageHandler, uid, userCourses, concentration);
       Map<String, List<String>> requirementResults = checker.checkAllRequirements();
 
       int coursesCompleted = checker.countCoursesCompleted();
       int totalRequired = checker.getTotalCoursesRequired();
 
       responseMap.put("response_type", "success");
-      responseMap.put("requirements_breakdown", requirementResults);
+      responseMap.put("user_requirements_breakdown", requirementResults);
       responseMap.put("courses_completed", coursesCompleted);
       responseMap.put("total_required", totalRequired); // 10 for AB, 16 for ScB
 

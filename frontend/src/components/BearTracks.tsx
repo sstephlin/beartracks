@@ -26,7 +26,7 @@ export default function BearTracks(props: BearTracksProps) {
 
     try {
       const response = await fetch(
-        `http://localhost:1234/search-course?query=${encodeURIComponent(query)}`
+        `http://localhost:3232/search-course?query=${encodeURIComponent(query)}`
       );
       const data = await response.json();
 
@@ -58,7 +58,7 @@ export default function BearTracks(props: BearTracksProps) {
 
     const semesterId = e.dataTransfer.getData("semesterId");
     const courseCode = e.dataTransfer.getData("courseCode");
-    const courseTitle = e.dataTransfer.getData("courseTitle");
+    const title = e.dataTransfer.getData("title");
 
     if (courseCode && semesterId) {
       window.dispatchEvent(
@@ -70,10 +70,10 @@ export default function BearTracks(props: BearTracksProps) {
       const [term, year] = semesterId.split(" ");
       if (!uid) return;
 
-      const url = `http://localhost:1234/remove-course?uid=${uid}&code=${encodeURIComponent(
+      const url = `http://localhost:3232/remove-course?uid=${uid}&code=${encodeURIComponent(
         courseCode
-      )}&title=${encodeURIComponent(courseTitle)}&term=${term}&year=${year}`;
-
+      )}&title=${encodeURIComponent(title)}&term=${term}&year=${year}`;
+      console.log("🗑 Dropped to trash:", { courseCode, semesterId });
       try {
         await fetch(url, { method: "POST" });
       } catch (error) {
@@ -129,8 +129,20 @@ export default function BearTracks(props: BearTracksProps) {
         setViewCount={setViewCount}
         draggedSearchCourse={draggedSearchCourse}
         expanded={props.expanded}
-        uid={uid}
       />
+      <div className="display-view">
+        {[2, 4].map((value) => (
+          <button
+            key={value}
+            onClick={() => setViewCount(value)}
+            className={`display-view-button ${
+              viewCount === value ? "selected" : "unselected"
+            }`}
+          >
+            {value}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

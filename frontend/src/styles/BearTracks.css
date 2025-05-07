@@ -1,8 +1,10 @@
 .bear-tracks-container {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 80vw;
   padding-top: 2vh;
+  align-items: center;
+  /* justify-content: center; */
 }
 
 .searchbar-and-trash-container {
@@ -134,4 +136,79 @@
 .course-title {
   font-size: 0.9rem;
   word-wrap: break-word;
+}
+
+.trash-area {
+  position: absolute;
+  right: 100px;
+  background: none;
+  border: 2px solid gray;
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border 0.2s ease;
+}
+
+.trash-hovered {
+  background-color: #ffe0e0;
+  border: 2px solid red;
+}
+
+.trash-hovered {
+  animation: wiggle 0.3s ease-in-out infinite;
+}
+
+@keyframes wiggle {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.display-view {
+  display: flex;
+  border: 2px solid #1e3a8a; /* blue outline */
+  border-radius: 9999px;
+  overflow: hidden;
+  width: 120px;
+  height: 40px;
+  background-color: white;
+  align-items: center;
+}
+
+.display-view-button {
+  flex: 1;
+  border: none;
+  background-color: white;
+  color: #1e3a8a;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+.display-view-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.display-view-button.selected {
+  background-color: #213333;
+  color: white;
+  height: 120%;
+  align-items: center;
+}
+
+.display-view-button.unselected {
+  background-color: white;
+  color: #213333;
 }

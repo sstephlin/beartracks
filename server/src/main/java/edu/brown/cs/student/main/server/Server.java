@@ -1,40 +1,62 @@
 package edu.brown.cs.student.main.server;
 
-import static spark.Spark.after;
+import static spark.Spark.before;
+import static spark.Spark.options;
 
 import edu.brown.cs.student.main.server.handlers.AddCourseHandler;
 import edu.brown.cs.student.main.server.handlers.AddSemesterHandler;
+import edu.brown.cs.student.main.server.handlers.CheckCapstoneHandler;
 import edu.brown.cs.student.main.server.handlers.CheckPrereqsHandler;
 import edu.brown.cs.student.main.server.handlers.CheckSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.CheckUserRequirementsHandler;
 import edu.brown.cs.student.main.server.handlers.GetConcentrationHandler;
+import edu.brown.cs.student.main.server.handlers.GetConcentrationRequirementsHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserCoursesHandler;
+import edu.brown.cs.student.main.server.handlers.GetUserCoursesWithTitleHandler;
 import edu.brown.cs.student.main.server.handlers.GetViewHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveCourseHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.SearchCourseHandler;
 import edu.brown.cs.student.main.server.handlers.StoreConcentrationHandler;
 import edu.brown.cs.student.main.server.handlers.StoreViewHandler;
+import edu.brown.cs.student.main.server.handlers.UpdateCapstoneHandler;
 import edu.brown.cs.student.main.server.parser.CourseCSVParser;
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.io.IOException;
-import spark.Filter;
 import spark.Spark;
 
 public class Server {
 
   public static void setUpServer() {
-    int port = 1234;
+    int port = 3232;
     Spark.port(port);
 
-    after(
-        (Filter)
-            (request, response) -> {
-              response.header("Access-Control-Allow-Origin", "*");
-              response.header("Access-Control-Allow-Methods", "*");
-            });
+    // Enable CORS
+    options(
+        "/*",
+        (request, response) -> {
+          String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
+          if (accessControlRequestHeaders != null) {
+            response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
+          }
+
+          String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
+          if (accessControlRequestMethod != null) {
+            response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
+          }
+
+          return "OK";
+        });
+
+    before(
+        (request, response) -> {
+          response.header(
+              "Access-Control-Allow-Origin", "*"); // or restrict to "http://localhost:8000"
+          response.header("Access-Control-Allow-Headers", "*");
+          response.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+        });
 
     StorageInterface firebaseUtils;
     try {
@@ -55,9 +77,13 @@ public class Server {
       Spark.post("store-view", new StoreViewHandler(firebaseUtils));
       Spark.get("get-view", new GetViewHandler(firebaseUtils));
       Spark.get("get-user-courses", new GetUserCoursesHandler(firebaseUtils));
+      Spark.get("get-user-courses-detailed", new GetUserCoursesWithTitleHandler(firebaseUtils));
       Spark.get(
           "check-concentration-requirements", new CheckUserRequirementsHandler(firebaseUtils));
       Spark.get("check-prereqs", new CheckPrereqsHandler(firebaseUtils, catalog));
+      Spark.post("update-capstone", new UpdateCapstoneHandler(firebaseUtils));
+      Spark.get("check-capstones", new CheckCapstoneHandler(firebaseUtils));
+      Spark.get("get-concen-reqs", new GetConcentrationRequirementsHandler(firebaseUtils));
 
       Spark.notFound(
           (request, response) -> {
