@@ -13,6 +13,7 @@ import edu.brown.cs.student.main.server.handlers.GetConcentrationHandler;
 import edu.brown.cs.student.main.server.handlers.GetConcentrationRequirementsHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserCoursesHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserCoursesWithTitleHandler;
+import edu.brown.cs.student.main.server.handlers.GetAllCourseAvailabilityHandler;
 import edu.brown.cs.student.main.server.handlers.GetViewHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveCourseHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveSemesterHandler;

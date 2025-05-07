@@ -120,15 +120,26 @@ public class AddCourseHandlerHelper {
       Map<String, String> courseToSemester,
       CourseCatalog catalog) {
     if (node.isLeaf()) {
-      String prereqCode = node.courseCode.toUpperCase();
-      String prereqSemester = courseToSemester.get(prereqCode);
+      String prereqCode = node.courseCode.toUpperCase(); // contains * for concurrent courses
+      // Strip asterisk when looking up in courseToSemester
+      String lookupCode = prereqCode.replace("*", "");
+      String prereqSemester = courseToSemester.get(lookupCode); // in courseToSemester, all courses are stored without *
 
       if (prereqSemester == null) {
         return false;
       }
 
-      if (compareSemesters(prereqSemester, targetSemester) >= 0) {
-        return false;
+      if (prereqCode.contains("*")) {
+        // if concurrent, same semester is allowed
+        if (compareSemesters(prereqSemester, targetSemester) > 0) {
+          return false;
+        }
+      }
+      else {
+        // otherwise, only check semesters before the current semester
+        if (compareSemesters(prereqSemester, targetSemester) >= 0) {
+          return false;
+        }
       }
 
       // Recursively check prereqs of this prereq
