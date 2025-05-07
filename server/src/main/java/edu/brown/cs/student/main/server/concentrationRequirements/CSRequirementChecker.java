@@ -76,7 +76,7 @@ public class CSRequirementChecker {
           fulfillingCourses = checkElectives();
           break;
         case "Capstone":
-          fulfillingCourses = checkCapstone(); // called first
+          fulfillingCourses = checkCapstone();
           break;
         case "Intro Part 2":
           fulfillingCourses = checkIntroPart2();

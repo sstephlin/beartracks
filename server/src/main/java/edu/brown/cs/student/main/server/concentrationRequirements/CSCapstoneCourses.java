@@ -3,6 +3,7 @@ package edu.brown.cs.student.main.server.concentrationRequirements;
 import java.util.List;
 
 public class CSCapstoneCourses {
+  // courses that CAN be capstoned but need to be indicated that user wants to capstone it
   public static final List<String> ALL =
       List.of(
           "CSCI 1230",
@@ -52,6 +53,7 @@ public class CSCapstoneCourses {
           "CSCI 2952Q",
           "ENGN 1001");
 
+  // separate capstone courses
   public static final List<String> AUTO_ACCEPTED =
       List.of(
           "CSCI 1234", "CSCI 1620", "CSCI 1690" // used in RequirementChecker for auto-approval
