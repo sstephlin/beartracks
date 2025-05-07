@@ -8,17 +8,13 @@ import { SignOutButton, useUser } from "@clerk/clerk-react";
 import { checkPrereqs } from "../utils/prereqUtils";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
-// import { useUser } from "@clerk/clerk-react";
-// import { checkPrereqs } from "../utils/prereqUtils";
-// import { CourseItem } from "../types";
 import RightClickComponent from "./RightClick.tsx";
 
 interface CarouselProps {
   viewCount: number;
   setViewCount: React.Dispatch<React.SetStateAction<number>>;
   draggedSearchCourse: any | null;
-  expanded: boolean;
-  // uid: string | undefined;
+  expanded: boolean; // uid: string | undefined;
 }
 
 const allSemesters = [
@@ -59,7 +55,7 @@ export default function Carousel({
   // const [boxIds, setBoxIds] = useState<number[]>([]);
   // const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
   // const [boxSelections, setBoxSelections] = useState<{
-  //   [boxId: string]: string;
+  //   [boxId: string]: string;
   // }>({});
   const [boxIds, setBoxIds] = useState<string[]>(["1"]);
   const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
@@ -70,6 +66,7 @@ export default function Carousel({
   const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
   const [courses, setCourses] = useState<CourseItem[]>([]);
   const { user } = useUser();
+  const [showManualAddDisclaimer, setShowManualAddDisclaimer] = useState(false);
 
   const { currentIndex, next, prev, maxIndex } = CarouselMover(
     allSemesters.length,
@@ -85,6 +82,7 @@ export default function Carousel({
     getCoursesForSemester,
     addCourse,
     setPrereqStatus,
+    recheckAllPrereqs,
   } = CourseDragManager(user?.id ?? "", {
     setSelectedSemester,
     setUsedSemesters,
@@ -216,6 +214,58 @@ export default function Carousel({
     return () => window.removeEventListener("click", handleClickOutside);
   }, []);
 
+  // const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
+  //   e.preventDefault();
+  //   if (!user?.id) return;
+
+  //   const searchCourseRaw = e.dataTransfer.getData("searchCourse");
+  //   const courseId = e.dataTransfer.getData("courseId");
+
+  //   if (searchCourseRaw) {
+  //     const searchCourse = JSON.parse(searchCourseRaw);
+
+  //     const met = await checkPrereqs(
+  //       user.id,
+  //       searchCourse.courseCode,
+  //       semesterId
+  //     );
+
+  //     const newCourse: CourseItem = {
+  //       id: `course-${Date.now()}`,
+  //       courseCode: searchCourse.courseCode,
+  //       title: searchCourse.courseName,
+  //       semesterId,
+  //       isEditing: false,
+  //       prereqsMet: met,
+  //     };
+
+  //     setCourses((prevCourses) => {
+  //       const updated = [...prevCourses, newCourse];
+  //       return updated;
+  //     });
+
+  //     // Recheck all prerequisites after adding a new course
+  //     setTimeout(() => {
+  //       // Re-check everything with the updated courses array
+  //       if (recheckAllPrereqs) {
+  //         recheckAllPrereqs([...courses]);
+  //       } else {
+  //         courses.forEach(async (c) => {
+  //           const result = await checkPrereqs(
+  //             user.id!,
+  //             c.courseCode,
+  //             c.semesterId
+  //           );
+  //           setPrereqStatus(c.id, result);
+  //           console.log("checking prereq for course", c, "result: ", result);
+  //         });
+  //       }
+  //     }, 100);
+  //   } else if (courseId) {
+  //     handleDrop(e, semesterId);
+  //   }
+  // };
+
   const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
     e.preventDefault();
     if (!user?.id) return;
@@ -226,6 +276,7 @@ export default function Carousel({
     if (searchCourseRaw) {
       const searchCourse = JSON.parse(searchCourseRaw);
 
+      // Check prerequisites first
       const met = await checkPrereqs(
         user.id,
         searchCourse.courseCode,
@@ -241,22 +292,40 @@ export default function Carousel({
         prereqsMet: met,
       };
 
-      setCourses((prevCourses) => {
-        const updated = [...prevCourses, newCourse];
-        // Re-check everything with the updated courses array
-        updated.forEach(async (c) => {
-          const result = await checkPrereqs(
-            user.id!,
-            c.courseCode,
-            c.semesterId
-          );
-          setPrereqStatus(c.id, result);
-          console.log("checking prereq for course", c, "result: ", result);
+      // Get the updated state using a promise
+      const updatedCourses = await new Promise<CourseItem[]>((resolve) => {
+        setCourses((prevCourses) => {
+          const updated = [...prevCourses, newCourse];
+          resolve(updated);
+          return updated;
         });
-
-        return updated;
       });
+
+      // Immediately sync with backend for search results
+      const [term, year] = semesterId.split(" ");
+      try {
+        await fetch(
+          `http://localhost:3232/add-course?uid=${
+            user.id
+          }&code=${encodeURIComponent(
+            searchCourse.courseCode
+          )}&title=${encodeURIComponent(
+            searchCourse.courseName
+          )}&term=${term}&year=${year}`,
+          { method: "POST" }
+        );
+
+        console.log("✅ Added course from search to semester in backend");
+
+        // Now recheck all prerequisites with the updated courses
+        setTimeout(() => {
+          recheckAllPrereqs(updatedCourses);
+        }, 100);
+      } catch (err) {
+        console.error("Failed to sync course to backend:", err);
+      }
     } else if (courseId) {
+      // This is for moving existing courses between semesters
       handleDrop(e, semesterId);
     }
   };
@@ -266,32 +335,84 @@ export default function Carousel({
     courseCode: string,
     title: string
   ) => {
-    setCourses((prev) =>
-      prev.map((c) =>
-        c.id === id ? { ...c, courseCode, title, isEditing: false } : c
-      )
-    );
+    // Get the updated state using a promise
+    const updatedCourses = await new Promise<CourseItem[]>((resolve) => {
+      setCourses((prev) => {
+        const updated = prev.map((c) =>
+          c.id === id ? { ...c, courseCode, title, isEditing: false } : c
+        );
+        resolve(updated);
+        return updated;
+      });
+    });
 
-    const course = courses.find((c) => c.id === id);
+    const course = updatedCourses.find((c) => c.id === id);
     if (!course || !user?.id) return;
 
     const [term, year] = course.semesterId.split(" ");
 
     try {
+      // Sync to backend
       await fetch(
         `http://localhost:3232/add-course?uid=${
           user.id
         }&code=${encodeURIComponent(courseCode)}&title=${encodeURIComponent(
           title
-        )}&term=${term}&year=${year}&skipCheck=true`,
+        )}&term=${term}&year=${year}`,
         {
           method: "POST",
         }
       );
+
+      console.log("✅ Saved course to backend:", courseCode);
+
+      // Now recheck all prerequisites with the updated courses
+      setTimeout(() => {
+        recheckAllPrereqs(updatedCourses);
+      }, 100);
     } catch (err) {
       console.error("Error updating course:", err);
     }
   };
+
+  // const handleSaveCourse = async (
+  //   id: string,
+  //   courseCode: string,
+  //   title: string
+  // ) => {
+  //   setCourses((prev) =>
+  //     prev.map((c) =>
+  //       c.id === id ? { ...c, courseCode, title, isEditing: false } : c
+  //     )
+  //   );
+
+  //   const course = courses.find((c) => c.id === id);
+  //   if (!course || !user?.id) return;
+
+  //   const [term, year] = course.semesterId.split(" ");
+
+  //   try {
+  //     await fetch(
+  //       `http://localhost:3232/add-course?uid=${
+  //         user.id
+  //       }&code=${encodeURIComponent(courseCode)}&title=${encodeURIComponent(
+  //         title
+  //       )}&term=${term}&year=${year}&skipCheck=true`,
+  //       {
+  //         method: "POST",
+  //       }
+  //     );
+
+  //     // Recheck all prerequisites after saving a course
+  //     setTimeout(() => {
+  //       if (recheckAllPrereqs) {
+  //         recheckAllPrereqs([...courses]);
+  //       }
+  //     }, 100);
+  //   } catch (err) {
+  //     console.error("Error updating course:", err);
+  //   }
+  // };
 
   useEffect(() => {
     const handleRemoveCourse = (e: any) => {
@@ -305,15 +426,22 @@ export default function Carousel({
           (c) => !(c.courseCode === courseCode && c.semesterId === semesterId)
         );
 
-        // Re-check everything after removing
-        updated.forEach(async (course) => {
-          const met = await checkPrereqs(
-            user!.id,
-            course.courseCode,
-            course.semesterId
-          );
-          setPrereqStatus(course.id, met);
-        });
+        // Recheck all prerequisites after course removal
+        // BUT use the updated courses array that no longer includes the deleted course
+        setTimeout(() => {
+          if (recheckAllPrereqs) {
+            recheckAllPrereqs(updated);
+          } else {
+            updated.forEach(async (course) => {
+              const result = await checkPrereqs(
+                user!.id,
+                course.courseCode,
+                course.semesterId
+              );
+              setPrereqStatus(course.id, result);
+            });
+          }
+        }, 100);
 
         return updated;
       });
@@ -321,7 +449,7 @@ export default function Carousel({
 
     window.addEventListener("removeCourse", handleRemoveCourse);
     return () => window.removeEventListener("removeCourse", handleRemoveCourse);
-  }, [user?.id, setCourses, setPrereqStatus]);
+  }, [user?.id, setPrereqStatus, recheckAllPrereqs]);
 
   const handleAddRightSemester = (currSemNum: string) => {
     let newID = "";
@@ -363,15 +491,17 @@ export default function Carousel({
     <div
       className={`carousel-outer-wrapper ${viewCount === 2 ? "two" : "four"}`}
     >
+            
       <button
         className="carousel-button left"
         onClick={prev}
         disabled={currentIndex === 0}
       >
-        ‹
+                ‹       
       </button>
-
+            
       <div className="carousel-inner-wrapper">
+                
         <div
           className="carousel-track"
           style={{
@@ -379,6 +509,7 @@ export default function Carousel({
             transition: "transform 0.5s ease",
           }}
         >
+                    
           {boxIds.map((boxId) => (
             <SemesterBox
               key={boxId}
@@ -394,6 +525,7 @@ export default function Carousel({
               expanded={expanded}
               onRightClick={(e) => handleRightClick(e, boxId)}
             >
+                            
               {boxSelections[boxId] &&
                 getCoursesForSemester(boxSelections[boxId]).map((course) => (
                   <CourseDrag
@@ -411,18 +543,21 @@ export default function Carousel({
                     isCapstone={course.isCapstone ?? false}
                   />
                 ))}
+                            
               <button
                 className="add-course-button"
                 onClick={() =>
                   addCourse(boxSelections[boxId], undefined, "new")
                 }
               >
-                + New course
+                                + New course               
               </button>
+                          
             </SemesterBox>
           ))}
-
+                    
           <div className={`add-box ${expanded ? "expanded" : "collapsed"}`}>
+                        
             <button
               className="add-button"
               onClick={() =>
@@ -431,13 +566,16 @@ export default function Carousel({
                 )
               }
             >
-              <div className="add-button-plus">+</div>
-              <div>New Semester</div>
+                            <div className="add-button-plus">+</div>
+                            <div>New Semester</div>
+                          
             </button>
+                      
           </div>
+                  
         </div>
-
-        {/* Context menu rendered globally once */}
+                {/* Context menu rendered globally once */}
+                
         {menuPosition && selectedBoxId !== null && (
           <RightClickComponent
             position={menuPosition}
@@ -446,15 +584,44 @@ export default function Carousel({
             onDeleteSemester={() => handleDeleteSemester(selectedBoxId)}
           />
         )}
+              
       </div>
-
+            
       <button
         className="carousel-button right"
         onClick={next}
         disabled={currentIndex === maxIndex}
       >
-        ›
+                ›       
       </button>
+      {showManualAddDisclaimer && (
+        <div
+          className="disclaimer-overlay"
+          onClick={(e) => {
+            if (
+              (e.target as HTMLElement).classList.contains("disclaimer-overlay")
+            ) {
+              setShowManualAddDisclaimer(false);
+            }
+          }}
+        >
+          <div className="disclaimer-box">
+            <button
+              className="close-disclaimer"
+              onClick={() => setShowManualAddDisclaimer(false)}
+            >
+              ×
+            </button>
+            <h2>Manual Course Entry</h2>
+            <p>
+              You're manually adding a course. After clicking, you can enter
+              course details like the code and name. Use this for Non-CS
+              courses. Please not that these courses will not be tracked on your
+              prgoression meter.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

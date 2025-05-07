@@ -62,7 +62,6 @@ public class FirebaseUtilities implements StorageInterface {
 
       // Now delete the document itself
       doc.delete().get();
-
     } catch (Exception e) {
       System.err.println("Error deleting document and its subcollections: " + e.getMessage());
     }
@@ -243,9 +242,22 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public void updateDocument(DocumentReference ref, Map<String, Object> updates) {
-    // Firestore’s update() will merge these fields into the existing document
-    ref.update(updates);
+  public void updatePrereqsMet(String uid, String semester, String courseCode, boolean prereqsMet) {
+
+    if (uid == null || semester == null || courseCode == null) {
+      throw new IllegalArgumentException("uid, semester, and courseCode must be non-null.");
+    }
+
+    DocumentReference docRef =
+        db.collection("users")
+            .document(uid)
+            .collection("semesters")
+            .document(semester)
+            .collection("courses")
+            .document(courseCode);
+
+    docRef.update("prereqsMet", prereqsMet);
+    System.out.println(courseCode + " updated to " + prereqsMet);
   }
 
   /**
@@ -266,7 +278,32 @@ public class FirebaseUtilities implements StorageInterface {
     Map<String, Object> updates = new HashMap<>();
     updates.put("isCapstone", isCapstone);
 
-    System.out.println("Updating path: " + fullPath + ", doc: " + courseCode);
+    //    System.out.println("Updating path: " + fullPath + ", doc: " + courseCode);
     docRef.set(updates, SetOptions.merge());
   }
+
+  //  @Override
+  //  public void updatePrereqsMet(String uid, String semester, String courseCode, boolean
+  // prereqsMet) {
+  //
+  //    if (uid == null || semester == null || courseCode == null) {
+  //      throw new IllegalArgumentException("uid, semester, and courseCode must be non-null.");
+  //    }
+  //
+  //    DocumentReference docRef =
+  //        db.collection("users")
+  //            .document(uid)
+  //            .collection("semesters")
+  //            .document(semester)
+  //            .collection("courses")
+  //            .document(courseCode);
+  //
+  ////    Map<String, Object> updates = new HashMap<>();
+  ////    updates.put("prereqsMet", prereqsMet);
+  ////
+  ////    docRef.update(updates).get(); // Waits for update to complete (can be omitted if async
+  // preferred)
+  //
+  //    docRef.update("prereqsMet", prereqsMet);
+  //  }
 }

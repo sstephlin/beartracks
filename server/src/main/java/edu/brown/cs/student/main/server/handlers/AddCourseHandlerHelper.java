@@ -124,12 +124,10 @@ public class AddCourseHandlerHelper {
       String prereqSemester = courseToSemester.get(prereqCode);
 
       if (prereqSemester == null) {
-        System.out.println("❌ Missing prereq in history: " + prereqCode);
         return false;
       }
 
       if (compareSemesters(prereqSemester, targetSemester) >= 0) {
-        System.out.println("❌ Prereq " + prereqCode + " taken in or after target semester.");
         return false;
       }
 

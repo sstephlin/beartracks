@@ -15,6 +15,16 @@ function App() {
   const [expanded, setExpanded] = useState<boolean>(true);
   const [degree, setDegree] = useState<string>("");
 
+  // add state to toggle visibility of disclaimer
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+
+  // click outside the modal box closes it
+  const handleClickOutside = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).classList.contains("disclaimer-overlay")) {
+      setShowDisclaimer(false);
+    }
+  };
+
   return (
     <div className="App">
       <div className="layout-container">
@@ -61,14 +71,40 @@ function App() {
           </header>
           <main className="main-content">
             <BearTracks expanded={expanded} />
+
+            {/* floating help icon that toggles the disclaimer */}
             <div>
               <button
                 className="floating-icon help-icon"
-                onClick={() => console.log("Help clicked")}
+                onClick={() => setShowDisclaimer(true)} // shows the disclaimer when clicked
               >
                 <HelpCircle />
               </button>
             </div>
+
+            {/* model disclaimer component */}
+            {showDisclaimer && (
+              <div
+                className="disclaimer-overlay" // full-screen background (for visual effects)
+                onClick={handleClickOutside} // close when clicking outside box
+              >
+                <div className="disclaimer-box">
+                  {/* close button in the top right of the box */}
+                  <button
+                    className="close-disclaimer"
+                    onClick={() => setShowDisclaimer(false)}
+                  >
+                    ×
+                  </button>
+                  {/* modal content */}
+                  <h2>How to Use BearTracks</h2>
+                  <p>
+                    Search for courses and drag and drop courses them into semesters. Use the trash icon to
+                    remove courses. Click "+ New Semester" to add a new term.
+                  </p>
+                </div>
+              </div>
+            )}
           </main>
         </div>
       </div>

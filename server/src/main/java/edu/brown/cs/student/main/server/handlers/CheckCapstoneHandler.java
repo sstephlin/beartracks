@@ -36,7 +36,8 @@ public class CheckCapstoneHandler implements Route {
 
       // 2. Check which courses are in the capstone list
       for (String course : userCourses) {
-        if (CSCapstoneCourses.ALL.contains(course)) {
+        if (CSCapstoneCourses.ALL.contains(course)
+            || CSCapstoneCourses.AUTO_ACCEPTED.contains(course)) {
           capstoneMatches.add(course);
         }
       }

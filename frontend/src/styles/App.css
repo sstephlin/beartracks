@@ -71,15 +71,15 @@ body {
   text-decoration: none;
   color: black;
   font-weight: 600;
-  font-size: 24px;
+  font-size: 54px;
   font-style: italic;
 }
 
 .logo-image {
-  width: 75px;
-  height: 75px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
-  margin-right: 10px;
+  margin-right: 100px;
 }
 
 .logo-progress {
@@ -108,8 +108,8 @@ body {
   bottom: 30px;
   cursor: pointer;
   z-index: 999;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   background-color: #f2f2f2;
   border: none;
   padding: 8px;
@@ -132,6 +132,98 @@ body {
   }
 
   .logo {
-    font-size: 18px;
+    font-size: 28px;
   }
+}
+
+/* Disclaimer Modal Overlay */
+.disclaimer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4); /* semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal Content Box */
+.disclaimer-box {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  font-family: "Georgia", serif;
+  color: #222;
+  text-align: left;
+}
+
+/* Close Button for Modal */
+.close-disclaimer {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.close-disclaimer:hover {
+  color: #333;
+}
+
+/* Disclaimer Modal Overlay */
+.disclaimer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4); /* semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal Content Box */
+.disclaimer-box {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  font-family: "Georgia", serif;
+  color: #222;
+  text-align: left;
+}
+
+/* Close Button for Modal */
+.close-disclaimer {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.close-disclaimer:hover {
+  color: #333;
 }

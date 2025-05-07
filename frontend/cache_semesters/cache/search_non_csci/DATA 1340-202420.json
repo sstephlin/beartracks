@@ -1,0 +1,32 @@
+{
+  "srcdb": "202420",
+  "count": 1,
+  "results": [
+    {
+      "key": "2379",
+      "code": "DATA 1340",
+      "title": "Machine Learning for the Earth and Environment (EEPS 1340).",
+      "crn": "28092",
+      "no": "",
+      "total": "1",
+      "schd": "0",
+      "stat": "X",
+      "hide": "",
+      "isCancelled": "",
+      "meets": "",
+      "mpkey": "1",
+      "meetingTimes": "[]",
+      "instr": "See details",
+      "start_date": "2025-01-22",
+      "end_date": "2025-05-16",
+      "permreq": "N",
+      "rpt": "N",
+      "cart_opts": "{\"grade_mode\":{\"cart_field\":\"p_gmod\",\"enabled\":true,\"options\":[{\"value\":\"N\",\"label\":\"No Credit/Gradable\",\"selected\":\"selected\",\"default\":true}],\"hidden\":true},\"credit_hrs\":{\"cartField\":\"p_hours\",\"enabled\":true,\"options\":[{\"value\":\"0\",\"label\":\"0\",\"default\":true,\"selected\":\"selected\"}]},\"swap_section_with\":{\"enabled\":true,\"options\":[{\"value\":\"\",\"label\":\"Not Applicable\",\"default\":true,\"selected\":\"selected\"}]}}",
+      "linked_crns": "",
+      "rfam": "2154",
+      "lrfam": "",
+      "srcdb": "202420",
+      "changehash": "1B2M2Y8AsgTpgAmY7PhCfg"
+    }
+  ]
+}
