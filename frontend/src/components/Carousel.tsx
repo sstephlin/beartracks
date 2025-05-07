@@ -66,6 +66,8 @@ export default function Carousel({
   const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
   const [courses, setCourses] = useState<CourseItem[]>([]);
   const { user } = useUser();
+  const [showManualAddDisclaimer, setShowManualAddDisclaimer] = useState(false);
+
 
   const { currentIndex, next, prev, maxIndex } = CarouselMover(
     allSemesters.length,
