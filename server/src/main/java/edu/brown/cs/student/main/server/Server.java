@@ -71,6 +71,7 @@ public class Server {
       Spark.post("remove-course", new RemoveCourseHandler(firebaseUtils, catalog));
       Spark.post("remove-semester", new RemoveSemesterHandler(firebaseUtils));
       Spark.get("check-semester", new CheckSemesterHandler(catalog));
+      Spark.get("get-all-course-availability", new GetAllCourseAvailabilityHandler(catalog));
       Spark.get("search-course", new SearchCourseHandler(catalog));
       Spark.post("store-concentration", new StoreConcentrationHandler(firebaseUtils));
       Spark.get("get-concentration", new GetConcentrationHandler(firebaseUtils));
