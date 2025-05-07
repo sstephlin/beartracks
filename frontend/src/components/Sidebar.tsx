@@ -8,8 +8,7 @@ import {
 } from "lucide-react";
 import "../styles/Sidebar.css";
 import "../styles/App.css";
-import { Dispatch, SetStateAction, useState, useRef, useEffect } from "react";
-("react");
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 
 interface SidebarProps {
@@ -22,98 +21,46 @@ interface SidebarProps {
 export default function Sidebar(props: SidebarProps) {
   const { user } = useUser();
   const uid = user?.id;
-  const dropdownRef = useRef<HTMLSelectElement | null>(null); // Create a reference for dropdown
+  const [selectedDegree, setSelectedDegree] = useState<string>("");
+  const [degreeInfo, setDegreeInfo] = useState<Record<string, any>>({});
 
-  const handleDegreeSubmit = () => {
-    if (dropdownRef.current) {
-      props.setDegree(dropdownRef.current.value);
-    }
-    //set concentration for this user
-    try {
-      fetch(
-        `http://localhost:3232/store-concentration?uid=${uid}&concentration=${props.degree}`,
-        {
-          method: "POST",
+  // Initialize dropdown from backend for existing users
+  useEffect(() => {
+    const fetchConcentration = async () => {
+      if (!user?.id) return;
+      try {
+        const response = await fetch(
+          `http://localhost:3232/get-concentration?uid=${user.id}`
+        );
+        const data = await response.json();
+        if (data.concentration) {
+          setSelectedDegree(data.concentration);
+          props.setDegree(data.concentration);
+          displayConcentrationRequirements(data.concentration);
+          console.log("user concentration from fetch", data.concentration);
         }
-      );
-      console.log("stored");
-    } catch (err) {
-      console.error("Network error while adding semester:", err);
-    }
-    displayConcentrationRequirements();
-    console.log(props.degree);
-  };
-  async function getUserConcentration(): Promise<string> {
-    if (!user?.id) {
-      console.log("no user id");
-      return "";
-    }
+      } catch (err) {
+        console.error("Error fetching user concentration", err);
+      }
+    };
+    fetchConcentration();
+  }, [user?.id]);
+
+  // Fetch and display requirements for a selected concentration
+  const displayConcentrationRequirements = async (degree: string) => {
+    if (!user?.id || !degree) return;
     try {
       const response = await fetch(
-        `http://localhost:3232/get-concentration?uid=${uid}`
+        `http://localhost:3232/check-concentration-requirements?uid=${user.id}`
       );
       const data = await response.json();
-      props.setDegree(data.concentration);
-      console.log("concentration", props.degree);
-      return props.degree;
+      setDegreeInfo(data.requirements_options);
+      console.log("Requirements for", degree, data.requirements_options);
     } catch (err) {
-      console.error("Network error while adding semester:", err);
-      return "";
+      console.error("Failed to fetch requirements:", err);
     }
-  }
-
-  // get concentration requirements for this user
-  async function displayConcentrationRequirements() {
-    const concentration = await getUserConcentration();
-    if (
-      concentration == "Computer Science Sc.B." ||
-      concentration === "Computer Science A.B"
-    ) {
-      props.setDegree(concentration);
-    }
-    const fetchData = async () => {
-      if (!user?.id) {
-        console.log("no user id");
-        return;
-      }
-      try {
-        const response = await fetch(
-          `http://localhost:3232/check-concentration-requirements?uid=${user.id}`
-        );
-        const data = await response.json();
-        const semestersData = data.requirements_options;
-
-        console.log("data", data);
-        console.log("requirements", semestersData);
-      } catch (err) {
-        console.error("Fetch failed:", err);
-      }
-    };
-    fetchData();
-  }
-
-  useEffect(() => {
-    console.log("effect");
-    const fetchData = async () => {
-      if (!user?.id) {
-        console.log("no user id");
-        return;
-      }
-      try {
-        const response = await fetch(
-          `http://localhost:3232/check-concentration-requirements?uid=${user.id}`
-        );
-        const data = await response.json();
-        const semestersData = data.requirements_options;
-
-        console.log("data", data);
-        console.log("requirements", semestersData);
-      } catch (err) {
-        console.error("Fetch failed:", err);
-      }
-    };
-    fetchData();
-  }, [user?.id]);
+    console.log("display");
+  };
 
   return (
     <aside
@@ -137,21 +84,49 @@ export default function Sidebar(props: SidebarProps) {
           </div>
         )}
       </div>
+
       {props.expanded && (
         <div>
           <select
-            ref={dropdownRef}
-            onChange={handleDegreeSubmit}
+            value={selectedDegree}
+            onChange={(e) => {
+              const newDegree = e.target.value;
+              setSelectedDegree(newDegree);
+              props.setDegree(newDegree);
+
+              // Store concentration in backend and display requirements
+              fetch(
+                `http://localhost:3232/store-concentration?uid=${uid}&concentration=${newDegree}`,
+                { method: "POST" }
+              )
+                .then(() => {
+                  console.log("Stored concentration");
+                  displayConcentrationRequirements(newDegree);
+                })
+                .catch((err) =>
+                  console.error(
+                    "Network error while storing concentration:",
+                    err
+                  )
+                );
+            }}
             className="concentration-dropdown"
           >
-            <option> Select a Concentration </option>
-            <option value={"Computer Science Sc.B."}>
+            <option value="">Select a Concentration</option>
+            <option value="Computer Science Sc.B.">
               Computer Science Sc.B.
             </option>
-            <option value={"Computer Science A.B."}>
-              Computer Science A.B.
-            </option>
+            <option value="Computer Science A.B.">Computer Science A.B.</option>
           </select>
+          <div className="concentration-req-container">
+            <ul>
+              {Object.keys(degreeInfo)
+                .reverse()
+                .map((key) => (
+                  <li key={key}>{key}</li>
+                ))}
+            </ul>{" "}
+          </div>
         </div>
       )}
     </aside>
