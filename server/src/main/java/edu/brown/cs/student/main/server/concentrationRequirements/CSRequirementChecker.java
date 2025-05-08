@@ -46,6 +46,7 @@ public class CSRequirementChecker {
   // New method: returns map of requirement name to list of USER'S courses that fulfill that
   // requirement
   public Map<String, List<String>> checkAllRequirements() {
+    System.out.println("Checking requirements for user: " + uid);
     Map<String, List<String>> results = new HashMap<>();
 
     List<String> requirementsList =
@@ -87,7 +88,7 @@ public class CSRequirementChecker {
 
       results.put(requirementName, fulfillingCourses);
     }
-
+    System.out.println(results);
     return results;
   }
 
@@ -308,9 +309,8 @@ public class CSRequirementChecker {
   }
 
   // ex: 6/16 for Sc.B
-  public int countCoursesCompleted() {
+  public int countCoursesCompleted(Map<String, List<String>> requirementResults) {
     int completedCourses = 0;
-    Map<String, List<String>> requirementResults = this.checkAllRequirements();
 
     // Loop over each requirement and its corresponding list of fulfilling courses that a user has
     // taken
@@ -322,7 +322,7 @@ public class CSRequirementChecker {
         completedCourses += fulfillingCourses.size();
       }
     }
-
+    System.out.println(completedCourses + " courses completed");
     return completedCourses;
   }
 
