@@ -223,7 +223,9 @@ export default function Sidebar(props: SidebarProps) {
                               {loading ? (
                                 <li>Loading Courses...</li>
                               ) : degreeInfo[key]?.length === 0 ? (
-                                <p>Sorry! Cannot list courses at the moment</p>
+                                <p className="cannot-list">
+                                  Sorry! Cannot list courses at the moment
+                                </p>
                               ) : (
                                 degreeInfo[key].map((course) => (
                                   <li
