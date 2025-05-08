@@ -99,8 +99,8 @@ function App() {
                   {/* modal content */}
                   <h2>How to Use BearTracks</h2>
                   <p>
-                    Search for courses and drag and drop courses them into semesters. Use the trash icon to
-                    remove courses. Click "+ New Semester" to add a new term.
+                    Search for courses and drag and drop them into semesters. Use the trash
+                    icon to remove courses. Click "+ New Course" to add a new course.
                   </p>
                 </div>
               </div>

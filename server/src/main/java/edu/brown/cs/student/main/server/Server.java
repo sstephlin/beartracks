@@ -13,6 +13,7 @@ import edu.brown.cs.student.main.server.handlers.GetConcentrationHandler;
 import edu.brown.cs.student.main.server.handlers.GetConcentrationRequirementsHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserCoursesHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserCoursesWithTitleHandler;
+import edu.brown.cs.student.main.server.handlers.GetAllCourseAvailabilityHandler;
 import edu.brown.cs.student.main.server.handlers.GetViewHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveCourseHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveSemesterHandler;
@@ -64,13 +65,14 @@ public class Server {
       firebaseUtils = new FirebaseUtilities();
 
       // 2. Parse CourseCatalog once at startup
-      CourseCatalog catalog = CourseCSVParser.parse("data/clean_prereqs.csv");
+      CourseCatalog catalog = CourseCSVParser.parse("data/csci_prereqs_with_non_csci.csv");
 
       Spark.post("add-course", new AddCourseHandler(firebaseUtils, catalog));
       Spark.post("add-semester", new AddSemesterHandler(firebaseUtils));
       Spark.post("remove-course", new RemoveCourseHandler(firebaseUtils, catalog));
       Spark.post("remove-semester", new RemoveSemesterHandler(firebaseUtils));
       Spark.get("check-semester", new CheckSemesterHandler(catalog));
+      Spark.get("get-all-course-availability", new GetAllCourseAvailabilityHandler(catalog));
       Spark.get("search-course", new SearchCourseHandler(catalog));
       Spark.post("store-concentration", new StoreConcentrationHandler(firebaseUtils));
       Spark.get("get-concentration", new GetConcentrationHandler(firebaseUtils));

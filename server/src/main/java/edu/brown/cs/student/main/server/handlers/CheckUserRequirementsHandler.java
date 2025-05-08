@@ -87,7 +87,7 @@ public class CheckUserRequirementsHandler implements Route {
           new CSRequirementChecker(this.storageHandler, uid, userCourses, concentration);
       Map<String, List<String>> requirementResults = checker.checkAllRequirements();
 
-      int coursesCompleted = checker.countCoursesCompleted();
+      int coursesCompleted = checker.countCoursesCompleted(requirementResults);
       int totalRequired = checker.getTotalCoursesRequired();
 
       responseMap.put("response_type", "success");

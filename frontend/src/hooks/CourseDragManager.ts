@@ -211,10 +211,31 @@ export function CourseDragManager(
               courseCode,
               targetSemesterId
             );
+
+            // Update the moved course's prereq status
             await updatePrereqStatusLocal(movedCourse.id, prereqsMet);
             console.log(
               `🔄 Rechecked moved course ${courseCode}: prereqsMet=${prereqsMet}`
             );
+
+            // Find courses that might have the moved course as a prerequisite
+            // and check their prereq status too
+            for (const course of updatedCourses) {
+              if (
+                course.semesterId === targetSemesterId &&
+                course.id !== movedCourse.id
+              ) {
+                const coursePrereqsMet = await checkPrereqs(
+                  userId,
+                  course.courseCode,
+                  course.semesterId
+                );
+                await updatePrereqStatusLocal(course.id, coursePrereqsMet);
+                console.log(
+                  `🔄 Rechecked other course in same semester ${course.courseCode}: prereqsMet=${coursePrereqsMet}`
+                );
+              }
+            }
           }
 
           // Then recheck all other prerequisites that might be affected
@@ -234,96 +255,6 @@ export function CourseDragManager(
       }
     }
   };
-
-  // const handleDrop = async (e: React.DragEvent, targetSemesterId: string) => {
-  //   e.preventDefault();
-  //   const courseId = e.dataTransfer.getData("courseId");
-  //   const courseCode = e.dataTransfer.getData("courseCode");
-  //   const title = e.dataTransfer.getData("title");
-  //   const sourceSemesterId = e.dataTransfer.getData("semesterId");
-
-  //   // Don't do anything if dropping on the same semester
-  //   if (sourceSemesterId === targetSemesterId) {
-  //     return;
-  //   }
-
-  //   if (courseId || (courseCode && sourceSemesterId)) {
-  //     // Get the updated state using a promise
-  //     const updatedCourses = await new Promise<CourseItem[]>((resolve) => {
-  //       setCourses((prevCourses) => {
-  //         const updated = prevCourses.map((course) => {
-  //           const isMatch = courseId
-  //             ? course.id === courseId
-  //             : course.courseCode === courseCode &&
-  //               course.semesterId === sourceSemesterId;
-
-  //           return isMatch
-  //             ? { ...course, semesterId: targetSemesterId }
-  //             : course;
-  //         });
-  //         resolve(updated);
-  //         return updated;
-  //       });
-  //     });
-
-  //     console.log(
-  //       `Moved course from ${sourceSemesterId} to ${targetSemesterId}`
-  //     );
-
-  //     // Add this course to our tracking Set to prevent duplicate backend operations
-  //     // during prereq rechecking
-  //     const movedCourseKey = `${courseCode}-${targetSemesterId}`;
-  //     setRecentlyMovedCourses((prev) => {
-  //       const newSet = new Set(prev);
-  //       newSet.add(movedCourseKey);
-  //       return newSet;
-  //     });
-
-  //     // Sync to backend
-  //     const [newTerm, newYear] = targetSemesterId.split(" ");
-  //     const [oldTerm, oldYear] = sourceSemesterId.split(" ");
-
-  //     const userId = uid;
-  //     if (userId) {
-  //       try {
-  //         // Remove from old semester
-  //         await fetch(
-  //           `http://localhost:3232/remove-course?uid=${userId}&code=${encodeURIComponent(
-  //             courseCode
-  //           )}&term=${oldTerm}&year=${oldYear}`,
-  //           { method: "POST" }
-  //         );
-  //         console.log("✅ Removed course from previous semester.");
-
-  //         // Add to new semester
-  //         await fetch(
-  //           `http://localhost:3232/add-course?uid=${userId}&code=${encodeURIComponent(
-  //             courseCode
-  //           )}&title=${encodeURIComponent(
-  //             title
-  //           )}&term=${newTerm}&year=${newYear}`,
-  //           { method: "POST" }
-  //         );
-  //         console.log("✅ Added course to new semester.");
-
-  //         // Now recheck prerequisites with the updated courses, but use the separate
-  //         // function that doesn't sync with backend
-  //         setTimeout(() => {
-  //           recheckAllPrereqs(updatedCourses);
-
-  //           // Clear the recently moved courses tracking after prereq check is done
-  //           setTimeout(() => {
-  //             setRecentlyMovedCourses(new Set());
-  //           }, 500);
-  //         }, 100);
-  //       } catch (err) {
-  //         console.error("❌ Error syncing course move:", err);
-  //         // Clear tracking set in case of error
-  //         setRecentlyMovedCourses(new Set());
-  //       }
-  //     }
-  //   }
-  // };
 
   const getCoursesForSemester = (semesterId: string) => {
     return courses.filter((course) => course.semesterId === semesterId);

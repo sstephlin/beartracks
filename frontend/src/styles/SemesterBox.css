@@ -68,6 +68,7 @@
   justify-content: center;
   margin: 5px 0;
   text-align: center;
+  position: relative;
 }
 
 /* Filled (Occupied) Course Slot */
@@ -85,7 +86,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+  position: relative;
+  padding: 10px;
+
 }
 
 /* Course Code (Top Line) */
@@ -99,6 +102,15 @@
 .course-title {
   font-weight: normal;
   font-size: 14px;
+}
+
+
+.capstone-checkbox {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  transform: scale(1.2);
+  cursor: pointer;
 }
 
 /* Add Course Button */
@@ -179,4 +191,57 @@
   /* CHANGE: red border/background */
   border: 2px solid #f44336;
   background-color: #ffebee;
+}
+
+.semester-box.error {
+  border: 2px solid #ff4444 !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.semester-box.error::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  z-index: 0;
+}
+
+.semester-box.error .semester-content {
+  position: relative;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.semester-box.error .semester-header {
+  position: relative;
+  z-index: 1;
+  background-color: rgba(43, 25, 25, 0.95);
+}
+
+.semester-error-message {
+  color: #ff4444;
+  font-size: 14px;
+  padding: 8px;
+  text-align: center;
+  background-color: rgba(255, 68, 68, 0.1);
+  border-radius: 4px;
+  margin: 8px;
+  animation: fadeIn 0.3s ease-in;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

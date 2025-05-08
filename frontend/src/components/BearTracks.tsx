@@ -45,6 +45,12 @@ export default function BearTracks(props: BearTracksProps) {
   const handleDragStartSearchCourse = (e: React.DragEvent, course: any) => {
     e.dataTransfer.setData("searchCourse", JSON.stringify(course));
     setDraggedSearchCourse(course);
+    // Call the Carousel's handler through a custom event
+    window.dispatchEvent(
+      new CustomEvent("searchCourseDragStart", {
+        detail: { course }
+      })
+    );
   };
 
   const handleDragEndSearchCourse = (e: React.DragEvent) => {

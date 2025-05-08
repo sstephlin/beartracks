@@ -8,7 +8,7 @@ CSCI 0150,Introduction to Object-Oriented Programming and Computer Science,[],,,
 CSCI 0170,Computer Science: An Integrated Introduction,[],,,,[],,,,[],,,,[],,,,[],,
 CSCI 0190,Accelerated Introduction to Computer Science,[],,,,[],,,,[],,,,[],,,,[],,
 CSCI 0320,Introduction to Software Engineering,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0190'}]",,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0190'}]",,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,"[{'CSCI 0160', 'CSCI 0200', 'CSCI 0180', 'CSCI 0220', 'CSCI 0190'}]",,"[{'CSCI 0160', 'CSCI 0200', 'CSCI 0180', 'CSCI 0220', 'CSCI 0190'}]",,"[{'CSCI 0160', 'CSCI 0200', 'CSCI 0180', 'CSCI 0220', 'CSCI 0190'}]",,"[{'CSCI 0160', 'CSCI 0200', 'CSCI 0180', 'CSCI 0220', 'CSCI 0190'}]",,"[{'CSCI 0160', 'CSCI 0200', 'CSCI 0180', 'CSCI 0220', 'CSCI 0190'}]",,
-CSCI 0330,Introduction to Computer Systems,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0190'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,,,,,
+,Introduction to Computer Systems,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0190'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,,,,,
 CSCI 1010,Theory of Computation,"[{'CSCI 1550', 'APMA 1655', 'CSCI 0220', 'APMA 1650', 'CSCI 0450', 'CSCI 1450', 'CSCI 1570'}]",,,,"[{'CSCI 1550', 'APMA 1655', 'CSCI 0220', 'APMA 1650', 'CSCI 0450', 'CSCI 1450', 'CSCI 1570'}]",,,,"[{'CSCI 1550', 'APMA 1655', 'CSCI 0220', 'APMA 1650', 'CSCI 0450', 'CSCI 1450', 'CSCI 1570'}]",,,,"[{'CSCI 1550', 'APMA 1655', 'CSCI 0220', 'APMA 1650', 'CSCI 0450', 'CSCI 1450', 'CSCI 1570'}]",,,,"[{'CSCI 1550', 'APMA 1655', 'CSCI 0220', 'APMA 1650', 'CSCI 0450', 'CSCI 1450', 'CSCI 1570'}]",,
 CSCI 1230,Introduction to Computer Graphics,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,
 CSCI 1234,Computer Graphics Lab,[],,,,[],,,,[],,,,[],,,,[],,
@@ -19,7 +19,7 @@ CSCI 1360,Human Factors in Cybersecurity,[],,[],,,,[],,[],,,,[],,,,[],,
 CSCI 1410,Artificial Intelligence,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0190'}, {'APMA 1655', 'CSCI 0220', 'APMA 1650', 'CSCI 0450', 'CSCI 1450'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}, {'APMA 1655', 'CSCI 0220', 'APMA 1650', 'CSCI 0450', 'CSCI 1450'}]",,,,,,,,,,,,,,
 CSCI 1430,Computer Vision,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0190'}]",,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0190'}]",,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}, {'CSCI 0530', 'MATH 0530', 'MATH 0540', 'MATH 0520'}]",,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}, {'CSCI 0530', 'MATH 0530', 'MATH 0540', 'MATH 0520'}]",,[],,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}, {'CSCI 0530', 'MATH 0530', 'MATH 0540', 'MATH 0520'}]"
 CSCI 1450,Advanced Introduction to Probability for Computing and Data Science,"[{'MATH 0100*', 'MATH 0190*', 'MATH 0170*'}]",,,,,,,,"[{'MATH 0100*', 'MATH 0190*', 'MATH 0170*'}]",,,,,,,,,,
-CSCI 1470,Deep Learning,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'CSCI 0220'}]",,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'CSCI 0220'}]",,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0200', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'CSCI 0220'}]",,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0200', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'CSCI 0220'}]",,,,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0200', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'CSCI 0220'}]",,,,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0200', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'MATH 1210', 'CSCI 0220'}]",,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0200', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'MATH 1210', 'CSCI 0220'}]",,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0200', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'MATH 1210', 'CSCI 0220'}]"
+,Deep Learning,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'CSCI 0220'}]",,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'CSCI 0220'}]",,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0200', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'CSCI 0220'}]",,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0200', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'CSCI 0220'}]",,,,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0200', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'CSCI 0220'}]",,,,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0200', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'MATH 1210', 'CSCI 0220'}]",,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0200', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'MATH 1210', 'CSCI 0220'}]",,"[{'CSCI 0190', 'CSCI 0170', 'CSCI 0200', 'CSCI 0150'}, {'CSCI 0530', 'MATH 0540', 'MATH 0520'}, {'APMA 1655', 'CSCI 0450', 'CSCI 1450', 'MATH 1610', 'APMA 1650', 'MATH 1210', 'CSCI 0220'}]"
 CSCI 1510,Introduction to Cryptography and Computer Security,"[{'CSCI 0220'}, {'CSCI 0510', 'CSCI 1010'}]",,,,"[{'CSCI 0220'}, {'CSCI 0510', 'CSCI 1010'}]",,,,"[{'CSCI 0220'}, {'CSCI 0510', 'CSCI 1010'}]",,,,"[{'CSCI 0220'}, {'CSCI 0510', 'CSCI 1010'}]",,,,"[{'CSCI 0220'}, {'CSCI 0510', 'CSCI 1010'}]",,
 CSCI 1570,Design and Analysis of Algorithms,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0190'}, {'CSCI 1010', 'MATH 0750', 'MATH 1010', 'MATH 0540', 'CSCI 0220', 'MATH 1530', 'CSCI 0510', 'MATH 0520', 'CSCI 0450', 'CSCI 1450'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}, {'CSCI 1010', 'MATH 0750', 'MATH 1010', 'MATH 0540', 'CSCI 0220', 'MATH 1530', 'CSCI 0510', 'MATH 0520', 'CSCI 0450', 'CSCI 1450'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}, {'CSCI 1010', 'MATH 0750', 'MATH 1010', 'MATH 0540', 'CSCI 0220', 'MATH 1530', 'CSCI 0510', 'MATH 0520', 'CSCI 0450', 'CSCI 1450'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}, {'CSCI 1010', 'MATH 0750', 'MATH 1010', 'MATH 0540', 'CSCI 0220', 'MATH 1530', 'CSCI 0510', 'MATH 0520', 'CSCI 0450', 'CSCI 1450'}]",,,,"[{'CSCI 0180', 'CSCI 0160', 'CSCI 0200', 'CSCI 0190'}, {'MATH 0750', 'MATH 1010', 'MATH 0540', 'MATH 1530', 'CSCI 0220', 'CSCI 0510', 'CSCI 1010', 'CSCI 0450', 'CSCI 1450'}]",,
 CSCI 1600,Real-Time and Embedded Software,"[{'CSCI 0300', 'CSCI 0330', 'CSCI 1330', 'CSCI 0320', 'CSCI 1310'}]",,,,"[{'CSCI 0300', 'CSCI 0330', 'CSCI 1330', 'CSCI 0320', 'CSCI 1310'}]",,,,"[{'CSCI 0300', 'CSCI 0330', 'CSCI 1330', 'CSCI 0320', 'CSCI 1310'}]",,,,"[{'CSCI 0300', 'CSCI 0330', 'CSCI 1330', 'CSCI 0320', 'CSCI 1310'}]",,,,"[{'CSCI 0300', 'CSCI 0330', 'CSCI 1330', 'CSCI 0320', 'CSCI 1310'}]",,
@@ -159,6 +159,7 @@ APMA 1360,Applied Dynamical Systems,,,[],,[],,,,,,[],,,,[],,,,[]
 APMA 1650,Introduction to Probability and Statistics with Calculus,[],,[],,[],,[],,[],[],[],[],[],,[],,[],,[]
 APMA 1655,Introduction to Probability and Statistics with Theory,[],,[],,[],,[],,[],,[],,[],,[],,[],,[]
 APMA 1660,Statistical Inference II,,,[],,,,[],,,,[],,,,[],,,,[]
+APMA 1670,,,,,,,,,,,,,,,,,,,,
 APMA 1690,Computational Probability and Statistics,[],,,,[],,,,[],,,,[],,,,[],,
 APMA 1710,Information Theory,,,[],,[],,,,,,[],,,,[],,[],,
 APMA 1720,Monte Carlo Simulation with Applications to Finance,,,,,,,[],,,,[],,,,,,,,
@@ -166,13 +167,20 @@ APMA 1740,Recent Applications of Probability and Statistics,,,[],,,,[],,,,[],,,,
 APMA 1910,Race and Gender in the Scientific Community,[],,,,[],,,,[],,,,[],,,,[],,
 APMA 1930W,Probabilities in Quantum Mechanics,,,,,[],,,,[],,,,,,[],,,,[]
 APMA 1930X,"Probability, Optimization, and Stochastic Calculus",,,,,,,,,[],,,,[],,,,,,
+CLPS 1211,,,,,,,,,,,,,,,,,,,,
 CLPS 1291,"Computational Methods for Mind, Brain and Behavior",,,,,[],,,,[],,,,,,,,,,
 CLPS 1342,Compositional Semantics,,,[],,,,,,,,[],,,,,,,,
+CLPS 1350,,,,,,,,,,,,,,,,,,,,
+CLPS 1491,,,,,,,,,,,,,,,,,,,,
+CLPS 1520,,,,,,,,,,,,,,,,,,,,
 CLPS 1950,"Deep Learning in Brains, Minds and Machines",,,[],,,,[],,,,[],,,,,,,,
+CLPS 1951X,,,,,,,,,,,,,,,,,,,,
+COGS 1200,,,,,,,,,,,,,,,,,,,,
 DATA 0200,Data Science Fluency,,,[],,,,[],,,,[],,,,[],,,,[]
 DATA 1030,Hands-on Data Science,[],,,,[],,,,[],,,,[],,,,[],,
 DATA 1080,Large Language Models and Generative AI,,,,,,,,,,,,,[],,[],,,,
 DATA 1340,Machine Learning for the Earth and Environment (EEPS 1340).,,,,,,,,,[],,,,,,[],,,,
+DEVL 1810,,,,,,,,,,,,,,,,,,,,
 ECON 1490,Theory of Market Design,,,,,[],,[],,,,[],,[],,[],,[],,
 ECON 1870,Game Theory and Applications to Economics,,,,,[],,,,,,,,[],,,,[],,
 EEPS 1340,Machine Learning for the Earth and Environment,,,,,,,,,[],,,,,,[],,,,
@@ -185,6 +193,7 @@ ENGN 1610,Image Understanding,,,,,[],,,,[],,,,[],,,,[],,
 ENGN 1630,Digital Electronics Systems Design,[],,,,[],,,,[],,,,[],,,,[],,
 ENGN 1640,Design of Computing Systems,,,[],,,,[],,,,[],,,,[],,,,[]
 ENGN 1650,Embedded Microprocessor Design,[],,,,[],,,,[],,,,[],,,,[],,
+ENGN 1660,,,,,,,,,,,,,,,,,,,,
 ENGN 1800,Social Impact of Emerging Technologies: The Role of Scientists and Engineers,,,,,,,,,[],,,,[],,,,,,
 ENGN 1931J,Social Impact of Emerging Technologies – The Role of Scientists and Engineers,[],,,,[],,,,,,,,,,,,,,
 ENGN 1931T,"Entrepreneurship Practicum: Starting, Running, and Scaling Ventures",[],,[],,[],,[],,,,[],,[],,[],,[],,[]
@@ -192,11 +201,13 @@ ENGN 2520,Pattern Recognition and Machine Learning,,,[],,,,,,,,[],,,,[],,,,[]
 IAPA 1701A,Technology and Development,[],,,,,,,,,,,,,,,,,,
 IAPA 1801,Science and Technology Policy in the Global South,[],,,,[],,,,,,[],,,,,,,,
 MATH 0100,"Single Variable Calculus, Part II",[],,[],,[],,[],,[],,[],,[],,[],,[],,[]
+MATH 0170,,,,,,,,,,,,,,,,,,,,
 MATH 0180,Multivariable Calculus,[],,[],,[],,[],,[],,[],,[],,[],[],[],,[]
 MATH 0190,"Single Variable Calculus, Part II (Physics/Engineering)",[],,,,[],,,,[],,,,[],,,,[],,
 MATH 0200,Multivariable Calculus (Physics/Engineering),[],,[],,[],,[],,[],,[],,[],,[],,[],,[]
 MATH 0350,Multivariable Calculus With Theory,[],,,,[],,,,[],,,,[],,,,[],,
 MATH 0520,Linear Algebra,[],,[],[],[],,[],[],[],,[],[],[],,[],,[],,[]
+MATH 0530,,,,,,,,,,,,,,,,,,,,
 MATH 0540,Linear Algebra With Theory,[],,[],,[],,[],,[],,[],,[],,[],,[],,[]
 MATH 0750,Introduction to Higher Mathematics,,,,,,,,,[],,,,[],,,,,,
 MATH 1010,Analysis: Functions of One Variable,,,[],,,,[],,,,[],,,,[],,[],,[]
@@ -210,6 +221,11 @@ NEUR 1440,Mechanisms and Meaning of Neural Dynamics,[],,,,[],,,,[],,,,[],,,,[],,
 NEUR 1660,Neural Computation in Learning and Decision-Making,,,[],,,,[],,,,,,,,[],,,,[]
 PHIL 1630,Mathematical Logic,,,,,[],,,,,,,,[],,,,,,
 PHIL 1635,Advanced Deductive Logic,,,[],,,,,,[],,,,,,,,,,
+PHIL 1855,,,,,,,,,,,,,,,,,,,,
+PHIL 1880,,,,,,,,,,,,,,,,,,,,
 PHP 1855,Infectious Disease Modeling,,,,,,,,,,,,,[],,,,[],,
+PHP2630,,,,,,,,,,,,,,,,,,,,
+PHP2650,,,,,,,,,,,,,,,,,,,,
 PHYS 1600,Computational Physics,,,,,,,[],,,,[],,,,[],,,,[]
 PHYS 2550,Applied Machine Learning and AI,,,,,,,,,,,[],,,,[],,[],,
+PLCY 1702X,,,,,,,,,,,,,,,,,,,,
