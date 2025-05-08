@@ -14,6 +14,7 @@ import {
 function App() {
   const [expanded, setExpanded] = useState<boolean>(true);
   const [degree, setDegree] = useState<string>("");
+  const [refreshSidebar, setRefreshSidebar] = useState(false);
 
   // add state to toggle visibility of disclaimer
   const [showDisclaimer, setShowDisclaimer] = useState(false);
@@ -33,6 +34,7 @@ function App() {
           setExpanded={setExpanded}
           degree={degree}
           setDegree={setDegree}
+          refreshSidebar={refreshSidebar}
         />
         <div className="header-and-content">
           <header
@@ -70,7 +72,10 @@ function App() {
             </div>
           </header>
           <main className="main-content">
-            <BearTracks expanded={expanded} />
+            <BearTracks
+              expanded={expanded}
+              setRefreshSidebar={setRefreshSidebar}
+            />
 
             {/* floating help icon that toggles the disclaimer */}
             <div>
@@ -99,8 +104,9 @@ function App() {
                   {/* modal content */}
                   <h2>How to Use BearTracks</h2>
                   <p>
-                    Search for courses and drag and drop them into semesters. Use the trash
-                    icon to remove courses. Click "+ New Course" to add a new course.
+                    Search for courses and drag and drop them into semesters.
+                    Use the trash icon to remove courses. Click "+ New Course"
+                    to add a new course.
                   </p>
                 </div>
               </div>

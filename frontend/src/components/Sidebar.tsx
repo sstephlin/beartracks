@@ -9,6 +9,7 @@ interface SidebarProps {
   setExpanded: Dispatch<SetStateAction<boolean>>;
   degree: string;
   setDegree: Dispatch<SetStateAction<string>>;
+  refreshSidebar: boolean;
 }
 
 export default function Sidebar(props: SidebarProps) {
@@ -19,6 +20,7 @@ export default function Sidebar(props: SidebarProps) {
   const [courseInfo, setCourseInfo] = useState<Record<string, string[]>>({});
   const [numCompleted, setNumCompleted] = useState<number>(0);
   const [numRequired, setNumRequired] = useState<number>(0);
+  // const [refreshSidebar, setRefreshSidebar] = useState(false);
 
   // const[progress, setProgress] =
   const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
@@ -45,6 +47,13 @@ export default function Sidebar(props: SidebarProps) {
     };
     fetchConcentration();
   }, [user?.id]); // Fetch and display requirements for a selected concentration
+
+  useEffect(() => {
+    console.log("effecting");
+    if (selectedDegree) {
+      displayConcentrationRequirements(selectedDegree);
+    }
+  }, [props.refreshSidebar]);
 
   // Fetch requirements from backend
   const displayConcentrationRequirements = async (degree: string) => {

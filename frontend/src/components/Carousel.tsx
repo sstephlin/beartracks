@@ -16,6 +16,7 @@ interface CarouselProps {
   setViewCount: React.Dispatch<React.SetStateAction<number>>;
   draggedSearchCourse: any | null;
   expanded: boolean; // uid: string | undefined;
+  setRefreshSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const allSemesters = [
@@ -52,6 +53,7 @@ export default function Carousel({
   setViewCount,
   draggedSearchCourse,
   expanded,
+  setRefreshSidebar,
 }: CarouselProps) {
   // const [boxIds, setBoxIds] = useState<number[]>([]);
   // const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
@@ -68,7 +70,7 @@ export default function Carousel({
   const [courses, setCourses] = useState<CourseItem[]>([]);
   const { user } = useUser();
   const [showManualAddDisclaimer, setShowManualAddDisclaimer] = useState(false);
-  
+
   const [capstoneCodes, setCapstoneCodes] = useState<Set<string>>(new Set());
   const [dropError, setDropError] = useState<{
     message: string;
@@ -654,6 +656,7 @@ export default function Carousel({
         console.error("Failed to sync course move to backend:", err);
       }
     }
+    setRefreshSidebar((prev) => !prev);
   };
 
   // const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
