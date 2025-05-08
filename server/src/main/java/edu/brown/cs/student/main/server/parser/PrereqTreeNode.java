@@ -13,15 +13,19 @@ public class PrereqTreeNode {
   public Type type;
   public List<PrereqTreeNode> children;
   public String courseCode;
+  public Boolean isConcurrent;
 
+  // For internal nodes (AND/OR)
   public PrereqTreeNode(Type type) {
     this.type = type;
     this.children = new ArrayList<>();
   }
 
-  public PrereqTreeNode(String courseCode) {
+  // For leaf course node
+  public PrereqTreeNode(String courseCode, boolean isConcurrent) {
     this.type = Type.COURSE;
     this.courseCode = courseCode;
+    this.isConcurrent = isConcurrent;
   }
 
   @Override

@@ -127,8 +127,14 @@ public class AddCourseHandlerHelper {
         return false;
       }
 
-      if (compareSemesters(prereqSemester, targetSemester) >= 0) {
-        return false;
+      if (node.isConcurrent) {
+        if (compareSemesters(prereqSemester, targetSemester) >= 0) { // equal to 0 means current semester
+          return false; // didn't meet prereqs
+        }
+      } else {
+        if (compareSemesters(prereqSemester, targetSemester) > 0) { // equal to 0 means current semester
+          return false; // didn't meet prereqs
+        }
       }
 
       // Recursively check prereqs of this prereq
@@ -154,6 +160,7 @@ public class AddCourseHandlerHelper {
     return false;
   }
 
+  // compares years FIRST. if they're the same, compare the terms.
   public static int compareSemesters(String a, String b) {
     String[] terms = {"Spring", "Summer", "Fall", "Winter"};
     String[] aParts = a.split(" ");
