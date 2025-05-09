@@ -124,7 +124,7 @@ public class CourseCSVParser {
     }
 
     // If we get here, it's just a single token with no outer bracket
-//    return new PrereqTreeNode(str);
+    //    return new PrereqTreeNode(str);
 
     boolean isConcurrent = str.endsWith("*");
     String cleaned = str.replace("*", "").trim();

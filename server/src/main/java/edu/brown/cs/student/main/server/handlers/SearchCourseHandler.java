@@ -78,38 +78,39 @@ public class SearchCourseHandler implements Route {
     }
 
     // Sort two courses by courseCode (which is the key in the Map<String, String>)
-//    matches.sort(
-//        (a, b) -> {
-//          String codeA = a.get("courseCode");
-//          String codeB = b.get("courseCode");
-//
-//          // Split courseCode into department and number
-//          String[] partsA = codeA.split("\\s+");
-//          String[] partsB = codeB.split("\\s+");
-//
-//          String deptA = partsA[0];
-//          String deptB = partsB[0];
-//
-//          int numA = partsA.length > 1 ? Integer.parseInt(partsA[1]) : 0;
-//          int numB = partsB.length > 1 ? Integer.parseInt(partsB[1]) : 0;
-//
-//          int deptCompare = deptA.compareTo(deptB);
-//          return deptCompare != 0 ? deptCompare : Integer.compare(numA, numB);
-//        });
+    //    matches.sort(
+    //        (a, b) -> {
+    //          String codeA = a.get("courseCode");
+    //          String codeB = b.get("courseCode");
+    //
+    //          // Split courseCode into department and number
+    //          String[] partsA = codeA.split("\\s+");
+    //          String[] partsB = codeB.split("\\s+");
+    //
+    //          String deptA = partsA[0];
+    //          String deptB = partsB[0];
+    //
+    //          int numA = partsA.length > 1 ? Integer.parseInt(partsA[1]) : 0;
+    //          int numB = partsB.length > 1 ? Integer.parseInt(partsB[1]) : 0;
+    //
+    //          int deptCompare = deptA.compareTo(deptB);
+    //          return deptCompare != 0 ? deptCompare : Integer.compare(numA, numB);
+    //        });
 
-    matches.sort((a, b) -> {
-      String codeA = a.get("courseCode");
-      String codeB = b.get("courseCode");
+    matches.sort(
+        (a, b) -> {
+          String codeA = a.get("courseCode");
+          String codeB = b.get("courseCode");
 
-      String deptA = codeA.replaceAll("[^A-Za-z]", "");
-      String deptB = codeB.replaceAll("[^A-Za-z]", "");
+          String deptA = codeA.replaceAll("[^A-Za-z]", "");
+          String deptB = codeB.replaceAll("[^A-Za-z]", "");
 
-      int numA = extractNumber(codeA);
-      int numB = extractNumber(codeB);
+          int numA = extractNumber(codeA);
+          int numB = extractNumber(codeB);
 
-      int deptCompare = deptA.compareTo(deptB);
-      return deptCompare != 0 ? deptCompare : Integer.compare(numA, numB);
-    });
+          int deptCompare = deptA.compareTo(deptB);
+          return deptCompare != 0 ? deptCompare : Integer.compare(numA, numB);
+        });
 
     return matches;
   }

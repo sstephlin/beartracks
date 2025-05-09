@@ -33,5 +33,3 @@ public interface StorageInterface {
   String findSemesterOfCapstone(String uid, String courseCode)
       throws ExecutionException, InterruptedException;
 }
-
- 

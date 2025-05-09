@@ -1021,17 +1021,14 @@ export default function Carousel({
                           const [term, year] =
                             selectedCourse.semesterId.split(" ");
                           fetch(
-                            `http://localhost:3232/update-capstone?uid=${user?.id}&semester=${term} ${year}&courseCode=${selectedCourse.courseCode}`,
+                            `http://localhost:3232/update-capstone?uid=${user?.id}&term=${term}&year=${year}&courseCode=${encodeURIComponent(selectedCourse.courseCode)}`,
                             {
                               method: "POST",
                             }
                           )
                             .then((res) => res.json())
                             .then((data) => {
-                              console.log(
-                                "✅ Updated capstone in backend",
-                                data
-                              );
+                              console.log("✅ Updated capstone in backend. Full JSON response:", JSON.stringify(data, null, 2));
                             });
                         }
                       }
