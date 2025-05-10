@@ -48,7 +48,7 @@ export default function BearTracks(props: BearTracksProps) {
     // Call the Carousel's handler through a custom event
     window.dispatchEvent(
       new CustomEvent("searchCourseDragStart", {
-        detail: { course }
+        detail: { course },
       })
     );
   };
@@ -97,7 +97,11 @@ export default function BearTracks(props: BearTracksProps) {
   };
 
   return (
-    <div className="bear-tracks-container">
+    <div
+      className={`bear-tracks-container ${
+        props.expanded ? "expanded" : "collapsed"
+      }`}
+    >
       <div className="searchbar-and-trash-container">
         <SearchBar onSearch={handleSearch} />
         {/* Enlarged trash area with the visible trash can in the center */}
@@ -107,14 +111,20 @@ export default function BearTracks(props: BearTracksProps) {
           onDragLeave={() => setIsTrashHovered(false)}
           onDrop={handleDropToTrash}
         >
-          <div className={`trash-area ${isTrashHovered ? "trash-hovered" : ""}`}>
-            <Trash2 size={48} strokeWidth={2} />
+          <div
+            className={`trash-area ${isTrashHovered ? "trash-hovered" : ""}`}
+          >
+            <Trash2 size={40} strokeWidth={2} />
           </div>
         </div>
       </div>
 
       {searchResults.length > 0 && (
-        <div className="search-results-container">
+        <div
+          className={`search-results-container ${
+            props.expanded ? "expanded" : "collapsed"
+          }`}
+        >
           {searchResults.map((course, index) => (
             <div
               key={index}

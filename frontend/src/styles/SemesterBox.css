@@ -1,12 +1,13 @@
 /* styles/SemesterBox.css */
 
 /* Semester Box Layouts */
-.semester-box.expanded {
+.semester-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 250px; /* fixed size when sidebar expanded */
-  min-height: 400px;
+  justify-content: center;
+  width: 17vw; /* fixed size when sidebar expanded */
+  height: 70vh;
   background-color: #e4e4e4;
   border-radius: 8px;
   margin: 0 8px;
@@ -16,7 +17,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 300px; /* fixed size when sidebar collapsed */
+  width: 20vw; /* fixed size when sidebar collapsed */
   min-height: 400px;
   background-color: #e4e4e4;
   border-radius: 8px;
@@ -39,7 +40,7 @@
 /* Semester Content (course list area) */
 .semester-content {
   background-color: white;
-  height: 450px;
+  height: 60vh;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -88,7 +89,6 @@
   align-items: center;
   position: relative;
   padding: 10px;
-
 }
 
 /* Course Code (Top Line) */
@@ -103,7 +103,6 @@
   font-weight: normal;
   font-size: 14px;
 }
-
 
 .capstone-checkbox {
   position: absolute;
@@ -201,7 +200,7 @@
 }
 
 .semester-box.error::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -242,6 +241,10 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

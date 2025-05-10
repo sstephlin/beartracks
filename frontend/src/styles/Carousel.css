@@ -1,15 +1,21 @@
 .carousel-outer-wrapper {
+  display: flex;
   position: relative;
   width: 80vw;
   overflow: hidden;
   align-items: center;
-  display: flex;
   justify-content: center; /* Center the carousel itself */
+  margin: 0 auto;
+}
+.carousel-outer-wrapper.collapsed {
+  width: 94vw;
+}
+.carousel-outer-wrapper.two.collapsed {
+  width: 47vw;
 }
 .carousel-outer-wrapper.two {
-  width: 43vw;
+  width: 42vw;
 }
-
 .carousel-inner-wrapper {
   overflow-x: auto;
   overflow-y: hidden;
@@ -118,8 +124,20 @@
 }
 
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translate(-50%, -20px); }
-  10% { opacity: 1; transform: translate(-50%, 0); }
-  90% { opacity: 1; transform: translate(-50%, 0); }
-  100% { opacity: 0; transform: translate(-50%, -20px); }
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  90% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
 }
