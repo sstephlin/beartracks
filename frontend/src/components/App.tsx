@@ -44,7 +44,7 @@ function App() {
               <div className="logo-title">
                 <a href="index.html" className="logo-link">
                   <img
-                    src="/BearTracks.png"
+                    src="/beartracks_logo2.png"
                     alt="Bear Logo"
                     className="logo-image"
                   />
@@ -99,8 +99,9 @@ function App() {
                   {/* modal content */}
                   <h2>How to Use BearTracks</h2>
                   <p>
-                    Search for courses and drag and drop them into semesters. Use the trash
-                    icon to remove courses. Click "+ New Course" to add a new course.
+                    Search for courses and drag and drop them into semesters.
+                    Use the trash icon to remove courses. Click "+ New Course"
+                    to add a new course.
                   </p>
                 </div>
               </div>

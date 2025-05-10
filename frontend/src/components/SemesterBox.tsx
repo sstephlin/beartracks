@@ -1,5 +1,4 @@
-import React from "react";
-import RightClick from "./RightClick";
+import React, { forwardRef } from "react";
 import "../styles/SemesterBox.css";
 
 interface SemesterBoxProps {
@@ -19,79 +18,85 @@ interface SemesterBoxProps {
   errorMessage?: string | null;
 }
 
-const SemesterBox: React.FC<SemesterBoxProps> = ({
-  boxId,
-  selectedSemester,
-  availableSemesters,
-  onSemesterSelect,
-  expanded,
-  children,
-  onDragOver,
-  onDragLeave,
-  onDrop,
-  onRightClick,
-  errorMessage,
-}) => {
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    onDragOver?.(e);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    onDrop?.(e);
-  };
-
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    if (value) {
-      onSemesterSelect(boxId, value);
-    }
-  };
-
-  // Trigger the passed down onRightClick function with boxId
-  const handleRightClickEvent = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+const SemesterBox = forwardRef<HTMLDivElement, SemesterBoxProps>(
+  (
+    {
+      boxId,
+      selectedSemester,
+      availableSemesters,
+      onSemesterSelect,
+      expanded,
+      children,
+      onDragOver,
+      onDragLeave,
+      onDrop,
+      onRightClick,
+      errorMessage,
+    },
+    ref
   ) => {
-    if (onRightClick) {
-      onRightClick(e, boxId); // Pass boxId to identify which box was clicked
-    }
-  };
+    const handleDragOver = (e: React.DragEvent) => {
+      e.preventDefault();
+      onDragOver?.(e);
+    };
 
-  return (
-    <div
-      className={`semester-box ${expanded ? "expanded" : "collapsed"} ${errorMessage ? "error" : ""}`}
-      onDragOver={handleDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={handleDrop}
-      onContextMenu={handleRightClickEvent}
-    >
-      {selectedSemester ? (
-        <div className="semester-header">{selectedSemester}</div>
-      ) : (
-        <select
-          className="semester-select-full"
-          defaultValue=""
-          onChange={handleSelectChange}
-        >
-          <option value="" disabled>
-            Select a semester
-          </option>
-          {availableSemesters.map((sem) => (
-            <option key={sem} value={sem}>
-              {sem}
+    const handleDrop = (e: React.DragEvent) => {
+      e.preventDefault();
+      onDrop?.(e);
+    };
+
+    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+      if (value) {
+        onSemesterSelect(boxId, value);
+      }
+    };
+
+    const handleRightClickEvent = (
+      e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    ) => {
+      onRightClick?.(e, boxId);
+    };
+
+    return (
+      <div
+        ref={ref}
+        className={`semester-box ${expanded ? "expanded" : "collapsed"} ${
+          errorMessage ? "error" : ""
+        }`}
+        onDragOver={handleDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={handleDrop}
+        onContextMenu={handleRightClickEvent}
+      >
+        {selectedSemester ? (
+          <div className="semester-header">{selectedSemester}</div>
+        ) : (
+          <select
+            className="semester-select-full"
+            defaultValue=""
+            onChange={handleSelectChange}
+          >
+            <option value="" disabled>
+              Select a semester
             </option>
-          ))}
-        </select>
-      )}
-      {errorMessage && (
-        <div className="semester-error-message">
-          {errorMessage}
-        </div>
-      )}
-      <div className="semester-content">{children}</div>
-    </div>
-  );
-};
+            {availableSemesters.map((sem) => (
+              <option key={sem} value={sem}>
+                {sem}
+              </option>
+            ))}
+          </select>
+        )}
+        {errorMessage && (
+          <div className="semester-error-message">{errorMessage}</div>
+        )}
+        <div className="semester-content">{children}</div>
+      </div>
+    );
+  }
+);
+
+// Optional but helpful for debugging
+SemesterBox.displayName = "SemesterBox";
 
 export default SemesterBox;

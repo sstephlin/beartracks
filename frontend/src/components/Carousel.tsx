@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import SemesterBox from "./SemesterBox";
 import CourseDrag from "./CourseDrag";
 import { CarouselMover } from "../hooks/CarouselMover";
@@ -83,19 +83,6 @@ export default function Carousel({
     [courseCode: string]: string[];
   }>({});
   const [capstoneCourseId, setCapstoneCourseId] = useState<string | null>(null);
-
-  const { currentIndex, next, prev, maxIndex } = CarouselMover(
-    allSemesters.length,
-    viewCount
-  );
-
-  // const handleToggleCapstone = (id: string, newValue: boolean) => {
-  //   setCourses((prev) =>
-  //     prev.map((course) =>
-  //       course.id === id ? { ...course, isCapstone: newValue } : course
-  //     )
-  //   );
-  // };
 
   const {
     emptySlots,
@@ -777,8 +764,28 @@ export default function Carousel({
     setBoxIds((prevBoxIds) => prevBoxIds.filter((id) => id !== semToDelete));
     console.log("delete");
   };
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
-  const boxWidth = expanded ? 270 : 320;
+  const handleScroll = (direction: "left" | "right") => {
+    const container = document.querySelector(".carousel-inner-wrapper");
+    if (!container) return;
+    const scrollAmount = boxWidth;
+    container.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  };
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [boxWidth, setBoxWidth] = useState<number>(270);
+
+  useEffect(() => {
+    if (boxRef.current) {
+      setBoxWidth(boxRef.current.offsetWidth);
+    }
+    console.log("width", boxRef.current?.offsetWidth);
+  }, [expanded, viewCount]);
 
   useEffect(() => {
     window.addEventListener(
@@ -790,6 +797,26 @@ export default function Carousel({
         "searchCourseDragStart",
         handleSearchCourseDragStart as EventListener
       );
+    };
+  }, []);
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const updateScrollButtons = () => {
+      setCanScrollLeft(container.scrollLeft > 0);
+      setCanScrollRight(
+        container.scrollLeft + container.clientWidth < container.scrollWidth
+      );
+    };
+
+    updateScrollButtons(); // initial
+    container.addEventListener("scroll", updateScrollButtons);
+    window.addEventListener("resize", updateScrollButtons); // handle viewport resize
+
+    return () => {
+      container.removeEventListener("scroll", updateScrollButtons);
+      window.removeEventListener("resize", updateScrollButtons);
     };
   }, []);
 
@@ -805,20 +832,19 @@ export default function Carousel({
 
       <button
         className="carousel-button left"
-        onClick={prev}
-        disabled={currentIndex === 0}
+        onClick={() => handleScroll("left")}
+        disabled={!canScrollLeft}
       >
         ‹
       </button>
 
-      <div className="carousel-inner-wrapper">
-        <div
-          className="carousel-track"
-          style={{
-            transform: `translateX(-${currentIndex * boxWidth}px)`,
-            transition: "transform 0.5s ease",
-          }}
-        >
+      <div
+        className={`carousel-inner-wrapper ${
+          viewCount === 2 ? "two" : "four"
+        } ${expanded ? "expanded" : "collapsed"}`}
+        ref={scrollContainerRef}
+      >
+        <div className="carousel-track">
           {boxIds.map((boxId) => (
             <SemesterBox
               key={boxId}
@@ -842,6 +868,7 @@ export default function Carousel({
                   ? dropError.message
                   : null
               }
+              ref={boxRef}
             >
               {boxSelections[boxId] &&
                 getCoursesForSemester(boxSelections[boxId]).map((course) => (
@@ -938,8 +965,8 @@ export default function Carousel({
 
       <button
         className="carousel-button right"
-        onClick={next}
-        disabled={currentIndex === maxIndex}
+        onClick={() => handleScroll("right")}
+        disabled={!canScrollRight}
       >
         ›
       </button>
