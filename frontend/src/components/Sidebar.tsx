@@ -10,6 +10,8 @@ interface SidebarProps {
   degree: string;
   setDegree: Dispatch<SetStateAction<string>>;
   refreshSidebar: boolean;
+  setNumCompleted: Dispatch<SetStateAction<number>>;
+  setNumRequired: Dispatch<SetStateAction<number>>;
 }
 
 export default function Sidebar(props: SidebarProps) {
@@ -18,8 +20,8 @@ export default function Sidebar(props: SidebarProps) {
   const [selectedDegree, setSelectedDegree] = useState<string>("");
   const [degreeInfo, setDegreeInfo] = useState<Record<string, string[]>>({});
   const [courseInfo, setCourseInfo] = useState<Record<string, string[]>>({});
-  const [numCompleted, setNumCompleted] = useState<number>(0);
-  const [numRequired, setNumRequired] = useState<number>(0);
+  // const [numCompleted, setNumCompleted] = useState<number>(0);
+  // const [numRequired, setNumRequired] = useState<number>(0);
   // const [refreshSidebar, setRefreshSidebar] = useState(false);
 
   // const[progress, setProgress] =
@@ -75,8 +77,8 @@ export default function Sidebar(props: SidebarProps) {
       );
       const data = await response.json();
       setCourseInfo(data.user_requirements_breakdown);
-      setNumCompleted(data.courses_completed);
-      setNumRequired(data.total_required);
+      props.setNumCompleted(data.courses_completed);
+      props.setNumRequired(data.total_required);
       console.log("Breakdown for", user.id, data.user_requirements_breakdown);
     } catch (err) {
       console.error("Failed to fetch requirements:", err);
@@ -163,7 +165,7 @@ export default function Sidebar(props: SidebarProps) {
                       
           </select>
 
-          <div className="progress-check">
+          {/* <div className="progress-check">
             {loading ? (
               <h3>Loading your progress...</h3>
             ) : (
@@ -171,7 +173,7 @@ export default function Sidebar(props: SidebarProps) {
                 {numCompleted} out of {numRequired} courses completed!
               </h3>
             )}
-          </div>
+          </div> */}
 
           <div className="concentration-req-container">
             {props.degree !== "Undeclared" &&
