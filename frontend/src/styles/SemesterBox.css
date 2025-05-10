@@ -98,6 +98,10 @@
   font-weight: bold;
   font-size: 16px;
   margin-bottom: 4px; /* space between code and title */
+  padding-right: 15px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* Course Title (Bottom Line) */
