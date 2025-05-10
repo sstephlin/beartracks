@@ -270,7 +270,7 @@ public class FirebaseUtilities implements StorageInterface {
    */
   @Override
   public void updateIsCapstoneField(
-      String uid, String semester, String courseCode, boolean isCapstone) {
+      String uid, String semester, String courseCode, Boolean isCapstone) {
     Firestore db = FirestoreClient.getFirestore();
     String fullPath = "users/" + uid + "/semesters/" + semester + "/courses";
     DocumentReference docRef = db.collection(fullPath).document(courseCode);
@@ -281,4 +281,42 @@ public class FirebaseUtilities implements StorageInterface {
     //    System.out.println("Updating path: " + fullPath + ", doc: " + courseCode);
     docRef.set(updates, SetOptions.merge());
   }
+
+  /**
+   * returns which semester a user took a given capstone course
+   *
+   * @param uid
+   * @param courseCode
+   * @return
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  @Override
+  public String findSemesterOfCapstone(String uid, String courseCode)
+      throws ExecutionException, InterruptedException {
+    CollectionReference semestersRef = db.collection("users/" + uid + "/semesters");
+    ApiFuture<QuerySnapshot> semestersFuture = semestersRef.get();
+    List<QueryDocumentSnapshot> semesters = semestersFuture.get().getDocuments();
+
+    for (QueryDocumentSnapshot semesterDoc : semesters) {
+      String semesterId = semesterDoc.getId();
+      CollectionReference coursesRef = semesterDoc.getReference().collection("courses");
+      List<QueryDocumentSnapshot> courseDocs = coursesRef.get().get().getDocuments();
+
+      for (QueryDocumentSnapshot courseDoc : courseDocs) {
+        Boolean isCapstone = courseDoc.getBoolean("isCapstone");
+        if (courseDoc.getId().equals(courseCode) && Boolean.TRUE.equals(isCapstone)) {
+          return semesterId;
+        }
+      }
+    }
+
+    return null;
+  }
 }
+  //  @Override
+  //  public void updatePrereqsMet(String uid, String semester, String courseCode, boolean
+  // prereqsMet) {
+  //
+  //    if (uid == null || semester == null || courseCode == null) {
+  //      throw new IllegalArgumen

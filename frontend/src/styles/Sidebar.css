@@ -1,36 +1,12 @@
 .sidebar {
-  height: 100vh;
-  width: 20vw;
+  min-height: 100vh;
+  height: 136vh;
   background-color: #213333;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   border-right: 5px solid rgba(0, 0, 0, 0.1);
-  align-items: cen;
-}
-
-.header-row {
-  padding: 1rem 0.75rem;
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-}
-.header-row.collapsed {
-  justify-content: center;
-}
-
-button {
-  background-color: #213333;
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sidebar {
-  height: 100vh;
   transition: width 0.3s ease;
-  overflow: hidden;
+  overflow-x: hidden; /* ✅ allow vertical overflow so SVGs don't get clipped */
 }
 
 .sidebar-expanded {
@@ -41,6 +17,24 @@ button {
   width: 6vw;
   border-right: 1px black solid;
 }
+
+.header-row {
+  padding: 1rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-row.collapsed {
+  justify-content: center;
+}
+
+.logo-title {
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+  color: white;
+}
+
 .logo-title.collapsed {
   opacity: 0;
   pointer-events: none;
@@ -59,15 +53,15 @@ button {
   overflow: hidden;
 }
 
-.logo-title {
-  overflow: hidden;
-  transition: opacity 0.2s ease;
+/* Scoped button styling instead of global */
+.sidebar button {
+  background-color: #213333;
   color: white;
-}
-
-.logo-title.collapsed {
-  opacity: 0;
-  pointer-events: none;
+  border: none;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .concentration-dropdown {
@@ -78,5 +72,76 @@ button {
   width: 15vw;
   background-color: #d6dadd;
   color: black;
-  font-family: "khula";
+  font-family: "khula", sans-serif;
+}
+
+/* Optional: space between concentration requirement sections */
+.concentration-req-container {
+  margin-top: 1rem;
+}
+
+.concentration-category {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: left; */
+  /* align-items: flex-start; 👈 align icon to top */
+  gap: 8px;
+  padding: 0.25rem 0;
+  padding-left: 0.5rem;
+  background-color: #d6dadd;
+  border: #213333 solid 3px;
+}
+.concentration-row {
+  display: flex;
+  /* justify-content: left; */
+  gap: 8px;
+  padding: 0.25rem 0;
+  padding-left: 0.5rem;
+  flex-wrap: initial;
+}
+.expand-button {
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  /* align-items: center;
+  justify-content: center; */
+  cursor: pointer;
+  /* flex-shrink: 0; ✅ prevents squishing when text wraps */
+}
+
+.button-icon {
+  fill: white;
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.requirement-list {
+  /* list-style-position: inside; ✅ moves bullet inside text block */
+  /* padding-left: 0; ✅ removes extra indentation */
+  border-radius: 4px;
+  font-weight: bold;
+  line-height: 1.8;
+  /* padding-left: 0; */
+}
+.requirement-list-container {
+  display: flex;
+  align-items: left;
+  justify-content: left;
+  padding: 0;
+  /* padding-left: 15px; */
+}
+
+.requirement_completed {
+  color: #3a5e42d2;
+}
+.progress-check {
+  color: #d6dadd;
+}
+.cannot-list {
+  color: #ac5a5ad2;
 }

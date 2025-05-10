@@ -7,6 +7,7 @@ import { useUser } from "@clerk/clerk-react";
 
 interface BearTracksProps {
   expanded: boolean;
+  setRefreshSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function BearTracks(props: BearTracksProps) {
   const { user } = useUser();
@@ -48,7 +49,7 @@ export default function BearTracks(props: BearTracksProps) {
     // Call the Carousel's handler through a custom event
     window.dispatchEvent(
       new CustomEvent("searchCourseDragStart", {
-        detail: { course }
+        detail: { course },
       })
     );
   };
@@ -86,6 +87,7 @@ export default function BearTracks(props: BearTracksProps) {
         console.error("Failed to remove from backend:", error);
       }
     }
+    props.setRefreshSidebar((prev) => !prev);
   };
 
   // Function to check if element is near the trash can
@@ -97,7 +99,11 @@ export default function BearTracks(props: BearTracksProps) {
   };
 
   return (
-    <div className="bear-tracks-container">
+    <div
+      className={`bear-tracks-container ${
+        props.expanded ? "expanded" : "collapsed"
+      }`}
+    >
       <div className="searchbar-and-trash-container">
         <SearchBar onSearch={handleSearch} />
         {/* Enlarged trash area with the visible trash can in the center */}
@@ -107,14 +113,20 @@ export default function BearTracks(props: BearTracksProps) {
           onDragLeave={() => setIsTrashHovered(false)}
           onDrop={handleDropToTrash}
         >
-          <div className={`trash-area ${isTrashHovered ? "trash-hovered" : ""}`}>
+          <div
+            className={`trash-area ${isTrashHovered ? "trash-hovered" : ""}`}
+          >
             <Trash2 size={48} strokeWidth={2} />
           </div>
         </div>
       </div>
 
       {searchResults.length > 0 && (
-        <div className="search-results-container">
+        <div
+          className={`search-results-container ${
+            props.expanded ? "expanded" : "collapsed"
+          }`}
+        >
           {searchResults.map((course, index) => (
             <div
               key={index}
@@ -135,6 +147,7 @@ export default function BearTracks(props: BearTracksProps) {
         setViewCount={setViewCount}
         draggedSearchCourse={draggedSearchCourse}
         expanded={props.expanded}
+        setRefreshSidebar={props.setRefreshSidebar}
       />
       <div className="display-view">
         {[2, 4].map((value) => (

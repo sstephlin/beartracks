@@ -17,6 +17,8 @@ body {
 
 /* Main App Layout */
 .App {
+  flex-grow: 1;
+  overflow-y: auto;
   text-align: center;
   background-color: #ffffff;
   overflow-x: hidden;
@@ -32,7 +34,9 @@ body {
   align-items: center;
   padding: 1rem;
   background-color: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 3px solid #e2e2e2;
+  height: 5vh;
+  line-height: 1%;
 }
 
 .layout-container {
@@ -71,13 +75,16 @@ body {
   text-decoration: none;
   color: black;
   font-weight: 600;
-  font-size: 24px;
+  font-size: 1.8rem;
   font-style: italic;
+}
+.logo-link:hover {
+  color: #213333;
 }
 
 .logo-image {
-  width: 75px;
-  height: 75px;
+  width: 55px;
+  height: 55px;
   object-fit: contain;
   margin-right: 10px;
 }

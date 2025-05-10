@@ -1,23 +1,44 @@
 .carousel-outer-wrapper {
+  display: flex;
   position: relative;
   width: 80vw;
   overflow: hidden;
   align-items: center;
-  display: flex;
   justify-content: center; /* Center the carousel itself */
+  margin: 0 auto;
+  border: #e4e4e4 3px solid;
+  border-radius: 16px;
+}
+.carousel-outer-wrapper.collapsed {
+  width: 94vw;
+}
+.carousel-outer-wrapper.two.collapsed {
+  width: 51vw;
 }
 .carousel-outer-wrapper.two {
+  width: 42vw;
+}
+.carousel-inner-wrapper.two {
+  width: 40vw;
+}
+.carousel-inner-wrapper.four {
+  width: 73vw;
+}
+.carousel-inner-wrapper.two.collapsed {
   width: 43vw;
 }
-
+.carousel-inner-wrapper.four.collapsed {
+  width: 86vw;
+}
 .carousel-inner-wrapper {
+  width: 70vw;
   overflow-x: auto;
   overflow-y: hidden;
-  width: 90%;
+  display: flex;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
   padding: 16px 0;
-  display: flex; /* <<< Add this line */
-  justify-content: center; /* Center the carousel-track */
-  align-items: stretch;
 }
 
 .add-box.expanded {
@@ -48,12 +69,17 @@
 .add-button {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   font-size: 25px;
   width: 100px;
   height: 100px;
   /* border: 3px #213333 solid; */
   background-color: #e4e4e4;
   color: #213333;
+}
+.add-button:active {
+  border: none;
 }
 .add-button-plus {
   font-size: 50px;
@@ -63,6 +89,7 @@
   flex-direction: row;
   justify-content: center; /* <<< Change this from space-between to center */
   align-items: stretch;
+  gap: 16px;
 }
 
 .carousel-button {
@@ -71,10 +98,10 @@
   transform: translateY();
   z-index: 1000;
   background: white;
-  border: 1px solid lightgray;
+  border: 2px solid lightgray;
   border-radius: 8px; /* <<< changed from 50% to 8px for slightly rounded corners */
-  width: 60px; /* <<< slightly wider */
-  height: 40px; /* <<< less tall */
+  width: 2vw; /* <<< slightly wider */
+  height: 6vh; /* <<< less tall */
   font-size: 24px;
   font-weight: bold;
   cursor: pointer;
@@ -86,7 +113,7 @@
 }
 
 .carousel-button.left {
-  left: 0;
+  left: 0vw;
 }
 
 .carousel-button.right {
@@ -113,8 +140,20 @@
 }
 
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translate(-50%, -20px); }
-  10% { opacity: 1; transform: translate(-50%, 0); }
-  90% { opacity: 1; transform: translate(-50%, 0); }
-  100% { opacity: 0; transform: translate(-50%, -20px); }
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  90% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
 }

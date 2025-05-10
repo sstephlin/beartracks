@@ -2,8 +2,8 @@ package edu.brown.cs.student.main.server.concentrationRequirements;
 
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,18 +46,19 @@ public class CSRequirementChecker {
   // New method: returns map of requirement name to list of USER'S courses that fulfill that
   // requirement
   public Map<String, List<String>> checkAllRequirements() {
-    Map<String, List<String>> results = new HashMap<>();
+    System.out.println("Checking requirements for user: " + uid);
+    Map<String, List<String>> results = new LinkedHashMap<>();
 
     List<String> requirementsList =
         List.of(
-            "Capstone", // Must come before electives and technicals
+            "Calculus",
             "Intro Part 1",
             "Intro Part 2",
+            "Math Foundation",
             "Foundations AI",
             "Foundations Systems",
             "Foundations Theory",
-            "Math Foundation",
-            "Calculus",
+            "Capstone", // Must come before electives and technicals
             "Technical Courses",
             "Electives");
 
@@ -87,7 +88,7 @@ public class CSRequirementChecker {
 
       results.put(requirementName, fulfillingCourses);
     }
-
+    System.out.println(results);
     return results;
   }
 
@@ -308,9 +309,8 @@ public class CSRequirementChecker {
   }
 
   // ex: 6/16 for Sc.B
-  public int countCoursesCompleted() {
+  public int countCoursesCompleted(Map<String, List<String>> requirementResults) {
     int completedCourses = 0;
-    Map<String, List<String>> requirementResults = this.checkAllRequirements();
 
     // Loop over each requirement and its corresponding list of fulfilling courses that a user has
     // taken
@@ -322,21 +322,17 @@ public class CSRequirementChecker {
         completedCourses += fulfillingCourses.size();
       }
     }
-
+    System.out.println(completedCourses + " courses completed");
     return completedCourses;
   }
 
   // based on requirements size, we know if user is AB or ScB
-  //  public int getTotalCoursesRequired() {
-  //    if (this.concentration == "Computer Science AB") {
-  //      return 10; // AB requirements
-  //    } else {
-  //      return 16; // ScB requirements
-  //    }
-  //  }
-
   public int getTotalCoursesRequired() {
-    return "Computer Science AB".equalsIgnoreCase(concentration) ? 10 : 16;
+    if ("Computer Science A.B.".equalsIgnoreCase(this.concentration)) {
+      return 10; // AB requirements
+    } else {
+      return 16; // ScB requirements
+    }
   }
 
   // electives: courses OUTSIDE of cs that count

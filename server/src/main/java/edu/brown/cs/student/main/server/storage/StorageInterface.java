@@ -25,7 +25,11 @@ public interface StorageInterface {
 
   String getCapstoneCourse(String uid);
 
-  void updateIsCapstoneField(String uid, String semester, String courseCode, boolean isCapstone);
+  void updateIsCapstoneField(String uid, String semester, String courseCode, Boolean isCapstone);
 
   void updatePrereqsMet(String uid, String semester, String courseCode, boolean prereqsMet);
+
+  // Returns the semester (e.g. "Fall 2024") that contains the capstone course
+  String findSemesterOfCapstone(String uid, String courseCode)
+      throws ExecutionException, InterruptedException;
 }

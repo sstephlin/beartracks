@@ -38,6 +38,8 @@ public class SearchCourseHandler implements Route {
 
     List<Map<String, String>> matchedCourses = searchCourses(catalog, query);
 
+    System.out.println("Returning " + matchedCourses.size() + " matched courses.");
+
     if (matchedCourses.isEmpty()) {
       responseMap.put("result", "error");
       responseMap.put("message", "No matching courses found.");
@@ -59,14 +61,15 @@ public class SearchCourseHandler implements Route {
    */
   private List<Map<String, String>> searchCourses(CourseCatalog catalog, String query) {
     List<Map<String, String>> matches = new ArrayList<>();
-    String lowerQuery = query.toLowerCase();
+    String normalizedQuery = query.toLowerCase().replaceAll("\\s+", "");
 
     for (Map.Entry<String, CourseInfo> entry : catalog.courseMap.entrySet()) {
       String courseCode = entry.getKey();
       CourseInfo info = entry.getValue();
 
-      if (courseCode.toLowerCase().contains(lowerQuery)
-          || info.courseName.toLowerCase().contains(lowerQuery)) {
+      String normalizedCode = courseCode.toLowerCase().replaceAll("\\s+", "");
+
+      if (normalizedCode.contains(normalizedQuery)) {
         Map<String, String> courseData = new HashMap<>();
         courseData.put("courseCode", courseCode);
         courseData.put("courseName", info.courseName);
@@ -75,25 +78,49 @@ public class SearchCourseHandler implements Route {
     }
 
     // Sort two courses by courseCode (which is the key in the Map<String, String>)
+    //    matches.sort(
+    //        (a, b) -> {
+    //          String codeA = a.get("courseCode");
+    //          String codeB = b.get("courseCode");
+    //
+    //          // Split courseCode into department and number
+    //          String[] partsA = codeA.split("\\s+");
+    //          String[] partsB = codeB.split("\\s+");
+    //
+    //          String deptA = partsA[0];
+    //          String deptB = partsB[0];
+    //
+    //          int numA = partsA.length > 1 ? Integer.parseInt(partsA[1]) : 0;
+    //          int numB = partsB.length > 1 ? Integer.parseInt(partsB[1]) : 0;
+    //
+    //          int deptCompare = deptA.compareTo(deptB);
+    //          return deptCompare != 0 ? deptCompare : Integer.compare(numA, numB);
+    //        });
+
     matches.sort(
         (a, b) -> {
           String codeA = a.get("courseCode");
           String codeB = b.get("courseCode");
 
-          // Split courseCode into department and number
-          String[] partsA = codeA.split("\\s+");
-          String[] partsB = codeB.split("\\s+");
+          String deptA = codeA.replaceAll("[^A-Za-z]", "");
+          String deptB = codeB.replaceAll("[^A-Za-z]", "");
 
-          String deptA = partsA[0];
-          String deptB = partsB[0];
-
-          int numA = partsA.length > 1 ? Integer.parseInt(partsA[1]) : 0;
-          int numB = partsB.length > 1 ? Integer.parseInt(partsB[1]) : 0;
+          int numA = extractNumber(codeA);
+          int numB = extractNumber(codeB);
 
           int deptCompare = deptA.compareTo(deptB);
           return deptCompare != 0 ? deptCompare : Integer.compare(numA, numB);
         });
 
     return matches;
+  }
+
+  private int extractNumber(String code) {
+    try {
+      String numberPart = code.replaceAll("[^0-9]", "");
+      return numberPart.isEmpty() ? 0 : Integer.parseInt(numberPart);
+    } catch (NumberFormatException e) {
+      return 0;
+    }
   }
 }
