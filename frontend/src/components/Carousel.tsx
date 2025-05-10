@@ -85,6 +85,7 @@ export default function Carousel({
     [courseCode: string]: string[];
   }>({});
   const [capstoneCourseId, setCapstoneCourseId] = useState<string | null>(null);
+  const [manualDisclaimerShown, setManualDisclaimerShown] = useState(false);
 
   const {
     emptySlots,
@@ -888,6 +889,7 @@ export default function Carousel({
                     }
                     onDragEnd={handleCourseDragEnd}
                     onSaveCourse={handleSaveCourse}
+                    isManual={course.isManual ?? false}
                     prereqsMet={course.prereqsMet ?? false}
                     isCapstone={course.isCapstone ?? false}
                     showCapstoneCheckbox={capstoneCodes.has(course.courseCode)}
@@ -932,9 +934,13 @@ export default function Carousel({
 
               <button
                 className="add-course-button"
-                onClick={() =>
-                  addCourse(boxSelections[boxId], undefined, "new")
-                }
+                onClick={() => {
+                  if (!manualDisclaimerShown) {
+                    setShowManualAddDisclaimer(true);
+                    setManualDisclaimerShown(true);
+                  }
+                  addCourse(boxSelections[boxId], undefined, "new", true);
+                }}
               >
                 + New course
               </button>

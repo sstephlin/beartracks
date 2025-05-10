@@ -7,5 +7,5 @@ export interface CourseItem {
   prereqsMet: boolean;
   isCapstone?: boolean;
   showCapstoneCheckbox?: boolean;
-  
+  isManual?: boolean;
 }

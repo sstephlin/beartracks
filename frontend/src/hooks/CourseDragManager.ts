@@ -263,8 +263,10 @@ export function CourseDragManager(
   const addCourse = async (
     semesterId: string,
     course?: Partial<CourseItem>,
-    source: "search" | "new" = "search"
+    source: "search" | "new" = "search",
+    isManual: boolean = source === "new",
   ) => {
+
     const newCourse: CourseItem = {
       id: course?.id ?? crypto.randomUUID(),
       courseCode: course?.courseCode ?? (source === "new" ? "" : "Course Code"),
@@ -272,6 +274,7 @@ export function CourseDragManager(
       semesterId,
       isEditing: source === "new" ? true : course?.isEditing ?? false,
       prereqsMet: true,
+      isManual,
     };
 
     // For manually added courses, we just update the local state

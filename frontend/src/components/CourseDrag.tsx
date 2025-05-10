@@ -11,6 +11,7 @@ interface CourseDragProps {
   prereqsMet: boolean;
   isCapstone: boolean;
   showCapstoneCheckbox?: boolean;
+  isManual?: boolean;
   
   onDragStart?: (
     e: React.DragEvent,
@@ -39,6 +40,7 @@ export default function CourseDrag({
   onSaveCourse,
   onToggleCapstone,
   showCapstoneCheckbox,
+  isManual = false,
 }: CourseDragProps & { isCapstone?: boolean }) {
   const [code, setCode] = useState(courseCode);
   const [title, setTitle] = useState(courseTitle || "");
@@ -77,6 +79,7 @@ export default function CourseDrag({
         ${isEmpty ? "empty" : "filled"} 
         ${!isEmpty ? (prereqsMet ? "pr-met" : "pr-not-met") : ""}
         ${isCapstone ? "capstone" : ""}
+        ${isManual ? "manual-course" : "search-course"}
       `}
       draggable={!isEmpty && !isEditing}
       onDragStart={handleDragStart}
