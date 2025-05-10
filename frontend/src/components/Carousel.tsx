@@ -1038,7 +1038,7 @@ export default function Carousel({
               You're manually adding a course. After clicking, you can enter
               course details like the code and name. Use this for Non-CS
               courses. Please not that these courses will not be tracked on your
-              prgoression meter.
+              concentration progression meter.
             </p>
           </div>
         </div>
