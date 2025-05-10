@@ -178,7 +178,6 @@ export default function Sidebar(props: SidebarProps) {
           <div className="concentration-req-container">
             {props.degree !== "Undeclared" &&
               Object.keys(degreeInfo)
-                .reverse()
                 .map((key) => {
                   const isExpanded = expandedKeys[key];
                   return (
