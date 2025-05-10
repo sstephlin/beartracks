@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import SemesterBox from "./SemesterBox";
 import CourseDrag from "./CourseDrag";
 import { CarouselMover } from "../hooks/CarouselMover";
@@ -85,19 +85,6 @@ export default function Carousel({
     [courseCode: string]: string[];
   }>({});
   const [capstoneCourseId, setCapstoneCourseId] = useState<string | null>(null);
-
-  const { currentIndex, next, prev, maxIndex } = CarouselMover(
-    allSemesters.length,
-    viewCount
-  );
-
-  // const handleToggleCapstone = (id: string, newValue: boolean) => {
-  //   setCourses((prev) =>
-  //     prev.map((course) =>
-  //       course.id === id ? { ...course, isCapstone: newValue } : course
-  //     )
-  //   );
-  // };
 
   const {
     emptySlots,
@@ -659,151 +646,6 @@ export default function Carousel({
     setRefreshSidebar((prev) => !prev);
   };
 
-  // const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
-  //   e.preventDefault();
-  //   if (!user?.id) return;
-
-  //   const searchCourseRaw = e.dataTransfer.getData("searchCourse");
-  //   const courseId = e.dataTransfer.getData("courseId");
-  //   const courseCode = e.dataTransfer.getData("courseCode");
-  //   const title = e.dataTransfer.getData("title");
-  //   const sourceSemesterId = e.dataTransfer.getData("semesterId");
-
-  //   // Don't do anything if dropping on the same semester
-  //   if (sourceSemesterId === semesterId) {
-  //     return;
-  //   }
-
-  //   // Check if course already exists in target semester
-  //   const courseAlreadyExists = courses.some(
-  //     course => course.courseCode === (searchCourseRaw ? JSON.parse(searchCourseRaw).courseCode : courseCode)
-  //     && course.semesterId === semesterId
-  //   );
-
-  //   if (courseAlreadyExists) {
-  //     setDropError({ message: "Course already exists in this semester", semesterId });
-  //     setTimeout(() => setDropError(null), 3000);
-  //     return;
-  //   }
-
-  //   if (searchCourseRaw) {
-  //     const searchCourse = JSON.parse(searchCourseRaw);
-
-  //     // Check if course is offered in this semester
-  //     const isOffered = await checkCourseOfferedInSemester(searchCourse.courseCode, semesterId);
-  //     if (!isOffered) {
-  //       setDropError({ message: "Course not offered in this semester", semesterId });
-  //       setTimeout(() => setDropError(null), 3000);
-  //       return;
-  //     }
-
-  //     // Check prerequisites first
-  //     const met = await checkPrereqs(
-  //       user.id,
-  //       searchCourse.courseCode,
-  //       semesterId
-  //     );
-
-  //     const newCourse: CourseItem = {
-  //       id: `course-${Date.now()}`,
-  //       courseCode: searchCourse.courseCode,
-  //       title: searchCourse.courseName,
-  //       semesterId,
-  //       isEditing: false,
-  //       prereqsMet: met,
-  //     };
-
-  //     // Get the updated state using a promise
-  //     const updatedCourses = await new Promise<CourseItem[]>((resolve) => {
-  //       setCourses((prevCourses) => {
-  //         const updated = [...prevCourses, newCourse];
-  //         resolve(updated);
-  //         return updated;
-  //       });
-  //     });
-
-  //     // Immediately sync with backend for search results
-  //     const [term, year] = semesterId.split(" ");
-  //     try {
-  //       await fetch(
-  //         `http://localhost:3232/add-course?uid=${
-  //           user.id
-  //         }&code=${encodeURIComponent(
-  //           searchCourse.courseCode
-  //         )}&title=${encodeURIComponent(
-  //           searchCourse.courseName
-  //         )}&term=${term}&year=${year}`,
-  //         { method: "POST" }
-  //       );
-
-  //       console.log("✅ Added course from search to semester in backend");
-
-  //       // Now recheck all prerequisites with the updated courses
-  //       setTimeout(() => {
-  //         recheckAllPrereqs(updatedCourses);
-  //       }, 100);
-  //     } catch (err) {
-  //       console.error("Failed to sync course to backend:", err);
-  //     }
-  //   } else if (courseId || (courseCode && sourceSemesterId)) {
-  //     // This is for moving existing courses between semesters
-  //     const course = courses.find(c => c.id === courseId || (c.courseCode === courseCode && c.semesterId === sourceSemesterId));
-  //     if (!course) return;
-
-  //     // Check if course is offered in the target semester
-  //     const isOffered = await checkCourseOfferedInSemester(course.courseCode, semesterId);
-  //     if (!isOffered) {
-  //       setDropError({ message: "Course not offered in this semester", semesterId });
-  //       setTimeout(() => setDropError(null), 3000);
-  //       return;
-  //     }
-
-  //     // Get the old semester info for deletion
-  //     const [oldTerm, oldYear] = course.semesterId.split(" ");
-
-  //     // Update the course's semester in state
-  //     setCourses(prevCourses =>
-  //       prevCourses.map(c =>
-  //         c.id === course.id ? { ...c, semesterId } : c
-  //       )
-  //     );
-
-  //     // Get the new semester info
-  //     const [newTerm, newYear] = semesterId.split(" ");
-
-  //     try {
-  //       // First, delete the course from the old semester
-  //       await fetch(
-  //         `http://localhost:3232/remove-course?uid=${
-  //           user.id
-  //         }&code=${encodeURIComponent(course.courseCode)}&term=${oldTerm}&year=${oldYear}`,
-  //         { method: "POST" }
-  //       );
-
-  //       console.log("✅ Removed course from old semester in backend");
-
-  //       // Then, add it to the new semester
-  //       await fetch(
-  //         `http://localhost:3232/add-course?uid=${
-  //           user.id
-  //         }&code=${encodeURIComponent(course.courseCode)}&title=${encodeURIComponent(
-  //           course.title
-  //         )}&term=${newTerm}&year=${newYear}`,
-  //         { method: "POST" }
-  //       );
-
-  //       console.log("✅ Added course to new semester in backend");
-
-  //       // Recheck prerequisites
-  //       setTimeout(() => {
-  //         recheckAllPrereqs(courses);
-  //       }, 100);
-  //     } catch (err) {
-  //       console.error("Failed to sync course move to backend:", err);
-  //     }
-  //   }
-  // };
-
   const handleSaveCourse = async (
     id: string,
     courseCode: string,
@@ -925,8 +767,28 @@ export default function Carousel({
     setBoxIds((prevBoxIds) => prevBoxIds.filter((id) => id !== semToDelete));
     console.log("delete");
   };
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
-  const boxWidth = expanded ? 270 : 320;
+  const handleScroll = (direction: "left" | "right") => {
+    const container = document.querySelector(".carousel-inner-wrapper");
+    if (!container) return;
+    const scrollAmount = boxWidth;
+    container.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  };
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [boxWidth, setBoxWidth] = useState<number>(270);
+
+  useEffect(() => {
+    if (boxRef.current) {
+      setBoxWidth(boxRef.current.offsetWidth);
+    }
+    console.log("width", boxRef.current?.offsetWidth);
+  }, [expanded, viewCount]);
 
   useEffect(() => {
     window.addEventListener(
@@ -940,10 +802,32 @@ export default function Carousel({
       );
     };
   }, []);
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const updateScrollButtons = () => {
+      setCanScrollLeft(container.scrollLeft > 0);
+      setCanScrollRight(
+        container.scrollLeft + container.clientWidth < container.scrollWidth
+      );
+    };
+
+    updateScrollButtons(); // initial
+    container.addEventListener("scroll", updateScrollButtons);
+    window.addEventListener("resize", updateScrollButtons); // handle viewport resize
+
+    return () => {
+      container.removeEventListener("scroll", updateScrollButtons);
+      window.removeEventListener("resize", updateScrollButtons);
+    };
+  }, []);
 
   return (
     <div
-      className={`carousel-outer-wrapper ${viewCount === 2 ? "two" : "four"}`}
+      className={`carousel-outer-wrapper ${viewCount === 2 ? "two" : "four"} ${
+        expanded ? "expanded" : "collapsed"
+      }`}
     >
       {dropError && (
         <div className="drop-error-message">{dropError.message}</div>
@@ -951,20 +835,19 @@ export default function Carousel({
 
       <button
         className="carousel-button left"
-        onClick={prev}
-        disabled={currentIndex === 0}
+        onClick={() => handleScroll("left")}
+        disabled={!canScrollLeft}
       >
         ‹
       </button>
 
-      <div className="carousel-inner-wrapper">
-        <div
-          className="carousel-track"
-          style={{
-            transform: `translateX(-${currentIndex * boxWidth}px)`,
-            transition: "transform 0.5s ease",
-          }}
-        >
+      <div
+        className={`carousel-inner-wrapper ${
+          viewCount === 2 ? "two" : "four"
+        } ${expanded ? "expanded" : "collapsed"}`}
+        ref={scrollContainerRef}
+      >
+        <div className="carousel-track">
           {boxIds.map((boxId) => (
             <SemesterBox
               key={boxId}
@@ -988,6 +871,7 @@ export default function Carousel({
                   ? dropError.message
                   : null
               }
+              ref={boxRef}
             >
               {boxSelections[boxId] &&
                 getCoursesForSemester(boxSelections[boxId]).map((course) => (
@@ -1024,7 +908,11 @@ export default function Carousel({
                           const [term, year] =
                             selectedCourse.semesterId.split(" ");
                           fetch(
-                            `http://localhost:3232/update-capstone?uid=${user?.id}&semester=${term} ${year}&courseCode=${selectedCourse.courseCode}`,
+                            `http://localhost:3232/update-capstone?uid=${
+                              user?.id
+                            }&term=${term}&year=${year}&courseCode=${encodeURIComponent(
+                              selectedCourse.courseCode
+                            )}`,
                             {
                               method: "POST",
                             }
@@ -1032,8 +920,8 @@ export default function Carousel({
                             .then((res) => res.json())
                             .then((data) => {
                               console.log(
-                                "✅ Updated capstone in backend",
-                                data
+                                "✅ Updated capstone in backend. Full JSON response:",
+                                JSON.stringify(data, null, 2)
                               );
                             });
                         }
@@ -1080,8 +968,8 @@ export default function Carousel({
 
       <button
         className="carousel-button right"
-        onClick={next}
-        disabled={currentIndex === maxIndex}
+        onClick={() => handleScroll("right")}
+        disabled={!canScrollRight}
       >
         ›
       </button>

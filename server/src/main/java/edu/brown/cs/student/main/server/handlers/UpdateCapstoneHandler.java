@@ -20,8 +20,11 @@ public class UpdateCapstoneHandler implements Route {
 
     try {
       String uid = request.queryParams("uid");
-      String semester = request.queryParams("semester"); // e.g. "Fall 2024"
+      String term = request.queryParams("term");
+      String year = request.queryParams("year");
       String courseCode = request.queryParams("courseCode"); // e.g. "CSCI 1470"
+
+      String semester = term + " " + year;
 
       if (uid == null || semester == null || courseCode == null) {
         throw new IllegalArgumentException("Missing one or more required query parameters.");
@@ -31,7 +34,12 @@ public class UpdateCapstoneHandler implements Route {
       String previousCapstone = storageHandler.getCapstoneCourse(uid);
 
       if (previousCapstone != null && !previousCapstone.equals(courseCode)) {
-        storageHandler.updateIsCapstoneField(uid, semester, previousCapstone, false);
+        String previousSemester = storageHandler.findSemesterOfCapstone(uid, previousCapstone);
+        if (previousSemester != null) {
+          storageHandler.updateIsCapstoneField(uid, previousSemester, previousCapstone, false);
+        } else {
+          System.out.println("Failed to find semester for previous capstone: " + previousCapstone);
+        }
       }
 
       // 2. Mark new course as capstone

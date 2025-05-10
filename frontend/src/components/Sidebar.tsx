@@ -115,7 +115,10 @@ export default function Sidebar(props: SidebarProps) {
         {props.expanded && (
           <div className="logo-title">
                         
-            <p className="logo-link" style={{ color: "#d6dadd" }}>
+            <p
+              className="concentration-title"
+              style={{ color: "#d6dadd", fontSize: "1.5rem" }}
+            >
                             Concentration Requirements             
             </p>
                       

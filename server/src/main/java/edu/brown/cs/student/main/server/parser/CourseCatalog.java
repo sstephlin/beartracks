@@ -16,6 +16,7 @@ public class CourseCatalog {
   public void addTree(String treeId, PrereqTreeNode tree) {
     treeMap.put(treeId, tree);
   }
+
   public PrereqTreeNode getPrereqTree(String courseCode, String semesterKey) {
     CourseInfo courseInfo = courseMap.get(courseCode);
     if (courseInfo == null) return null;

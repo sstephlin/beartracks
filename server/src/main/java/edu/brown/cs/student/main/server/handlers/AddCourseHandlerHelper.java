@@ -32,7 +32,8 @@ public class AddCourseHandlerHelper {
       String prereqCode = node.courseCode.toUpperCase(); // contains * for concurrent courses
       // Strip asterisk when looking up in courseToSemester
       String lookupCode = prereqCode.replace("*", "");
-      String prereqSemester = courseToSemester.get(lookupCode); // in courseToSemester, all courses are stored without *
+      String prereqSemester =
+          courseToSemester.get(lookupCode); // in courseToSemester, all courses are stored without *
 
       if (prereqSemester == null) {
         return false;
@@ -43,8 +44,7 @@ public class AddCourseHandlerHelper {
         if (compareSemesters(prereqSemester, targetSemester) > 0) {
           return false;
         }
-      }
-      else {
+      } else {
         // otherwise, only check semesters before the current semester
         if (compareSemesters(prereqSemester, targetSemester) >= 0) {
           return false;
