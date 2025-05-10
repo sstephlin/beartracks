@@ -32,11 +32,12 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  /* padding: 1rem; */
   background-color: #ffffff;
   border-bottom: 3px solid #e2e2e2;
-  height: 5vh;
-  line-height: 1%;
+  margin: 0;
+  /* height: 5vh; */
+  /* line-height: 1%; */
 }
 
 .layout-container {
@@ -83,10 +84,11 @@ body {
 }
 
 .logo-image {
-  width: 55px;
-  height: 55px;
+  width: 255px;
+  height: 95px;
   object-fit: contain;
-  margin-right: 10px;
+  /* margin-right: 10px; */
+  /* border: #5cb85c 1px solid; */
 }
 
 .logo-progress {
