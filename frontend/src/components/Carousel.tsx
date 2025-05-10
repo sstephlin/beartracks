@@ -764,10 +764,46 @@ export default function Carousel({
     console.log("newIds", newBoxIds);
   };
 
-  const handleDeleteSemester = (semToDelete: string) => {
-    setBoxIds((prevBoxIds) => prevBoxIds.filter((id) => id !== semToDelete));
-    console.log("delete");
+  // const handleDeleteSemester = (semToDelete: string) => {
+  //   setBoxIds((prevBoxIds) => prevBoxIds.filter((id) => id !== semToDelete));
+  //   console.log("delete");
+  // };
+
+  const handleDeleteSemester = async (boxIdToDelete: string) => {
+    const semester = boxSelections[boxIdToDelete];
+    if (!semester || !user?.id) return;
+  
+    const [term, year] = semester.split(" ");
+  
+    try {
+      const res = await fetch(
+        `http://localhost:3232/remove-semester?uid=${user.id}&term=${term}&year=${year}`,
+        {
+          method: "POST",
+        }
+      );
+      const data = await res.json();
+  
+      if (data.response_type === "success") {
+        setBoxIds((prev) => prev.filter((id) => id !== boxIdToDelete));
+        setUsedSemesters((prev) => prev.filter((s) => s !== semester));
+  
+        setBoxSelections((prev) => {
+          const newSelections = { ...prev };
+          delete newSelections[boxIdToDelete];
+          return newSelections;
+        });
+  
+        // ALSO: remove all courses from that semester
+        setCourses((prev) => prev.filter((c) => c.semesterId !== semester));
+      } else {
+        console.error("Delete failed:", data.error);
+      }
+    } catch (err) {
+      console.error("Network error during delete:", err);
+    }
   };
+  
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
