@@ -22,37 +22,41 @@ public class UpdateCapstoneHandler implements Route {
       String uid = request.queryParams("uid");
       String term = request.queryParams("term");
       String year = request.queryParams("year");
-      String courseCode = request.queryParams("courseCode"); // e.g. "CSCI 1470"
+      String courseCode = request.queryParams("courseCode"); // is optional if user just wants to uncheck currrent captstoen course
 
-      String semester = term + " " + year;
-
-      if (uid == null || semester == null || courseCode == null) {
+      if (uid == null || term == null || year == null) {
         throw new IllegalArgumentException("Missing one or more required query parameters.");
       }
 
-      // 1. Find old capstone if it exists and set isCapstone field to false
+      String semester = term + " " + year;
+
       String previousCapstone = storageHandler.getCapstoneCourse(uid);
 
-      if (previousCapstone != null && !previousCapstone.equals(courseCode)) {
+      // step 1. if there's a current capstone, uddate the isCapstone field to false
+      if (previousCapstone != null) {
         String previousSemester = storageHandler.findSemesterOfCapstone(uid, previousCapstone);
         if (previousSemester != null) {
           storageHandler.updateIsCapstoneField(uid, previousSemester, previousCapstone, false);
         } else {
-          System.out.println("Failed to find semester for previous capstone: " + previousCapstone);
+          System.out.println("Could not locate semester for previous capstone: " + previousCapstone);
         }
       }
+      
+      // step 2 (not always applicable): if courseCode is NOT null, update new capstone course's isCapstone field to true
+      if (courseCode != null && !courseCode.trim().isEmpty()) {
+        storageHandler.updateIsCapstoneField(uid, semester, courseCode.trim(), true);
+        responseMap.put("response_type", "success");
+        responseMap.put("message", "Capstone course is now updated to " + courseCode.trim());
+      } else {
+        responseMap.put("response_type", "success");
+        responseMap.put("message", "Previous capstone unset (no new capstone course provided).");
+      }
 
-      // 2. Mark new course as capstone
-      storageHandler.updateIsCapstoneField(uid, semester, courseCode, true);
-
-      responseMap.put("response_type", "success");
-      responseMap.put("message", "Capstone course updated to " + courseCode);
     } catch (Exception e) {
       e.printStackTrace();
       responseMap.put("response_type", "failure");
       responseMap.put("error", e.getMessage());
     }
-
     response.type("application/json");
     return Utils.toMoshiJson(responseMap);
   }

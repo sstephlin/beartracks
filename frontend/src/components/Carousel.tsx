@@ -125,40 +125,41 @@ export default function Carousel({
   const handleToggleCapstone = async (courseId: string, checked: boolean) => {
     const course = courses.find((c) => c.id === courseId);
     if (!course || !user?.id) return;
-
+  
     const { courseCode, semesterId } = course;
     const [term, year] = semesterId.split(" ");
-    const semester = `${term} ${year}`;
-
+  
     try {
+      const query = new URLSearchParams({
+        uid: user.id,
+        term,
+        year,
+      });
+  
       if (checked) {
-        // User marked this course as their capstone
-        await fetch(
-          `http://localhost:3232/update-capstone?uid=${
-            user.id
-          }&semester=${encodeURIComponent(
-            semester
-          )}&courseCode=${encodeURIComponent(courseCode)}`,
-          { method: "POST" }
-        );
-
-        // Update frontend state: only one course can be capstone
-        setCourses((prev) =>
-          prev.map((c) => ({
-            ...c,
-            isCapstone: c.id === courseId,
-          }))
-        );
-      } else {
-        // User unchecked — clear capstone
-        setCourses((prev) =>
-          prev.map((c) => (c.id === courseId ? { ...c, isCapstone: false } : c))
-        );
+        // if there's a current capstone course, set the new capstone course
+        query.append("courseCode", courseCode);
       }
+  
+      await fetch(`http://localhost:3232/update-capstone?${query.toString()}`, {
+        method: "POST",
+      });
+  
+      // Update frontend state: only one course can be marked as capstone
+
+      setCourses((prev) =>
+        prev.map((c) => ({
+          ...c,
+          isCapstone: c.id === newCapstoneId,
+        }))
+      );
+
+      const newCapstoneId = checked ? courseId : null;
+      setCapstoneCourseId(newCapstoneId);
     } catch (err) {
       console.error("❌ Failed to update capstone:", err);
     }
-  };
+  };  
 
   useEffect(() => {
     const fetchCapstones = async () => {
