@@ -10,6 +10,8 @@ interface SidebarProps {
   degree: string;
   setDegree: Dispatch<SetStateAction<string>>;
   refreshSidebar: boolean;
+  numCompleted: number;
+  numRequired: number;
   setNumCompleted: Dispatch<SetStateAction<number>>;
   setNumRequired: Dispatch<SetStateAction<number>>;
 }
@@ -165,19 +167,21 @@ export default function Sidebar(props: SidebarProps) {
                       
           </select>
 
-          {/* <div className="progress-check">
+          <div className="progress-check">
             {loading ? (
               <h3>Loading your progress...</h3>
             ) : (
               <h3>
-                {numCompleted} out of {numRequired} courses completed!
+                {props.numCompleted} out of {props.numRequired} courses
+                completed!
               </h3>
             )}
-          </div> */}
+          </div>
 
           <div className="concentration-req-container">
             {props.degree !== "Undeclared" &&
               Object.keys(degreeInfo)
+                .reverse()
                 .map((key) => {
                   const isExpanded = expandedKeys[key];
                   return (
