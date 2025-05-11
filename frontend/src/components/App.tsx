@@ -19,6 +19,9 @@ function App() {
   // add state to toggle visibility of disclaimer
   const [showDisclaimer, setShowDisclaimer] = useState(false);
 
+  const [numCompleted, setNumCompleted] = useState(0);
+  const [numRequired, setNumRequired] = useState(0);
+
   // click outside the modal box closes it
   const handleClickOutside = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).classList.contains("disclaimer-overlay")) {
@@ -35,6 +38,10 @@ function App() {
           degree={degree}
           setDegree={setDegree}
           refreshSidebar={refreshSidebar}
+          numCompleted={numCompleted}
+          numRequired={numRequired}
+          setNumCompleted={setNumCompleted}
+          setNumRequired={setNumRequired}
         />
         <div className="header-and-content">
           <header
@@ -45,19 +52,32 @@ function App() {
             <div className="logo">
               <div className="logo-title">
                 <a href="index.html" className="logo-link">
+                  {/* BearTracks */}
                   <img
-                    src="/beartracks_logo2.png"
+                    src="/beartracks_logo4.png"
                     alt="Bear Logo"
                     className="logo-image"
                   />
-                  BearTracks
                 </a>
               </div>
-              <progress
-                className="logo-progress"
-                value={40}
-                max={100}
-              ></progress>
+              <div className="progress-row">
+                <progress
+                  className="logo-progress"
+                  value={
+                    numRequired === 0 ? 0 : (numCompleted / numRequired) * 100
+                  }
+                  max={100}
+                ></progress>
+                <p
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "#444",
+                    marginTop: "4px",
+                  }}
+                >
+                  {numCompleted} / {numRequired}
+                </p>
+              </div>
             </div>
             <div className="Sign-in-out-container">
               <SignedOut>

@@ -106,18 +106,18 @@ export default function BearTracks(props: BearTracksProps) {
     >
       <div className="searchbar-and-trash-container">
         <SearchBar onSearch={handleSearch} />
-        {/* Enlarged trash area with the visible trash can in the center */}
-        <div
-          className="enlarged-trash-zone"
-          onDragOver={handleDragOverTrashZone}
-          onDragLeave={() => setIsTrashHovered(false)}
-          onDrop={handleDropToTrash}
-        >
-          <div
-            className={`trash-area ${isTrashHovered ? "trash-hovered" : ""}`}
-          >
-            <Trash2 size={48} strokeWidth={2} />
-          </div>
+        <div className="display-view">
+          {[2, 4].map((value) => (
+            <button
+              key={value}
+              onClick={() => setViewCount(value)}
+              className={`display-view-button ${
+                viewCount === value ? "selected" : "unselected"
+              }`}
+            >
+              {value}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -149,18 +149,16 @@ export default function BearTracks(props: BearTracksProps) {
         expanded={props.expanded}
         setRefreshSidebar={props.setRefreshSidebar}
       />
-      <div className="display-view">
-        {[2, 4].map((value) => (
-          <button
-            key={value}
-            onClick={() => setViewCount(value)}
-            className={`display-view-button ${
-              viewCount === value ? "selected" : "unselected"
-            }`}
-          >
-            {value}
-          </button>
-        ))}
+      {/* Enlarged trash area with the visible trash can in the center */}
+      <div
+        className="enlarged-trash-zone"
+        onDragOver={handleDragOverTrashZone}
+        onDragLeave={() => setIsTrashHovered(false)}
+        onDrop={handleDropToTrash}
+      >
+        <div className={`trash-area ${isTrashHovered ? "trash-hovered" : ""}`}>
+          <Trash2 size={48} strokeWidth={2} />
+        </div>
       </div>
     </div>
   );

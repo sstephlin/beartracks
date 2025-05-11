@@ -85,6 +85,7 @@ export default function Carousel({
     [courseCode: string]: string[];
   }>({});
   const [capstoneCourseId, setCapstoneCourseId] = useState<string | null>(null);
+  const [manualDisclaimerShown, setManualDisclaimerShown] = useState(false);
 
   const {
     emptySlots,
@@ -124,40 +125,39 @@ export default function Carousel({
   const handleToggleCapstone = async (courseId: string, checked: boolean) => {
     const course = courses.find((c) => c.id === courseId);
     if (!course || !user?.id) return;
-
+  
     const { courseCode, semesterId } = course;
     const [term, year] = semesterId.split(" ");
-    const semester = `${term} ${year}`;
-
+  
     try {
-      if (checked) {
-        // User marked this course as their capstone
-        await fetch(
-          `http://localhost:3232/update-capstone?uid=${
-            user.id
-          }&semester=${encodeURIComponent(
-            semester
-          )}&courseCode=${encodeURIComponent(courseCode)}`,
-          { method: "POST" }
-        );
-
-        // Update frontend state: only one course can be capstone
-        setCourses((prev) =>
-          prev.map((c) => ({
-            ...c,
-            isCapstone: c.id === courseId,
-          }))
-        );
-      } else {
-        // User unchecked — clear capstone
-        setCourses((prev) =>
-          prev.map((c) => (c.id === courseId ? { ...c, isCapstone: false } : c))
-        );
+      const query = new URLSearchParams({
+        uid: user.id,
+        term,
+        year,
+      });
+  
+      if (checked) { // checked == true means that the user wants to check a NEW capstone course
+        query.append("courseCode", courseCode); // add the new cpastone course to the api fetch
       }
+  
+      await fetch(`http://localhost:3232/update-capstone?${query.toString()}`, {
+        method: "POST",
+      });
+  
+      setCourses((prev) =>
+        prev.map((c) => ({
+          ...c,
+          isCapstone: checked && c.id === courseId,
+        }))
+      );
+
+      // update which course is being capstoned 
+      const newCapstoneId = checked ? courseId : null;
+      setCapstoneCourseId(newCapstoneId);
     } catch (err) {
-      console.error("❌ Failed to update capstone:", err);
+      console.error("Failed to update capstone:", err);
     }
-  };
+  };  
 
   useEffect(() => {
     const fetchCapstones = async () => {
@@ -763,10 +763,46 @@ export default function Carousel({
     console.log("newIds", newBoxIds);
   };
 
-  const handleDeleteSemester = (semToDelete: string) => {
-    setBoxIds((prevBoxIds) => prevBoxIds.filter((id) => id !== semToDelete));
-    console.log("delete");
+  // const handleDeleteSemester = (semToDelete: string) => {
+  //   setBoxIds((prevBoxIds) => prevBoxIds.filter((id) => id !== semToDelete));
+  //   console.log("delete");
+  // };
+
+  const handleDeleteSemester = async (boxIdToDelete: string) => {
+    const semester = boxSelections[boxIdToDelete];
+    if (!semester || !user?.id) return;
+  
+    const [term, year] = semester.split(" ");
+  
+    try {
+      const res = await fetch(
+        `http://localhost:3232/remove-semester?uid=${user.id}&term=${term}&year=${year}`,
+        {
+          method: "POST",
+        }
+      );
+      const data = await res.json();
+  
+      if (data.response_type === "success") {
+        setBoxIds((prev) => prev.filter((id) => id !== boxIdToDelete));
+        setUsedSemesters((prev) => prev.filter((s) => s !== semester));
+  
+        setBoxSelections((prev) => {
+          const newSelections = { ...prev };
+          delete newSelections[boxIdToDelete];
+          return newSelections;
+        });
+  
+        // ALSO: remove all courses from that semester
+        setCourses((prev) => prev.filter((c) => c.semesterId !== semester));
+      } else {
+        console.error("Delete failed:", data.error);
+      }
+    } catch (err) {
+      console.error("Network error during delete:", err);
+    }
   };
+  
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -888,53 +924,23 @@ export default function Carousel({
                     }
                     onDragEnd={handleCourseDragEnd}
                     onSaveCourse={handleSaveCourse}
+                    isManual={course.isManual ?? false}
                     prereqsMet={course.prereqsMet ?? false}
                     isCapstone={course.isCapstone ?? false}
                     showCapstoneCheckbox={capstoneCodes.has(course.courseCode)}
-                    onToggleCapstone={(id, checked) => {
-                      const newCapstoneId = checked ? id : null;
-                      setCapstoneCourseId(newCapstoneId); // ensure only one selected
-
-                      const updatedCourses = courses.map((c) => ({
-                        ...c,
-                        isCapstone: c.id === newCapstoneId,
-                      }));
-                      setCourses(updatedCourses);
-
-                      // backend call
-                      if (checked) {
-                        const selectedCourse = courses.find((c) => c.id === id);
-                        if (selectedCourse) {
-                          const [term, year] =
-                            selectedCourse.semesterId.split(" ");
-                          fetch(
-                            `http://localhost:3232/update-capstone?uid=${
-                              user?.id
-                            }&term=${term}&year=${year}&courseCode=${encodeURIComponent(
-                              selectedCourse.courseCode
-                            )}`,
-                            {
-                              method: "POST",
-                            }
-                          )
-                            .then((res) => res.json())
-                            .then((data) => {
-                              console.log(
-                                "✅ Updated capstone in backend. Full JSON response:",
-                                JSON.stringify(data, null, 2)
-                              );
-                            });
-                        }
-                      }
-                    }}
+                    onToggleCapstone={handleToggleCapstone}
                   />
                 ))}
 
               <button
                 className="add-course-button"
-                onClick={() =>
-                  addCourse(boxSelections[boxId], undefined, "new")
-                }
+                onClick={() => {
+                  if (!manualDisclaimerShown) {
+                    setShowManualAddDisclaimer(true);
+                    setManualDisclaimerShown(true);
+                  }
+                  addCourse(boxSelections[boxId], undefined, "new", true);
+                }}
               >
                 + New course
               </button>
@@ -996,7 +1002,7 @@ export default function Carousel({
               You're manually adding a course. After clicking, you can enter
               course details like the code and name. Use this for Non-CS
               courses. Please not that these courses will not be tracked on your
-              prgoression meter.
+              concentration progression meter.
             </p>
           </div>
         </div>

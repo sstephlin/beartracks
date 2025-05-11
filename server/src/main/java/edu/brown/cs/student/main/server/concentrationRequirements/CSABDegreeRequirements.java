@@ -19,7 +19,7 @@ public class CSABDegreeRequirements {
 
     // Intro sequence - cs200. For cs19 students, another course numbered 0200 or higher (MANUAL
     // CHECK)
-    requirements.put("Intro Part 2", new RequirementRule(List.of("CSCI 0200"), 1, null));
+    requirements.put("i", new RequirementRule(List.of("CSCI 0200"), 1, null));
 
     // Math foundation (main = CSCI 0220, substitutions allowed)
     requirements.put(

@@ -34,7 +34,9 @@ public class CheckUserRequirementsHandler implements Route {
 
       // Step 2: Get all user courses
       Set<String> userCourses = storageHandler.getAllUserCourses(uid);
-      if (userCourses == null || userCourses.isEmpty()) {
+      if (userCourses == null
+      //          || userCourses.isEmpty()
+      ) {
         throw new IllegalArgumentException("No courses found for user.");
       }
 
