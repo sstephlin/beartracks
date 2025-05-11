@@ -136,28 +136,26 @@ export default function Carousel({
         year,
       });
   
-      if (checked) {
-        // if there's a current capstone course, set the new capstone course
-        query.append("courseCode", courseCode);
+      if (checked) { // checked == true means that the user wants to check a NEW capstone course
+        query.append("courseCode", courseCode); // add the new cpastone course to the api fetch
       }
   
       await fetch(`http://localhost:3232/update-capstone?${query.toString()}`, {
         method: "POST",
       });
   
-      // Update frontend state: only one course can be marked as capstone
-
       setCourses((prev) =>
         prev.map((c) => ({
           ...c,
-          isCapstone: c.id === newCapstoneId,
+          isCapstone: checked && c.id === courseId,
         }))
       );
 
+      // update which course is being capstoned 
       const newCapstoneId = checked ? courseId : null;
       setCapstoneCourseId(newCapstoneId);
     } catch (err) {
-      console.error("❌ Failed to update capstone:", err);
+      console.error("Failed to update capstone:", err);
     }
   };  
 
@@ -930,42 +928,7 @@ export default function Carousel({
                     prereqsMet={course.prereqsMet ?? false}
                     isCapstone={course.isCapstone ?? false}
                     showCapstoneCheckbox={capstoneCodes.has(course.courseCode)}
-                    onToggleCapstone={(id, checked) => {
-                      const newCapstoneId = checked ? id : null;
-                      setCapstoneCourseId(newCapstoneId); // ensure only one selected
-
-                      const updatedCourses = courses.map((c) => ({
-                        ...c,
-                        isCapstone: c.id === newCapstoneId,
-                      }));
-                      setCourses(updatedCourses);
-
-                      // backend call
-                      if (checked) {
-                        const selectedCourse = courses.find((c) => c.id === id);
-                        if (selectedCourse) {
-                          const [term, year] =
-                            selectedCourse.semesterId.split(" ");
-                          fetch(
-                            `http://localhost:3232/update-capstone?uid=${
-                              user?.id
-                            }&term=${term}&year=${year}&courseCode=${encodeURIComponent(
-                              selectedCourse.courseCode
-                            )}`,
-                            {
-                              method: "POST",
-                            }
-                          )
-                            .then((res) => res.json())
-                            .then((data) => {
-                              console.log(
-                                "✅ Updated capstone in backend. Full JSON response:",
-                                JSON.stringify(data, null, 2)
-                              );
-                            });
-                        }
-                      }
-                    }}
+                    onToggleCapstone={handleToggleCapstone}
                   />
                 ))}
 
