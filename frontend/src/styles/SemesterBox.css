@@ -42,6 +42,7 @@
 /* Semester Content (course list area) */
 .semester-content {
   background-color: white;
+  min-height: 30vh;
   height: 60vh;
   padding: 10px;
   display: flex;
@@ -63,8 +64,9 @@
 /* Course Slot */
 .course-slot {
   background-color: #e0f2ff;
+  min-height: 10vh;
+
   border-radius: 4px;
-  min-height: 50px;
   padding: 10px;
   display: flex;
   align-items: center;
@@ -76,12 +78,17 @@
 
 /* Filled (Occupied) Course Slot */
 .course-slot.filled {
+  min-height: 13vh;
   background-color: #f0d7d7;
-  display: flex;
+  display: block;
   flex-direction: column; /* stack course code and title vertically */
-  align-items: center;
-  justify-content: center;
-  padding: 10px 15px;
+  /* align-items: center; */
+  /* justify-content: center; */
+  padding: 0px;
+  word-break: break-word; /* breaks long words at the edge */
+  overflow-wrap: break-word; /* ensures text wraps inside box */
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 /* Styling inside the filled course slot */
