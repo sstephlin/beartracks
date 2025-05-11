@@ -4,6 +4,7 @@
   width: 80vw;
   padding-top: 2vh;
   align-items: center;
+  gap: 0px;
   /* justify-content: center; */
 }
 .bear-tracks-container.collapsed {
@@ -39,31 +40,45 @@
 
 /* New enlarged invisible trash zone */
 .enlarged-trash-zone {
-  position: absolute;
-  right: 70px;
-  width: 150px; /* Much wider detection area */
-  height: 150px; /* Much taller detection area */
+  /* position: absolute; */
+  /* right: 70px; */
+  width: 200px; /* Much wider detection area */
+  height: 120px; /* Much taller detection area */
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 20px; /* or however much spacing you want */
+  /* border: 2px solid #1e3a8a; blue outline */
+  border-radius: 9999px;
+  overflow: hidden;
+  /* width: 120px;
+  height: 40px; */
+  background-color: white;
+  align-items: center;
+  /* right: 0; */
+  /* margin-right: 10px; */
+  /* background-color: aqua; */
+  position: relative;
+  /* right: 120px; */
   /* Uncomment for debugging: */
   /* background-color: rgba(255, 0, 0, 0.1); */
   /* border: 1px dashed #ddd; */
 }
 
 .trash-area {
-  position: relative; /* Changed from absolute to relative */
+  position: relative;
   width: 50px;
   height: 50px;
   background-color: #f8f8f8;
   border: 2px solid #aaa;
-  border-radius: 50%;
+  /* border-radius: 50%; */
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   transition: all 0.3s ease; /* Fixed typo: 0.3 to 0.3s */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px;
 }
 
 .trash-area:hover {
@@ -155,7 +170,7 @@
   overflow: hidden;
 }
 
-.trash-area {
+/* .trash-area {
   position: absolute;
   right: 100px;
   background: none;
@@ -164,7 +179,7 @@
   padding: 8px;
   cursor: pointer;
   transition: background-color 0.2s ease, border 0.2s ease;
-}
+} */
 
 .trash-hovered {
   background-color: #ffe0e0;
@@ -194,6 +209,7 @@
 }
 
 .display-view {
+  position: relative; /* Changed from absolute to relative */
   display: flex;
   border: 2px solid #1e3a8a; /* blue outline */
   border-radius: 9999px;
@@ -202,6 +218,11 @@
   height: 40px;
   background-color: white;
   align-items: center;
+  right: 0;
+  margin-right: 10px;
+  /* background-color: aqua; */
+  position: absolute;
+  right: 120px;
 }
 
 .display-view-button {

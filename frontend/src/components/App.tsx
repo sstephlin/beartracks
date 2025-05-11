@@ -38,6 +38,8 @@ function App() {
           degree={degree}
           setDegree={setDegree}
           refreshSidebar={refreshSidebar}
+          numCompleted={numCompleted}
+          numRequired={numRequired}
           setNumCompleted={setNumCompleted}
           setNumRequired={setNumRequired}
         />
@@ -52,21 +54,30 @@ function App() {
                 <a href="index.html" className="logo-link">
                   {/* BearTracks */}
                   <img
-                    src="/beartracks_logo3.png"
+                    src="/beartracks_logo4.png"
                     alt="Bear Logo"
                     className="logo-image"
                   />
                 </a>
               </div>
-              <progress
-                className="logo-progress"
-                value={numRequired === 0 ? 0 : (numCompleted / numRequired) * 100}
-                max={100}
-              ></progress>
-              <p style={{ fontSize: "0.8rem", color: "#444", marginTop: "4px" }}>
-                Progress: {numCompleted} / {numRequired}
-            </p>
-
+              <div className="progress-row">
+                <progress
+                  className="logo-progress"
+                  value={
+                    numRequired === 0 ? 0 : (numCompleted / numRequired) * 100
+                  }
+                  max={100}
+                ></progress>
+                <p
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "#444",
+                    marginTop: "4px",
+                  }}
+                >
+                  {numCompleted} / {numRequired}
+                </p>
+              </div>
             </div>
             <div className="Sign-in-out-container">
               <SignedOut>
