@@ -1,10 +1,11 @@
-import edu.brown.cs.student.main.server.storage.StorageInterface;
+package edu.brown.cs.student.main.server.storage;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * This MockStorageInterface class can be instantiated in unit tests in test classes to mock
+ * This edu.brown.cs.student.main.server.storage.MockStorageInterface class can be instantiated in unit tests in test classes to mock
  * the getter methods that StorageInterface relies on
  */
 public class MockStorageInterface implements StorageInterface {

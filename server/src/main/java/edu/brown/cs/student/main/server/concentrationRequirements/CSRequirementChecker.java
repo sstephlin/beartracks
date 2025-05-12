@@ -243,7 +243,6 @@ public class CSRequirementChecker {
    * @return a list of the first capstone-eligible course that a user has taken
    */
   private List<String> checkCapstone() {
-    System.out.println("Running checkCapstone for user: " + uid);
     List<String> matchedCourses = new ArrayList<>();
 
     // only 3 capstone courses on C@B that a user can add
@@ -304,13 +303,14 @@ public class CSRequirementChecker {
     Set<String> available = new HashSet<>(this.userCourses);
 
     // Remove all used courses EXCEPT the capstone course, so it can overlap
-    String capstone = this.storageHandler.getCapstoneCourse(uid);
-    for (String used : this.usedCourses) {
-      if (!used.equals(capstone)) {
-        available.remove(used);
-      }
-    }
+//    String capstone = this.storageHandler.getCapstoneCourse(uid);
+//    for (String used : this.usedCourses) {
+//      if (!used.equals(capstone)) {
+//        available.remove(used);
+//      }
+//    }
 
+    available.removeAll(this.usedCourses);  // Always remove already-used courses
     return available;
   }
 
@@ -337,6 +337,31 @@ public class CSRequirementChecker {
     }
     System.out.println(completedCourses + " courses completed");
     return completedCourses;
+//    Set<String> countedCourses = new HashSet<>();
+//    Set<String> capstoneCourses = new HashSet<>();
+//
+//    for (Map.Entry<String, List<String>> entry : requirementResults.entrySet()) {
+//      String requirement = entry.getKey();
+//      List<String> courses = entry.getValue();
+//
+//      if (courses == null) continue;
+//
+//      if (requirement.equals("Capstone")) {
+//        capstoneCourses.addAll(courses); // capstone counts even if overlapping
+//      } else {
+//        for (String course : courses) {
+//          countedCourses.add(course); // only count once
+//        }
+//      }
+//    }
+//
+//    // Final result = all distinct used courses + capstone overlap
+//    Set<String> totalCourses = new HashSet<>(countedCourses);
+//    totalCourses.addAll(capstoneCourses); // allow capstone overlap
+//
+//    int totalCompleted = totalCourses.size();
+//    System.out.println(totalCompleted + " courses completed");
+//    return totalCompleted;
   }
 
   public int getTotalCoursesRequired() {
