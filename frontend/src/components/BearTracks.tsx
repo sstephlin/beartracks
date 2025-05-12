@@ -12,7 +12,7 @@ interface BearTracksProps {
 export default function BearTracks(props: BearTracksProps) {
   const { user } = useUser();
   const uid = user?.id;
-  const [viewCount, setViewCount] = useState<number>(2);
+  const [viewCount, setViewCount] = useState<string>("2");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [draggedSearchCourse, setDraggedSearchCourse] = useState<any | null>(
     null
@@ -98,6 +98,13 @@ export default function BearTracks(props: BearTracksProps) {
     setIsTrashHovered(true);
   };
 
+  async function handleViewCount(value: string) {
+    await fetch(`http://localhost:3232/store-view?uid=${uid}&view=${value}`, {
+      method: "POST",
+    });
+    setViewCount(value);
+  }
+
   return (
     <div
       className={`bear-tracks-container ${
@@ -107,10 +114,10 @@ export default function BearTracks(props: BearTracksProps) {
       <div className="searchbar-and-trash-container">
         <SearchBar onSearch={handleSearch} />
         <div className="display-view">
-          {[2, 4].map((value) => (
+          {["2", "4"].map((value) => (
             <button
               key={value}
-              onClick={() => setViewCount(value)}
+              onClick={() => handleViewCount(value)}
               className={`display-view-button ${
                 viewCount === value ? "selected" : "unselected"
               }`}

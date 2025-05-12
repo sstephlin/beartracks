@@ -12,6 +12,7 @@ import edu.brown.cs.student.main.server.handlers.CheckUserRequirementsHandler;
 import edu.brown.cs.student.main.server.handlers.GetAllCourseAvailabilityHandler;
 import edu.brown.cs.student.main.server.handlers.GetConcentrationHandler;
 import edu.brown.cs.student.main.server.handlers.GetConcentrationRequirementsHandler;
+import edu.brown.cs.student.main.server.handlers.GetExpandedHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserCoursesHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserCoursesWithTitleHandler;
 import edu.brown.cs.student.main.server.handlers.GetViewHandler;
@@ -19,6 +20,7 @@ import edu.brown.cs.student.main.server.handlers.RemoveCourseHandler;
 import edu.brown.cs.student.main.server.handlers.RemoveSemesterHandler;
 import edu.brown.cs.student.main.server.handlers.SearchCourseHandler;
 import edu.brown.cs.student.main.server.handlers.StoreConcentrationHandler;
+import edu.brown.cs.student.main.server.handlers.StoreSidebarHandler;
 import edu.brown.cs.student.main.server.handlers.StoreViewHandler;
 import edu.brown.cs.student.main.server.handlers.UpdateCapstoneHandler;
 import edu.brown.cs.student.main.server.parser.CourseCSVParser;
@@ -78,6 +80,8 @@ public class Server {
       Spark.get("get-concentration", new GetConcentrationHandler(firebaseUtils));
       Spark.post("store-view", new StoreViewHandler(firebaseUtils));
       Spark.get("get-view", new GetViewHandler(firebaseUtils));
+      Spark.post("store-expanded", new StoreSidebarHandler(firebaseUtils));
+      Spark.get("get-expanded", new GetExpandedHandler(firebaseUtils));
       Spark.get("get-user-courses", new GetUserCoursesHandler(firebaseUtils));
       Spark.get("get-user-courses-detailed", new GetUserCoursesWithTitleHandler(firebaseUtils));
       Spark.get(
