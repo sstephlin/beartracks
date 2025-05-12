@@ -193,8 +193,8 @@ public class CSRequirementChecker {
     int nonCsCoursesUsed = 0;
     int nonTechnicalArtsCoursesUsed = 0;
 
-    int nonCsLimit = (this.requirements.size() == 10) ? 1 : 3; // AB: 1, ScB: 3
-    int nonTechnicalArtsLimit = (this.requirements.size() == 10) ? 1 : 3; // AB: 1, ScB: 3
+    int nonCsLimit = this.concentration.equals("Computer Science A.B.") ? 1 : 3;
+    int nonTechnicalArtsLimit = this.concentration.equals("Computer Science A.B.") ? 1 : 3;
 
     Set<String> linearAlgebraCourses = Set.of("MATH 0520", "MATH 0540", "APMA 0260");
     Set<String> specialElectives =
@@ -466,6 +466,8 @@ public class CSRequirementChecker {
       }
     }
     // if not, check if their non cs course is in the set above
+//    return ALLOWED_NON_CS_COURSES.contains(courseCode);
+
     return ALLOWED_NON_CS_COURSES.contains(courseCode);
   }
 }

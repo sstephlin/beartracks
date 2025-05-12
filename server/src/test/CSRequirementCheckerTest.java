@@ -133,7 +133,8 @@ public class CSRequirementCheckerTest {
     Set<String> userCourses = Set.of(
         "CSCI 0111",  // Intro Part 1
         "CSCI 0200",  // Math Foundation
-        "DATA 1040",   // Elective (non-csci course)
+        "DATA 1030",   // Elective (non-csci course)
+        "MATH 1450",
         "CSCI 1234" // capstone course
     );
     String uid = "test-user";
@@ -143,16 +144,16 @@ public class CSRequirementCheckerTest {
     MockStorageInterface mockStorage = new MockStorageInterface(concentration, userCourses, capstoneCourse);
     CSRequirementChecker checker = new CSRequirementChecker(mockStorage, uid, userCourses, concentration);
     Map<String, List<String>> results = checker.checkAllRequirements();
-    System.out.println(results);
 
     assertTrue(results.get("Intro Part 1").contains("CSCI 0111"));
     assertTrue(results.get("Intro Part 2").contains("CSCI 0200")); // bc any 200+ level course counts as second intro
-    assertTrue(results.get("Electives").contains("APMA 1910"));
+    assertTrue(results.get("Electives").contains("DATA 1030"));
+    assertTrue(results.get("Electives").contains("MATH 1450"));
     assertTrue(results.get("Capstone").contains("CSCI 1234"));
 
     int completed = checker.countCoursesCompleted(results);
 
-    assertEquals(5, completed);  // capstone course gets counted twice
+    assertEquals(6, completed);  // capstone course gets counted twice
     assertEquals(16, checker.getTotalCoursesRequired());
   }
 }
