@@ -8,29 +8,40 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+// checks a user's set of courses against each of the user's concentration's requirements
 public class CSRequirementChecker {
-
   private StorageInterface storageHandler;
   private String uid;
   private Set<String> userCourses;
-  public Map<String, RequirementRule> requirements;
+  private Map<String, RequirementRule> requirements;
   private Set<String> usedCourses = new HashSet<>();
   private String concentration;
 
+  /**
+   * constructor for CSRequirementChecker
+   *
+   * @param storageHandler - contains all the methods connecting to firebase
+   * @param uid- user's id
+   * @param userCourses - set of all the courses a user has added to their course plan
+   * @param concentration - user's selected concentration
+   */
   public CSRequirementChecker(
-      StorageInterface storageHandler, String uid, Set<String> userCourses, String concentration)
-      throws Exception {
+      StorageInterface storageHandler, String uid, Set<String> userCourses, String concentration) {
     this.storageHandler = storageHandler;
     this.uid = uid;
     this.userCourses = userCourses;
-    //    this.concentration = this.storageHandler.getConcentration(uid);
     this.concentration = concentration;
+
+    // defensive checks for empty or null parameters
+    if (userCourses.isEmpty()) {
+      throw new IllegalArgumentException("No courses found for user.");
+    }
 
     if (this.concentration == null) {
       throw new IllegalArgumentException("No concentration found for user: " + uid);
     }
 
-    // Set requirements based on concentration
+    // set requirements based on concentration
     switch (this.concentration) {
       case "Computer Science A.B.":
         this.requirements = CSABDegreeRequirements.requirements;
@@ -39,12 +50,16 @@ public class CSRequirementChecker {
         this.requirements = CSScBDegreeRequirements.requirements;
         break;
       default:
-        throw new IllegalArgumentException("Unknown concentration: " + concentration);
+        throw new IllegalArgumentException("Unsupported concentration: " + concentration);
     }
   }
 
-  // New method: returns map of requirement name to list of USER'S courses that fulfill that
-  // requirement
+  /**
+   * lists user courses that fulfill each requirement by calling individual check methods for
+   * each requirement
+   *
+   * @return map of requirement name to list of USER'S courses that fulfill that requirement
+   */
   public Map<String, List<String>> checkAllRequirements() {
     System.out.println("Checking requirements for user: " + uid);
     Map<String, List<String>> results = new LinkedHashMap<>();
@@ -58,9 +73,9 @@ public class CSRequirementChecker {
             "Foundations AI",
             "Foundations Systems",
             "Foundations Theory",
-            "Capstone", // Must come before electives and technicals
             "Technical Courses",
-            "Electives");
+            "Electives",
+            "Capstone");
 
     for (String requirementName : requirementsList) {
       if (!this.requirements.containsKey(requirementName)) {
@@ -92,7 +107,12 @@ public class CSRequirementChecker {
     return results;
   }
 
-  // standard requirements = Intro Part 1 and 2, Foundations
+  /**
+   * checks "standard requirements" (AKA Intro Part 1 and 2, Foundations, Math Foundations)
+   *
+   * @param requirementName - name of requirement
+   * @return - list of courses that fulfill the requirement
+   */
   private List<String> checkStandardRequirement(String requirementName) {
     RequirementRule rule = this.requirements.get(requirementName);
     List<String> matchedCourses = new ArrayList<>();
@@ -128,7 +148,11 @@ public class CSRequirementChecker {
     return matchedCourses;
   }
 
-  // Modified: now returns list
+  /**
+   * checks which 1000+ csci technical courses a user has taken
+   *
+   * @return - list of courses that fulfill the requirement
+   */
   private List<String> checkTechnicalCourses() {
     List<String> matchedCourses = new ArrayList<>();
     Set<String> availableCourses = getAvailableCourses();
@@ -158,7 +182,7 @@ public class CSRequirementChecker {
   /**
    * checks all the possible elective courses user could take (linear algebra, approved non-cs)
    *
-   * @return
+   * @return - list of courses that fulfill the requirement
    */
   private List<String> checkElectives() {
     List<String> matchedCourses = new ArrayList<>();
@@ -237,39 +261,27 @@ public class CSRequirementChecker {
   }
 
   /**
-   * checks that a user's courses includes a capstone course (either one of the 3 special capstone
-   * classes OR if the user checkmarks it separately)
+   * checks which capstone course a user selected (retrieved from firestore)
    *
-   * @return a list of the first capstone-eligible course that a user has taken
+   * @return - list of courses that fulfill the requirement
    */
   private List<String> checkCapstone() {
     List<String> matchedCourses = new ArrayList<>();
 
-    // only 3 capstone courses on C@B that a user can add
-    //    Set<String> autoCapstones = new HashSet<>(CSCapstoneCourses.AUTO_ACCEPTED);
-
-    // OR get which course the user chose to be their capstone
+    // get which course the user chose to be their capstone
     String userSelectedCapstone = this.storageHandler.getCapstoneCourse(uid);
 
-    //    for (String course : this.userCourses) {
-    //      // 1. either the user chose one of the 3 special capstone courses
-    //      // 2. OR the user marked a course as their capstone course on the frontend
-    //      if (autoCapstones.contains(course)
-    //          || (userSelectedCapstone != null && course.equals(userSelectedCapstone))) {
-    //        matchedCourses.add(course);
-    //        break;
-    //      }
-    //    }
-
-    // 1. either the user chose one of the 3 special capstone courses
-    // 2. OR the user marked a course as their capstone course on the frontend
     if (userSelectedCapstone != null) {
       matchedCourses.add(userSelectedCapstone);
     }
-
-    return matchedCourses; // empty if case 1 doesn't apply or user didn't choose a capstone course
+    return matchedCourses;
   }
 
+  /**
+   * Checks that a user either took cs200 or another 200+ csci course if they took cs19 as their intro part 1
+   *
+   * @return - list of courses that fulfill the requirement
+   */
   private List<String> checkIntroPart2() {
     List<String> matchedCourses = new ArrayList<>();
 
@@ -299,17 +311,13 @@ public class CSRequirementChecker {
     return matchedCourses;
   }
 
+  /**
+   * returns a set of a user's courses that haven't been counted already in concentration categories
+   *
+   * @return - a set of a user's courses that haven't been counted already in concentration categories
+   */
   private Set<String> getAvailableCourses() {
     Set<String> available = new HashSet<>(this.userCourses);
-
-    // Remove all used courses EXCEPT the capstone course, so it can overlap
-//    String capstone = this.storageHandler.getCapstoneCourse(uid);
-//    for (String used : this.usedCourses) {
-//      if (!used.equals(capstone)) {
-//        available.remove(used);
-//      }
-//    }
-
     available.removeAll(this.usedCourses);  // Always remove already-used courses
     return available;
   }
@@ -337,33 +345,13 @@ public class CSRequirementChecker {
     }
     System.out.println(completedCourses + " courses completed");
     return completedCourses;
-//    Set<String> countedCourses = new HashSet<>();
-//    Set<String> capstoneCourses = new HashSet<>();
-//
-//    for (Map.Entry<String, List<String>> entry : requirementResults.entrySet()) {
-//      String requirement = entry.getKey();
-//      List<String> courses = entry.getValue();
-//
-//      if (courses == null) continue;
-//
-//      if (requirement.equals("Capstone")) {
-//        capstoneCourses.addAll(courses); // capstone counts even if overlapping
-//      } else {
-//        for (String course : courses) {
-//          countedCourses.add(course); // only count once
-//        }
-//      }
-//    }
-//
-//    // Final result = all distinct used courses + capstone overlap
-//    Set<String> totalCourses = new HashSet<>(countedCourses);
-//    totalCourses.addAll(capstoneCourses); // allow capstone overlap
-//
-//    int totalCompleted = totalCourses.size();
-//    System.out.println(totalCompleted + " courses completed");
-//    return totalCompleted;
   }
 
+  /**
+   * based on user's selected concentration, returns how many total credits/courses they need to fulfill
+   *
+   * @return - either 10 (A.B.) or 16 (Sc.B)
+   */
   public int getTotalCoursesRequired() {
     if ("Computer Science A.B.".equalsIgnoreCase(this.concentration)) {
       return 10;
@@ -464,7 +452,7 @@ public class CSRequirementChecker {
   /**
    * checks if a non CSCI course is approved to count as an elective
    *
-   * @param courseCode - ex: DATA 1040
+   * @param courseCode - ex: DATA 1030
    * @return true or false for whether a non CSCI course is approved to count as an elective
    */
   private boolean isAllowedNonCSCourse(String courseCode) {
