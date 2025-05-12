@@ -13,7 +13,7 @@ public class CSRequirementChecker {
   private StorageInterface storageHandler;
   private String uid;
   private Set<String> userCourses;
-  private Map<String, RequirementRule> requirements;
+  public Map<String, RequirementRule> requirements;
   private Set<String> usedCourses = new HashSet<>();
   private String concentration;
 
@@ -243,26 +243,32 @@ public class CSRequirementChecker {
    * @return a list of the first capstone-eligible course that a user has taken
    */
   private List<String> checkCapstone() {
+    System.out.println("Running checkCapstone for user: " + uid);
     List<String> matchedCourses = new ArrayList<>();
 
     // only 3 capstone courses on C@B that a user can add
-    Set<String> autoCapstones = new HashSet<>(CSCapstoneCourses.AUTO_ACCEPTED);
+    //    Set<String> autoCapstones = new HashSet<>(CSCapstoneCourses.AUTO_ACCEPTED);
 
     // OR get which course the user chose to be their capstone
     String userSelectedCapstone = this.storageHandler.getCapstoneCourse(uid);
 
-    for (String course : this.userCourses) {
-      // 1. either the user chose one of the 3 special capstone courses
-      // 2. OR the user marked a course as their capstone course on the frontend
-      if (autoCapstones.contains(course)
-          || (userSelectedCapstone != null && course.equals(userSelectedCapstone))) {
-        matchedCourses.add(course);
-        break;
-      }
+    //    for (String course : this.userCourses) {
+    //      // 1. either the user chose one of the 3 special capstone courses
+    //      // 2. OR the user marked a course as their capstone course on the frontend
+    //      if (autoCapstones.contains(course)
+    //          || (userSelectedCapstone != null && course.equals(userSelectedCapstone))) {
+    //        matchedCourses.add(course);
+    //        break;
+    //      }
+    //    }
+
+    // 1. either the user chose one of the 3 special capstone courses
+    // 2. OR the user marked a course as their capstone course on the frontend
+    if (userSelectedCapstone != null) {
+      matchedCourses.add(userSelectedCapstone);
     }
 
     return matchedCourses; // empty if case 1 doesn't apply or user didn't choose a capstone course
-    // yet
   }
 
   private List<String> checkIntroPart2() {
@@ -308,7 +314,14 @@ public class CSRequirementChecker {
     return available;
   }
 
-  // ex: 6/16 for Sc.B
+  /**
+   * counts how many courses a user has completed, out of the total courses required for their
+   * concentration
+   *
+   * @param requirementResults - maps name of requirement to a list of courses a user has taken that
+   *     satisfies that requirement
+   * @return an integer value for the number of completed courses
+   */
   public int countCoursesCompleted(Map<String, List<String>> requirementResults) {
     int completedCourses = 0;
 
@@ -326,10 +339,9 @@ public class CSRequirementChecker {
     return completedCourses;
   }
 
-  // based on requirements size, we know if user is AB or ScB
   public int getTotalCoursesRequired() {
     if ("Computer Science A.B.".equalsIgnoreCase(this.concentration)) {
-      return 10; // AB requirements
+      return 10;
     } else {
       return 16; // ScB requirements
     }
@@ -428,7 +440,7 @@ public class CSRequirementChecker {
    * checks if a non CSCI course is approved to count as an elective
    *
    * @param courseCode - ex: DATA 1040
-   * @return true or false
+   * @return true or false for whether a non CSCI course is approved to count as an elective
    */
   private boolean isAllowedNonCSCourse(String courseCode) {
     // first, check if user is taking any 1000+ math class
