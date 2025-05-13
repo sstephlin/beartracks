@@ -60,17 +60,17 @@ public class MockStorageInterface implements StorageInterface {
     return this.capstoneCourse;
   }
 
-  /**
-   * getter method for returning if the user last selected to view 2 or 4 semesters at a time
-   * @param uid
-   * @return either 2 or 4, as strings
-   */
+  // setter methods that write to/modify firestore will not be mocked!
   @Override
   public String getView(String uid) {
     throw new UnsupportedOperationException("Not used in test");
   }
 
-  // setter methods that write to/modify firestore will not be mocked!
+  @Override
+  public String getExpanded(String uid) {
+    throw new UnsupportedOperationException("Not used in test");
+  }
+
   @Override
   public void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data) {
     throw new UnsupportedOperationException("Not used in test");
