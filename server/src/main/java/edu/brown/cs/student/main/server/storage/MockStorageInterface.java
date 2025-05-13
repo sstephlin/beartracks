@@ -68,6 +68,7 @@ public class MockStorageInterface implements StorageInterface {
    * @param uid
    * @return either 2 or 4, as strings
    */
+  // setter methods that write to/modify firestore will not be mocked!
   @Override
   public String getView(String uid) {
     throw new UnsupportedOperationException("Not used in test");
@@ -78,7 +79,11 @@ public class MockStorageInterface implements StorageInterface {
     throw new UnsupportedOperationException("Not used in test");
   }
 
-  // setter methods that write to/modify firestore will not be mocked!
+  @Override
+  public String getExpanded(String uid) {
+    throw new UnsupportedOperationException("Not used in test");
+  }
+
   @Override
   public void addDocument(
       String uid, String collection_id, String doc_id, Map<String, Object> data) {

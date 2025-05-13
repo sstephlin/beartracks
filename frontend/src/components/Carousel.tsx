@@ -1012,9 +1012,8 @@ export default function Carousel({
             </button>
             <h2>Manual Course Entry</h2>
             <p>
-              You're manually adding a course. After clicking, you can enter
-              course details like the code and name. Use this for Non-CS
-              courses. Please not that these courses will not be tracked on your
+              You're manually adding a course. Enter course code and course name for Non-CS
+              courses, and hit Enter to save this manually-added course. Please not that these courses will not be tracked on your
               concentration progression meter.
             </p>
           </div>
