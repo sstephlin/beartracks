@@ -98,6 +98,38 @@ export default function Sidebar(props: SidebarProps) {
     console.log("key", key);
   };
 
+  function stringToBool(str: string): boolean {
+    return str.toLowerCase() === "true";
+  }
+
+  useEffect(() => {
+    const getExpanded = async () => {
+      if (!user?.id) return;
+      try {
+        const res = await fetch(
+          `http://localhost:3232/get-expanded?uid=${user.id}`
+        );
+        const data = await res.json();
+        if (data.expanded) {
+          props.setExpanded(stringToBool(data.expanded));
+        }
+      } catch (err) {
+        console.error("failed to fetch view-count", err);
+      }
+    };
+    getExpanded();
+  }, [user?.id]);
+
+  async function handleExpanded(stringValue: string) {
+    await fetch(
+      `http://localhost:3232/store-expanded?uid=${uid}&expanded=${stringValue}`,
+      {
+        method: "POST",
+      }
+    );
+    props.setExpanded(!props.expanded);
+  }
+
   return (
     <aside
       className={`sidebar ${
@@ -109,7 +141,7 @@ export default function Sidebar(props: SidebarProps) {
                 
         <button
           className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100"
-          onClick={() => props.setExpanded((curr) => !curr)}
+          onClick={() => handleExpanded((!props.expanded).toString())}
         >
                     
           <AlignJustify />
