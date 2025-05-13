@@ -212,90 +212,88 @@ export default function Sidebar(props: SidebarProps) {
 
           <div className="concentration-req-container">
             {props.degree !== "Undeclared" &&
-              Object.keys(degreeInfo)
-                .reverse()
-                .map((key) => {
-                  const isExpanded = expandedKeys[key];
-                  return (
-                    <div key={key} className="concentration-category">
-                      <div className="concentration-row">
-                        {!isExpanded ? (
-                          <button
-                            onClick={() => handleExpand(key)}
-                            className="expand-button"
+              Object.keys(degreeInfo).map((key) => {
+                const isExpanded = expandedKeys[key];
+                return (
+                  <div key={key} className="concentration-category">
+                    <div className="concentration-row">
+                      {!isExpanded ? (
+                        <button
+                          onClick={() => handleExpand(key)}
+                          className="expand-button"
+                        >
+                          <svg
+                            className={`button-icon ${
+                              isExpanded ? "rotated" : ""
+                            }`}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="white"
+                            width="24"
+                            height="24"
+                            style={{ display: "block" }}
                           >
-                            <svg
-                              className={`button-icon ${
-                                isExpanded ? "rotated" : ""
-                              }`}
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 20 20"
-                              fill="white"
-                              width="24"
-                              height="24"
-                              style={{ display: "block" }}
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M10 14a1 1 0 01-.707-.293l-5-5a1 1 0 011.414-1.414L10 11.586l4.293-4.293a1 1 0 011.414 1.414l-5 5A1 1 0 0110 14z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleExpand(key)}
-                            className="expand-button"
+                            <path
+                              fillRule="evenodd"
+                              d="M10 14a1 1 0 01-.707-.293l-5-5a1 1 0 011.414-1.414L10 11.586l4.293-4.293a1 1 0 011.414 1.414l-5 5A1 1 0 0110 14z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleExpand(key)}
+                          className="expand-button"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke-width="1.5"
-                              stroke="currentColor"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="m4.5 15.75 7.5-7.5 7.5 7.5"
-                              />
-                            </svg>
-                          </button>
-                        )}
-                        {key}
-                      </div>
-
-                      <div className="requirement-list-container">
-                        {isExpanded && (
-                          <div>
-                            <ul className="requirement-list">
-                              {loading ? (
-                                <li>Loading Courses...</li>
-                              ) : degreeInfo[key]?.length === 0 ? (
-                                <p className="cannot-list">
-                                  Sorry! Cannot list courses at the moment
-                                </p>
-                              ) : (
-                                degreeInfo[key].map((course) => (
-                                  <li
-                                    key={course}
-                                    className={`${
-                                      courseInfo[key].includes(course)
-                                        ? "requirement_completed"
-                                        : "requirement_not_completed"
-                                    }`}
-                                  >
-                                    {course}
-                                  </li>
-                                ))
-                              )}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="m4.5 15.75 7.5-7.5 7.5 7.5"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                      {key}
                     </div>
-                  );
-                })}
+
+                    <div className="requirement-list-container">
+                      {isExpanded && (
+                        <div>
+                          <ul className="requirement-list">
+                            {loading ? (
+                              <li>Loading Courses...</li>
+                            ) : degreeInfo[key]?.length === 0 ? (
+                              <p className="cannot-list">
+                                Sorry! Cannot list courses at the moment
+                              </p>
+                            ) : (
+                              degreeInfo[key].map((course) => (
+                                <li
+                                  key={course}
+                                  className={`${
+                                    courseInfo[key].includes(course)
+                                      ? "requirement_completed"
+                                      : "requirement_not_completed"
+                                  }`}
+                                >
+                                  {course}
+                                </li>
+                              ))
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
           </div>
         </div>
       )}
