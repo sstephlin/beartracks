@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This edu.brown.cs.student.main.server.storage.MockStorageInterface class can be instantiated in unit tests in test classes to mock
- * the getter methods that StorageInterface relies on
+ * This edu.brown.cs.student.main.server.storage.MockStorageInterface class can be instantiated in
+ * unit tests in test classes to mock the getter methods that StorageInterface relies on
  */
 public class MockStorageInterface implements StorageInterface {
 
@@ -18,10 +18,12 @@ public class MockStorageInterface implements StorageInterface {
    * constructor for a mock stoage interface to mock the getter methods in StorageInterface
    *
    * @param concentration - a user's concentration
-   * @param userCourses - all the courses a user has taken/plans to take (AKA added to their course plan)
+   * @param userCourses - all the courses a user has taken/plans to take (AKA added to their course
+   *     plan)
    * @param capstoneCourse - a user's selected capstone course
    */
-  public MockStorageInterface(String concentration, Set<String> userCourses, String capstoneCourse) {
+  public MockStorageInterface(
+      String concentration, Set<String> userCourses, String capstoneCourse) {
     this.concentration = concentration;
     this.userCourses = userCourses;
     this.capstoneCourse = capstoneCourse;
@@ -72,7 +74,8 @@ public class MockStorageInterface implements StorageInterface {
   }
 
   @Override
-  public void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data) {
+  public void addDocument(
+      String uid, String collection_id, String doc_id, Map<String, Object> data) {
     throw new UnsupportedOperationException("Not used in test");
   }
 
@@ -87,12 +90,14 @@ public class MockStorageInterface implements StorageInterface {
   }
 
   @Override
-  public Map<String, List<Map<String, Object>>> getAllSemestersAndCourses(String uid, boolean includeTitle) {
+  public Map<String, List<Map<String, Object>>> getAllSemestersAndCourses(
+      String uid, boolean includeTitle) {
     throw new UnsupportedOperationException("Not used in test");
   }
 
   @Override
-  public void updateIsCapstoneField(String uid, String semester, String courseCode, Boolean isCapstone) {
+  public void updateIsCapstoneField(
+      String uid, String semester, String courseCode, Boolean isCapstone) {
     throw new UnsupportedOperationException("Not used in test");
   }
 

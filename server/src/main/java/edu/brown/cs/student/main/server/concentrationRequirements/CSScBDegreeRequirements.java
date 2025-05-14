@@ -87,10 +87,6 @@ public class CSScBDegreeRequirements {
     allCapstones.addAll(CSCapstoneCourses.AUTO_ACCEPTED);
     allCapstones.addAll(CSCapstoneCourses.ALL);
 
-    requirements.put(
-        "Capstone",
-        new RequirementRule(allCapstones,
-            1,
-            null));
+    requirements.put("Capstone", new RequirementRule(allCapstones, 1, null));
   }
 }

@@ -55,8 +55,8 @@ public class CSRequirementChecker {
   }
 
   /**
-   * lists user courses that fulfill each requirement by calling individual check methods for
-   * each requirement
+   * lists user courses that fulfill each requirement by calling individual check methods for each
+   * requirement
    *
    * @return map of requirement name to list of USER'S courses that fulfill that requirement
    */
@@ -278,7 +278,8 @@ public class CSRequirementChecker {
   }
 
   /**
-   * Checks that a user either took cs200 or another 200+ csci course if they took cs19 as their intro part 1
+   * Checks that a user either took cs200 or another 200+ csci course if they took cs19 as their
+   * intro part 1
    *
    * @return - list of courses that fulfill the requirement
    */
@@ -314,11 +315,12 @@ public class CSRequirementChecker {
   /**
    * returns a set of a user's courses that haven't been counted already in concentration categories
    *
-   * @return - a set of a user's courses that haven't been counted already in concentration categories
+   * @return - a set of a user's courses that haven't been counted already in concentration
+   *     categories
    */
   private Set<String> getAvailableCourses() {
     Set<String> available = new HashSet<>(this.userCourses);
-    available.removeAll(this.usedCourses);  // Always remove already-used courses
+    available.removeAll(this.usedCourses); // Always remove already-used courses
     return available;
   }
 
@@ -348,7 +350,8 @@ public class CSRequirementChecker {
   }
 
   /**
-   * based on user's selected concentration, returns how many total credits/courses they need to fulfill
+   * based on user's selected concentration, returns how many total credits/courses they need to
+   * fulfill
    *
    * @return - either 10 (A.B.) or 16 (Sc.B)
    */
@@ -466,7 +469,7 @@ public class CSRequirementChecker {
       }
     }
     // if not, check if their non cs course is in the set above
-//    return ALLOWED_NON_CS_COURSES.contains(courseCode);
+    //    return ALLOWED_NON_CS_COURSES.contains(courseCode);
 
     return ALLOWED_NON_CS_COURSES.contains(courseCode);
   }
