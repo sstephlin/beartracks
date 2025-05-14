@@ -6,7 +6,9 @@ import java.util.Set;
 
 /**
  * This edu.brown.cs.student.main.server.storage.MockStorageInterface class can be instantiated in
- * unit tests in test classes to mock the getter methods that StorageInterface relies on
+ * unit tests in test classes to mock the getter methods that StorageInterface relies on This
+ * edu.brown.cs.student.main.server.storage.MockStorageInterface class can be instantiated in unit
+ * tests in test classes to mock the getter methods that StorageInterface relies on
  */
 public class MockStorageInterface implements StorageInterface {
 
@@ -62,6 +64,12 @@ public class MockStorageInterface implements StorageInterface {
     return this.capstoneCourse;
   }
 
+  /**
+   * getter method for returning if the user last selected to view 2 or 4 semesters at a time
+   *
+   * @param uid
+   * @return either 2 or 4, as strings
+   */
   // setter methods that write to/modify firestore will not be mocked!
   @Override
   public String getView(String uid) {
