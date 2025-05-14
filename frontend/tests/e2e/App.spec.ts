@@ -39,5 +39,5 @@ test.beforeEach(async ({ page }) => {
 test("sign-in", async ({ page }) => {
   await page.goto("http://localhost:8000/");
   await expect(page.getByRole("banner")).toContainText("Welcome!");
-  await page.getByText("/ Welcome!").click();
+  await page.getByText("Welcome!").click();
 });
