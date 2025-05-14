@@ -16,6 +16,8 @@ public interface StorageInterface {
 
   String getView(String uid) throws Exception;
 
+  String getExpanded(String uid) throws Exception;
+
   String getConcentration(String uid) throws Exception;
 
   Set<String> getAllUserCourses(String userId) throws ExecutionException, InterruptedException;

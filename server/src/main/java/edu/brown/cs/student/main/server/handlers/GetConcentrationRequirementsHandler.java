@@ -2,8 +2,8 @@ package edu.brown.cs.student.main.server.handlers;
 
 import edu.brown.cs.student.main.server.concentrationRequirements.*;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
-import java.util.LinkedHashMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import spark.Request;
@@ -45,7 +45,7 @@ public class GetConcentrationRequirementsHandler implements Route {
       }
 
       Map<String, List<String>> requirementOptions = new LinkedHashMap<>();
-      
+
       // first, check if Calculus should be first (if concentration is Sc.B.)
       if (concentration.equalsIgnoreCase("Computer Science Sc.B.")) {
         RequirementRule calculusReq = requirements.get("Calculus");

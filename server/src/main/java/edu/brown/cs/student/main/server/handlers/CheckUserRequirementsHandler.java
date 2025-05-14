@@ -10,13 +10,26 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+// checks which courses satisfy each requirement of a user's concentration
 public class CheckUserRequirementsHandler implements Route {
   public StorageInterface storageHandler;
 
+  /**
+   * constructor for CheckUserRequirementsHandler
+   *
+   * @param storageHandler - contains all the methods connecting to firebase
+   */
   public CheckUserRequirementsHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
   }
 
+  /**
+   * Handles the check-concentration-requirements endpoint
+   *
+   * @param request - request object containing the query parameters
+   * @param response - response object used to return success or error messages
+   * @return A JSON response indicating success or failure.
+   */
   public Object handle(Request request, Response response) throws Exception {
     Map<String, Object> responseMap = new HashMap<>();
     try {
@@ -34,11 +47,6 @@ public class CheckUserRequirementsHandler implements Route {
 
       // Step 2: Get all user courses
       Set<String> userCourses = storageHandler.getAllUserCourses(uid);
-      if (userCourses == null
-      //          || userCourses.isEmpty()
-      ) {
-        throw new IllegalArgumentException("No courses found for user.");
-      }
 
       // Step 3: instantiate checker that checks user's courses WITH concentration requirements
       CSRequirementChecker checker =

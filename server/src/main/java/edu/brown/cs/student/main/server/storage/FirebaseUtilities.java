@@ -203,6 +203,18 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
+  public String getExpanded(String uid) throws Exception {
+    DocumentReference docRef =
+        db.collection("users").document(uid).collection("expanded").document("current");
+
+    DocumentSnapshot snapshot = docRef.get().get();
+    if (snapshot.exists() && snapshot.getString("expanded") != null) {
+      return snapshot.getString("expanded");
+    }
+    return null;
+  }
+
+  @Override
   public String getConcentration(String uid) throws Exception {
     DocumentReference docRef =
         db.collection("users").document(uid).collection("concentration").document("current");

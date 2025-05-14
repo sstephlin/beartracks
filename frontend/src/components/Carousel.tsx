@@ -12,8 +12,8 @@ import RightClickComponent from "./RightClick.tsx";
 import { Award } from "lucide-react";
 
 interface CarouselProps {
-  viewCount: number;
-  setViewCount: React.Dispatch<React.SetStateAction<number>>;
+  viewCount: string;
+  setViewCount: React.Dispatch<React.SetStateAction<string>>;
   draggedSearchCourse: any | null;
   expanded: boolean; // uid: string | undefined;
   setRefreshSidebar: React.Dispatch<React.SetStateAction<boolean>>;
@@ -125,25 +125,26 @@ export default function Carousel({
   const handleToggleCapstone = async (courseId: string, checked: boolean) => {
     const course = courses.find((c) => c.id === courseId);
     if (!course || !user?.id) return;
-  
+
     const { courseCode, semesterId } = course;
     const [term, year] = semesterId.split(" ");
-  
+
     try {
       const query = new URLSearchParams({
         uid: user.id,
         term,
         year,
       });
-  
-      if (checked) { // checked == true means that the user wants to check a NEW capstone course
+
+      if (checked) {
+        // checked == true means that the user wants to check a NEW capstone course
         query.append("courseCode", courseCode); // add the new cpastone course to the api fetch
       }
-  
+
       await fetch(`http://localhost:3232/update-capstone?${query.toString()}`, {
         method: "POST",
       });
-  
+
       setCourses((prev) =>
         prev.map((c) => ({
           ...c,
@@ -151,13 +152,13 @@ export default function Carousel({
         }))
       );
 
-      // update which course is being capstoned 
+      // update which course is being capstoned
       const newCapstoneId = checked ? courseId : null;
       setCapstoneCourseId(newCapstoneId);
     } catch (err) {
       console.error("Failed to update capstone:", err);
     }
-  };  
+  };
 
   useEffect(() => {
     const fetchCapstones = async () => {
@@ -763,17 +764,12 @@ export default function Carousel({
     console.log("newIds", newBoxIds);
   };
 
-  // const handleDeleteSemester = (semToDelete: string) => {
-  //   setBoxIds((prevBoxIds) => prevBoxIds.filter((id) => id !== semToDelete));
-  //   console.log("delete");
-  // };
-
   const handleDeleteSemester = async (boxIdToDelete: string) => {
     const semester = boxSelections[boxIdToDelete];
     if (!semester || !user?.id) return;
-  
+
     const [term, year] = semester.split(" ");
-  
+
     try {
       const res = await fetch(
         `http://localhost:3232/remove-semester?uid=${user.id}&term=${term}&year=${year}`,
@@ -782,17 +778,17 @@ export default function Carousel({
         }
       );
       const data = await res.json();
-  
+
       if (data.response_type === "success") {
         setBoxIds((prev) => prev.filter((id) => id !== boxIdToDelete));
         setUsedSemesters((prev) => prev.filter((s) => s !== semester));
-  
+
         setBoxSelections((prev) => {
           const newSelections = { ...prev };
           delete newSelections[boxIdToDelete];
           return newSelections;
         });
-  
+
         // ALSO: remove all courses from that semester
         setCourses((prev) => prev.filter((c) => c.semesterId !== semester));
       } else {
@@ -802,7 +798,7 @@ export default function Carousel({
       console.error("Network error during delete:", err);
     }
   };
-  
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -858,12 +854,29 @@ export default function Carousel({
       window.removeEventListener("resize", updateScrollButtons);
     };
   }, []);
+  useEffect(() => {
+    const getView = async () => {
+      if (!user?.id) return;
+      try {
+        const res = await fetch(
+          `http://localhost:3232/get-view?uid=${user.id}`
+        );
+        const data = await res.json();
+        if (data.view) {
+          setViewCount(data.view);
+        }
+      } catch (err) {
+        console.error("failed to fetch view-count", err);
+      }
+    };
+    getView();
+  }, [user?.id]);
 
   return (
     <div
-      className={`carousel-outer-wrapper ${viewCount === 2 ? "two" : "four"} ${
-        expanded ? "expanded" : "collapsed"
-      }`}
+      className={`carousel-outer-wrapper ${
+        viewCount === "2" ? "two" : "four"
+      } ${expanded ? "expanded" : "collapsed"}`}
     >
       {dropError && (
         <div className="drop-error-message">{dropError.message}</div>
@@ -879,7 +892,7 @@ export default function Carousel({
 
       <div
         className={`carousel-inner-wrapper ${
-          viewCount === 2 ? "two" : "four"
+          viewCount === "2" ? "two" : "four"
         } ${expanded ? "expanded" : "collapsed"}`}
         ref={scrollContainerRef}
       >
@@ -999,9 +1012,8 @@ export default function Carousel({
             </button>
             <h2>Manual Course Entry</h2>
             <p>
-              You're manually adding a course. After clicking, you can enter
-              course details like the code and name. Use this for Non-CS
-              courses. Please not that these courses will not be tracked on your
+              You're manually adding a course. Enter course code and course name for Non-CS
+              courses, and hit Enter to save this manually-added course. Please not that these courses will not be tracked on your
               concentration progression meter.
             </p>
           </div>
