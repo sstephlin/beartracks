@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/SemesterBox.css";
 
+// these are all the props for the CourseDrag component
 interface CourseDragProps {
   id: string;
   courseCode: string;
@@ -46,6 +47,7 @@ export default function CourseDrag({
   const [title, setTitle] = useState(courseTitle || "");
   const [isChecked, setIsChecked] = useState<boolean>(!!isCapstone);
 
+  // this handles enter key press to save course
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && onSaveCourse) {
       onSaveCourse(id, code.trim(), title.trim());
@@ -66,6 +68,7 @@ export default function CourseDrag({
     e.dataTransfer.setData("semesterId", semesterId);
   };
 
+  // this ensures to keep thecapstone checkbox state in sync with props
   useEffect(() => {
     setIsChecked(isCapstone);
   }, [isCapstone]);
@@ -106,6 +109,7 @@ export default function CourseDrag({
           />
         </div>
       ) : (
+        // this is the standard display mode
         <div className="course-filled">
           <div className="course-header">
             <div className="course-code">{courseCode}</div>

@@ -1,6 +1,7 @@
 import React, { forwardRef } from "react";
 import "../styles/SemesterBox.css";
 
+// this is the props interface for SemesterBox
 interface SemesterBoxProps {
   boxId: string;
   selectedSemester: string;
@@ -45,6 +46,7 @@ const SemesterBox = forwardRef<HTMLDivElement, SemesterBoxProps>(
       onDrop?.(e);
     };
 
+    // this handles selecting a semester from the dropdown
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const value = e.target.value;
       if (value) {
@@ -52,6 +54,7 @@ const SemesterBox = forwardRef<HTMLDivElement, SemesterBoxProps>(
       }
     };
 
+    // this is the right-click logic for opening a menu
     const handleRightClickEvent = (
       e: React.MouseEvent<HTMLDivElement, MouseEvent>
     ) => {

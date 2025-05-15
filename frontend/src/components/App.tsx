@@ -11,6 +11,7 @@ import {
   UserButton,
 } from "@clerk/clerk-react";
 
+// App function with the constant variables
 function App() {
   const [expanded, setExpanded] = useState<boolean>(true);
   const [degree, setDegree] = useState<string>("");
@@ -24,6 +25,7 @@ function App() {
     }
   };
 
+  // returns the provided constant variables
   return (
     <div className="App">
       <div className="layout-container">
@@ -44,6 +46,7 @@ function App() {
               expanded ? "header-sidebar-expanded" : "header-sidebar-collapsed"
             }`}
           >
+            {/* handles the logo on display */}
             <div className="logo">
               <div className="logo-title">
                 <a href="index.html" className="logo-link">
@@ -54,6 +57,7 @@ function App() {
                   />
                 </a>
               </div>
+              {/* handles the progress bar */}
               <div className="progress-row">
                 <progress
                   className="logo-progress"
@@ -73,6 +77,7 @@ function App() {
                 </p>
               </div>
             </div>
+            {/* handles the sign in button */}
             <div className="Sign-in-out-container">
               <SignedOut>
                 <SignInButton />
@@ -99,7 +104,7 @@ function App() {
                 <HelpCircle />
               </button>
             </div>
-
+            {/* handles the disclaimer functionality */}        
             {showDisclaimer && (
               <div className="disclaimer-overlay" onClick={handleClickOutside}>
                 <div className="disclaimer-box">
@@ -109,6 +114,7 @@ function App() {
                   >
                     ×
                   </button>
+                  {/* handles the disclaimer for the user */}
                   <h2>How to Use BearTracks</h2>
                   <p>
                     Search for courses and drag and drop them into semesters.

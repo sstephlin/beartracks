@@ -7,6 +7,7 @@ interface RightClickMenuProps {
   onDeleteSemester: () => void;
 }
 
+// this is the component to render the right-click menu
 const RightClickMenu = (props: RightClickMenuProps) => {
   return (
     <div
@@ -28,14 +29,17 @@ const RightClickMenu = (props: RightClickMenuProps) => {
         style={{ listStyleType: "none", margin: 0, padding: 0 }}
         className="menu"
       >
+        {/* Option to add a semester to the left */}
         <li className="menu-item" onClick={props.onAddLeftSemester}>
           Add Semester to the Left
         </li>
         <hr />
+        {/* Option to add a semester to the right */}
         <li className="menu-item" onClick={props.onAddRightSemester}>
           Add Semester to the Right
         </li>
         <hr />
+        {/* Option to delete a semester */}
         <li className="menu-item" onClick={props.onDeleteSemester}>
           Delete Semester
         </li>
