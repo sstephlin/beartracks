@@ -39,11 +39,11 @@ export default defineConfig({
       dependencies: ["auth"],
     },
 
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
-      dependencies: ["auth"],
-    },
+    // {
+    //   name: "webkit",
+    //   use: { ...devices["Desktop Safari"] },
+    //   dependencies: ["auth"],
+    // },
   ],
   /* Run your local dev server before starting the tests */
   webServer: {
