@@ -5,10 +5,13 @@ import { Trash2 } from "lucide-react";
 import "../styles/BearTracks.css";
 import { useUser } from "@clerk/clerk-react";
 
+// this defines the props for the BearTracks component
 interface BearTracksProps {
   expanded: boolean;
   setRefreshSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+// constant variables
 export default function BearTracks(props: BearTracksProps) {
   const { user } = useUser();
   const uid = user?.id;
@@ -18,7 +21,8 @@ export default function BearTracks(props: BearTracksProps) {
     null
   );
   const [isTrashHovered, setIsTrashHovered] = useState(false);
-
+  
+  // this handles searching courses from the backend
   const handleSearch = async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -43,6 +47,7 @@ export default function BearTracks(props: BearTracksProps) {
     }
   };
 
+  // this is in charge when the user drags a course from the search results
   const handleDragStartSearchCourse = (e: React.DragEvent, course: any) => {
     e.dataTransfer.setData("searchCourse", JSON.stringify(course));
     setDraggedSearchCourse(course);
@@ -53,10 +58,12 @@ export default function BearTracks(props: BearTracksProps) {
     );
   };
 
+  // this is in charge when the dragging ends 
   const handleDragEndSearchCourse = (e: React.DragEvent) => {
     setDraggedSearchCourse(null);
   };
 
+  // this is in charge of dragging to the trash can 
   const handleDropToTrash = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsTrashHovered(false);
@@ -88,11 +95,10 @@ export default function BearTracks(props: BearTracksProps) {
     props.setRefreshSidebar((prev) => !prev);
   };
 
-  // Function to check if element is near the trash can
+  // function that checks if element is near the trash can
   const handleDragOverTrashZone = (e: React.DragEvent) => {
     e.preventDefault();
-    // Always set hover state to true when something is dragged over the trash zone
-    // The actual check for valid data will happen on drop
+    // this always sets hover state to true when something is dragged over the trash zone
     setIsTrashHovered(true);
   };
 

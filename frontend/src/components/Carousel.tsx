@@ -17,6 +17,7 @@ interface CarouselProps {
   setRefreshSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// defines all the possible semesters the user can select
 const allSemesters = [
   "Fall 21",
   "Winter 21",
@@ -39,6 +40,7 @@ const allSemesters = [
   "Spring 26",
 ];
 
+// defines all of the constant variables
 export default function Carousel({
   viewCount,
   setViewCount,
@@ -116,10 +118,9 @@ export default function Carousel({
         term,
         year,
       });
-
+      // this adds the new cpastone course to the api fetch
       if (checked) {
-        // checked == true means that the user wants to check a NEW capstone course
-        query.append("courseCode", courseCode); // add the new cpastone course to the api fetch
+        query.append("courseCode", courseCode); 
       }
 
       await fetch(`http://localhost:3232/update-capstone?${query.toString()}`, {
@@ -141,6 +142,7 @@ export default function Carousel({
     }
   };
 
+  // all these useEffects relate to a section in the backend
   useEffect(() => {
     const fetchCapstones = async () => {
       if (!user?.id) return;
@@ -237,9 +239,11 @@ export default function Carousel({
     fetchData();
   }, [user?.id]);
 
+  // this gets all unused semesters
   const getAvailableSemesters = () =>
     allSemesters.filter((s) => !usedSemesters.includes(s));
 
+  // this handles when a semester is selected from dropdown
   const handleSemesterSelect = async (boxId: string, semester: string) => {
     setBoxSelections((prev) => ({ ...prev, [boxId]: semester }));
     setUsedSemesters((prev) => [...prev, semester]);
@@ -292,12 +296,12 @@ export default function Carousel({
     courseCode: string,
     semester: string
   ): Promise<boolean> => {
-    // First check the cache
+    // first check the cache
     if (courseAvailabilityCache[courseCode]) {
       return courseAvailabilityCache[courseCode].includes(semester);
     }
 
-    // If not in cache, fetch and update cache
+    // if not in cache, fetch and update cache
     try {
       const response = await fetch(
         `http://localhost:3232/check-semester?courseCode=${encodeURIComponent(
@@ -308,7 +312,7 @@ export default function Carousel({
 
       if (data.result === "success") {
         const offeredSemesters = data.offeredSemesters as string[];
-        // Update cache
+        // this then updates the cache
         setCourseAvailabilityCache((prev) => ({
           ...prev,
           [courseCode]: offeredSemesters,
@@ -322,6 +326,7 @@ export default function Carousel({
     }
   };
 
+  // handles all the dragging functionality regarding a course
   const handleCourseDragStart = (
     e: React.DragEvent,
     courseCode: string,
@@ -349,7 +354,7 @@ export default function Carousel({
     e.preventDefault();
     if (!user?.id || !draggedCourse) return;
 
-    // Check if course already exists in target semester
+    // checks if course already exists in target semester
     const courseAlreadyExists = courses.some(
       (course) =>
         course.courseCode === draggedCourse.courseCode &&
@@ -363,7 +368,8 @@ export default function Carousel({
       });
       return;
     }
-
+    
+    // checks if the course is offered
     const isOffered = await checkCourseOfferedInSemester(
       draggedCourse.courseCode,
       semesterId
@@ -395,7 +401,7 @@ export default function Carousel({
       return;
     }
 
-    // Check if course already exists in target semester
+    // checks if the course already exists in target semester
     const courseAlreadyExists = courses.some(
       (course) =>
         course.courseCode ===
@@ -416,7 +422,7 @@ export default function Carousel({
     if (searchCourseRaw) {
       const searchCourse = JSON.parse(searchCourseRaw);
 
-      // Check if course is offered in this semester
+      // checks if the course is offered in this semester
       const isOffered = await checkCourseOfferedInSemester(
         searchCourse.courseCode,
         semesterId
@@ -430,7 +436,7 @@ export default function Carousel({
         return;
       }
 
-      // Check prerequisites first
+      // checks the prerequisites first
       const met = await checkPrereqs(
         user.id,
         searchCourse.courseCode,
@@ -450,7 +456,7 @@ export default function Carousel({
         showCapstoneCheckbox: isEligible,
       };
 
-      // Get the updated state using a promise
+      // gets the updated state using a promise
       const updatedCourses = await new Promise<CourseItem[]>((resolve) => {
         setCourses((prevCourses) => {
           const updated = [...prevCourses, newCourse];
@@ -459,7 +465,7 @@ export default function Carousel({
         });
       });
 
-      // Immediately sync with backend for search results
+      // syncs with the backend for search results
       const [term, year] = semesterId.split(" ");
       try {
         await fetch(
@@ -475,7 +481,7 @@ export default function Carousel({
 
         console.log("Added course from search to semester in backend");
 
-        // Check if this added course affects any other courses in the same semester (for concurrent prereqs)
+        // checks if the added course affects any other courses in the same semester (for concurrent prereqs)
         for (const course of updatedCourses) {
           if (course.semesterId === semesterId && course.id !== newCourse.id) {
             const prereqsMet = await checkPrereqs(
@@ -490,7 +496,7 @@ export default function Carousel({
           }
         }
 
-        // Now recheck all prerequisites with the updated courses
+        // rechecks all prerequisites with the updated courses
         setTimeout(() => {
           recheckAllPrereqs(updatedCourses);
         }, 100);
@@ -498,7 +504,7 @@ export default function Carousel({
         console.error("Failed to sync course to backend:", err);
       }
     } else if (courseId || (courseCode && sourceSemesterId)) {
-      // This is for moving existing courses between semesters
+      // moves existing courses between semesters
       const course = courses.find(
         (c) =>
           c.id === courseId ||
@@ -506,7 +512,7 @@ export default function Carousel({
       );
       if (!course) return;
 
-      // Check if course is offered in the target semester
+      // checks if course is offered in the target semester
       const isOffered = await checkCourseOfferedInSemester(
         course.courseCode,
         semesterId
@@ -520,10 +526,10 @@ export default function Carousel({
         return;
       }
 
-      // Get the old semester info for deletion
+      // gets the old semester info for deletion
       const [oldTerm, oldYear] = course.semesterId.split(" ");
 
-      // Update the course's semester in state
+      // updates the course's semester in state
       const updatedCourses = await new Promise<CourseItem[]>((resolve) => {
         setCourses((prevCourses) => {
           const updated = prevCourses.map((c) =>
@@ -534,11 +540,11 @@ export default function Carousel({
         });
       });
 
-      // Get the new semester info
+      // gets the new semester info
       const [newTerm, newYear] = semesterId.split(" ");
 
       try {
-        // First, delete the course from the old semester
+        // deletes the course from the old semester
         await fetch(
           `http://localhost:3232/remove-course?uid=${
             user.id
@@ -550,7 +556,7 @@ export default function Carousel({
 
         console.log("Removed course from old semester in backend");
 
-        // add it to the new semester
+        // adds the course to the new semester
         await fetch(
           `http://localhost:3232/add-course?uid=${
             user.id
@@ -564,14 +570,14 @@ export default function Carousel({
 
         console.log("Added course to new semester in backend");
 
-        // Check prerequisites for the moved course
+        // checks prerequisites for the moved course
         const prereqsMet = await checkPrereqs(
           user.id,
           course.courseCode,
           semesterId
         );
 
-        // Update the moved course's prereq status
+        // updates the moved course's prereq status
         for (const c of updatedCourses) {
           if (c.id === course.id) {
             setPrereqStatus(c.id, prereqsMet);
@@ -582,7 +588,7 @@ export default function Carousel({
           }
         }
 
-        // Check if this affects any other courses in the source semester (losing a concurrent prereq)
+        // checks if this affects any other courses in the source semester (losing a concurrent prereq)
         for (const c of updatedCourses) {
           if (c.semesterId === sourceSemesterId && c.id !== course.id) {
             const coursePrereqsMet = await checkPrereqs(
@@ -597,7 +603,7 @@ export default function Carousel({
           }
         }
 
-        // Check if this affects any other courses in the target semester (gaining a concurrent prereq)
+        // checks if this affects any other courses in the target semester (gaining a concurrent prereq)
         for (const c of updatedCourses) {
           if (c.semesterId === semesterId && c.id !== course.id) {
             const coursePrereqsMet = await checkPrereqs(
@@ -612,7 +618,7 @@ export default function Carousel({
           }
         }
 
-        // Recheck all prerequisites to ensure everything is consistent
+        // checks again all prerequisites to ensure everything is consistent
         setTimeout(() => {
           recheckAllPrereqs(updatedCourses);
         }, 100);
@@ -628,13 +634,13 @@ export default function Carousel({
     courseCode: string,
     title: string
   ) => {
-    // If both fields are empty, remove the course
+    // removes the course if both fields are empty
     if (!courseCode.trim() && !title.trim()) {
       setCourses((prev) => prev.filter((c) => c.id !== id));
       return;
     }
 
-    // Get the updated state using a promise
+    // gets the updated state using a promise
     const updatedCourses = await new Promise<CourseItem[]>((resolve) => {
       setCourses((prev) => {
         const updated = prev.map((c) =>
@@ -651,7 +657,7 @@ export default function Carousel({
     const [term, year] = course.semesterId.split(" ");
 
     try {
-      // Sync to backend
+      // syncs to the backend
       await fetch(
         `http://localhost:3232/add-course?uid=${
           user.id
@@ -665,7 +671,7 @@ export default function Carousel({
 
       console.log("Saved course to backend:", courseCode);
 
-      // Now recheck all prerequisites with the updated courses
+      // checks again all prerequisites with the updated courses
       setTimeout(() => {
         recheckAllPrereqs(updatedCourses);
       }, 100);
@@ -686,8 +692,8 @@ export default function Carousel({
           (c) => !(c.courseCode === courseCode && c.semesterId === semesterId)
         );
 
-        // Recheck all prerequisites after course removal
-        // BUT use the updated courses array that no longer includes the deleted course
+        // checks all prerequisites after course removal but uses the updated courses array 
+        // that no longer includes the deleted course
         setTimeout(() => {
           if (recheckAllPrereqs) {
             recheckAllPrereqs(updated);
@@ -717,7 +723,8 @@ export default function Carousel({
     if (currSemNum === "0") {
       newID = "1";
       index = 0;
-    } else if (index === -1) return boxIds; // invalid semester id
+    // considers the case of an invalid semester id
+    } else if (index === -1) return boxIds; 
     else {
       newID = (Math.max(...boxIds.map(Number)) + 1).toString();
     }
@@ -730,7 +737,8 @@ export default function Carousel({
 
   const handleAddLeftSemester = (currSemNum: string) => {
     const index = boxIds.indexOf(`${currSemNum}`);
-    if (index === -1) return boxIds; // invalid semester id
+    // considers the case of an invalid semester id
+    if (index === -1) return boxIds; 
     const newID = (Math.max(...boxIds.map(Number)) + 1).toString();
 
     const newBoxIds = [...boxIds];
@@ -765,7 +773,7 @@ export default function Carousel({
           return newSelections;
         });
 
-        // ALSO: remove all courses from that semester
+        // removes all courses from that semester
         setCourses((prev) => prev.filter((c) => c.semesterId !== semester));
       } else {
         console.error("Delete failed:", data.error);
@@ -820,10 +828,10 @@ export default function Carousel({
         container.scrollLeft + container.clientWidth < container.scrollWidth
       );
     };
-
-    updateScrollButtons(); // initial
+    // handles viewport resize
+    updateScrollButtons(); 
     container.addEventListener("scroll", updateScrollButtons);
-    window.addEventListener("resize", updateScrollButtons); // handle viewport resize
+    window.addEventListener("resize", updateScrollButtons); 
 
     return () => {
       container.removeEventListener("scroll", updateScrollButtons);
