@@ -274,7 +274,7 @@ export default function Sidebar(props: SidebarProps) {
                                 <li
                                   key={course}
                                   className={`${
-                                    courseInfo[key].includes(course)
+                                    (courseInfo[key] || []).includes(course)
                                       ? "requirement_completed"
                                       : "requirement_not_completed"
                                   }`}
