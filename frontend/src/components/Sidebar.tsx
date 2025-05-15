@@ -22,11 +22,6 @@ export default function Sidebar(props: SidebarProps) {
   const [selectedDegree, setSelectedDegree] = useState<string>("");
   const [degreeInfo, setDegreeInfo] = useState<Record<string, string[]>>({});
   const [courseInfo, setCourseInfo] = useState<Record<string, string[]>>({});
-  // const [numCompleted, setNumCompleted] = useState<number>(0);
-  // const [numRequired, setNumRequired] = useState<number>(0);
-  // const [refreshSidebar, setRefreshSidebar] = useState(false);
-
-  // const[progress, setProgress] =
   const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -171,26 +166,7 @@ export default function Sidebar(props: SidebarProps) {
         <div>
           <select
             value={selectedDegree}
-            onChange={(e) => {
-              const newDegree = e.target.value;
-              setSelectedDegree(newDegree);
-              props.setDegree(newDegree);
-
-              fetch(
-                `http://localhost:3232/store-concentration?uid=${uid}&concentration=${newDegree}`,
-                { method: "POST" }
-              )
-                .then(() => {
-                  console.log("Stored concentration");
-                  displayConcentrationRequirements(newDegree);
-                })
-                .catch((err) =>
-                  console.error(
-                    "Network error while storing concentration:",
-                    err
-                  )
-                );
-            }}
+            onChange={(e) => handleChangeDegree(e)}
             className="concentration-dropdown"
           >
                         <option value="">Select a Concentration</option>
@@ -216,6 +192,7 @@ export default function Sidebar(props: SidebarProps) {
 
           <div className="concentration-req-container">
             {props.degree !== "Undeclared" &&
+              !loading &&
               Object.keys(degreeInfo).map((key) => {
                 const isExpanded = expandedKeys[key];
                 return (
