@@ -16,53 +16,23 @@
   width: 100%;
   margin: 16px auto;
   display: flex;
-  justify-content: center; /* Center the search bar */
+  justify-content: center;
   align-items: center;
-  padding: 0 40px; /* Optional: Add some side padding */
+  padding: 0 40px;
 }
 
-/* .trash-near-search {
-  position: absolute;
-  right: 5vw;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 22px;
-  color: #444;
-  padding: 8px;
-  border-radius: 50%;
-  transition: background-color 0.2s ease;
-} */
-
-/* .trash-near-search:hover {
-  background-color: #f2f2f2;
-} */
-
-/* New enlarged invisible trash zone */
 .enlarged-trash-zone {
-  /* position: absolute; */
-  /* right: 70px; */
-  width: 200px; /* Much wider detection area */
-  height: 120px; /* Much taller detection area */
+  width: 200px;
+  height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px; /* or however much spacing you want */
-  /* border: 2px solid #1e3a8a; blue outline */
+  margin-top: 20px;
   border-radius: 9999px;
   overflow: hidden;
-  /* width: 120px;
-  height: 40px; */
   background-color: white;
   align-items: center;
-  /* right: 0; */
-  /* margin-right: 10px; */
-  /* background-color: aqua; */
   position: relative;
-  /* right: 120px; */
-  /* Uncomment for debugging: */
-  /* background-color: rgba(255, 0, 0, 0.1); */
-  /* border: 1px dashed #ddd; */
 }
 
 .trash-area {
@@ -71,12 +41,11 @@
   height: 50px;
   background-color: #f8f8f8;
   border: 2px solid #aaa;
-  /* border-radius: 50%; */
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: all 0.3s ease; /* Fixed typo: 0.3 to 0.3s */
+  transition: all 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 8px;
 }
@@ -92,7 +61,6 @@
   border: 2px solid red;
   animation: wiggle 0.5s ease-in-out infinite;
   box-shadow: 0 4px 8px rgba(225, 0, 0, 0.2);
-  /* Removed transform here as it will be handled by the animation */
 }
 
 @keyframes wiggle {
@@ -138,14 +106,11 @@
   color: white;
   padding: 10px;
   border-radius: 8px;
-  /* text-align: center; */
   width: 100%;
   height: 15vh;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
-  /* align-items: center; */
   cursor: grab;
 }
 
@@ -164,22 +129,11 @@
 
 .course-title {
   font-size: 0.9rem;
-  word-break: break-word; /* breaks long words at the edge */
-  overflow-wrap: break-word; /* ensures text wraps inside box */
+  word-break: break-word;
+  overflow-wrap: break-word;
   text-overflow: ellipsis;
   overflow: hidden;
 }
-
-/* .trash-area {
-  position: absolute;
-  right: 100px;
-  background: none;
-  border: 2px solid gray;
-  border-radius: 50%;
-  padding: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, border 0.2s ease;
-} */
 
 .trash-hovered {
   background-color: #ffe0e0;
@@ -209,9 +163,9 @@
 }
 
 .display-view {
-  position: relative; /* Changed from absolute to relative */
+  position: relative;
   display: flex;
-  border: 2px solid #1e3a8a; /* blue outline */
+  border: 2px solid #1e3a8a;
   border-radius: 9999px;
   overflow: hidden;
   width: 120px;
@@ -220,7 +174,6 @@
   align-items: center;
   right: 0;
   margin-right: 10px;
-  /* background-color: aqua; */
   position: absolute;
   right: 120px;
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/SemesterBox.css";
 
-interface CourseDragProps extends React.HTMLAttributes<HTMLDivElement> {
+interface CourseDragProps {
   id: string;
   courseCode: string;
   courseTitle?: string;
@@ -41,7 +41,6 @@ export default function CourseDrag({
   onToggleCapstone,
   showCapstoneCheckbox,
   isManual = false,
-  ...rest
 }: CourseDragProps & { isCapstone?: boolean }) {
   const [code, setCode] = useState(courseCode);
   const [title, setTitle] = useState(courseTitle || "");
@@ -68,7 +67,7 @@ export default function CourseDrag({
   };
 
   useEffect(() => {
-    setIsChecked(isCapstone); // sync when isCapstone updates externally
+    setIsChecked(isCapstone);
   }, [isCapstone]);
 
   return (
@@ -85,7 +84,8 @@ export default function CourseDrag({
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}
       onDrop={onDrop}
-      {...rest}
+      role="button"
+      tabIndex={0}
     >
       {!isEmpty && isEditing ? (
         <div className="course-edit-fields">
@@ -106,23 +106,6 @@ export default function CourseDrag({
           />
         </div>
       ) : (
-        //     <div className="course-filled">
-        //       <div className="course-code">
-        //         {courseCode}
-        //         {isCapstone && (
-        //           <input
-        //             type="checkbox"
-        //             className="capstone-checkbox"
-        //             title="Capstone"
-        //             // checked={true}
-        //             onChange={(e) => onToggleCapstone?.(id, e.target.checked)}
-        //           />
-        //         )}
-        //       </div>
-        //       {title && <div className="course-title">{title}</div>}
-        //     </div>
-        //   )}
-        // </div>
         <div className="course-filled">
           <div className="course-header">
             <div className="course-code">{courseCode}</div>

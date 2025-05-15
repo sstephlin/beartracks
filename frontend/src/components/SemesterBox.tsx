@@ -96,7 +96,4 @@ const SemesterBox = forwardRef<HTMLDivElement, SemesterBoxProps>(
   }
 );
 
-// Optional but helpful for debugging
-SemesterBox.displayName = "SemesterBox";
-
 export default SemesterBox;

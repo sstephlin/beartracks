@@ -4,7 +4,7 @@
   width: 80vw;
   overflow: hidden;
   align-items: center;
-  justify-content: center; /* Center the carousel itself */
+  justify-content: center;
   margin: 0 auto;
   border: #e4e4e4 3px solid;
   border-radius: 16px;
@@ -46,7 +46,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 250px; /* fixed size when sidebar expanded */
+  width: 250px;
   min-height: 400px;
   background-color: #e4e4e4;
   border: 3px #e4e4e4 solid;
@@ -59,7 +59,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 300px; /* fixed size when sidebar collapsed */
+  width: 300px;
   min-height: 400px;
   background-color: #e4e4e4;
   border: 3px #e4e4e4 solid;
@@ -74,7 +74,6 @@
   font-size: 25px;
   width: 100px;
   height: 100px;
-  /* border: 3px #213333 solid; */
   background-color: #e4e4e4;
   color: #213333;
 }
@@ -87,7 +86,7 @@
 .carousel-track {
   display: flex;
   flex-direction: row;
-  justify-content: center; /* <<< Change this from space-between to center */
+  justify-content: center;
   align-items: stretch;
   gap: 16px;
 }
@@ -99,9 +98,9 @@
   z-index: 1000;
   background: white;
   border: 2px solid lightgray;
-  border-radius: 8px; /* <<< changed from 50% to 8px for slightly rounded corners */
-  width: 2vw; /* <<< slightly wider */
-  height: 6vh; /* <<< less tall */
+  border-radius: 8px;
+  width: 2vw;
+  height: 6vh;
   font-size: 24px;
   font-weight: bold;
   cursor: pointer;

@@ -1,4 +1,3 @@
-// import React from "react";
 import "../styles/RightClick.css";
 
 interface RightClickMenuProps {
@@ -12,7 +11,7 @@ const RightClickMenu = (props: RightClickMenuProps) => {
   return (
     <div
       style={{
-        position: "fixed", // Positioned relative to the viewport
+        position: "fixed",
         top: `${props.position.y}px`,
         left: `${props.position.x}px`,
         background: "white",

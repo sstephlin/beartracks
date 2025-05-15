@@ -46,7 +46,6 @@ export default function BearTracks(props: BearTracksProps) {
   const handleDragStartSearchCourse = (e: React.DragEvent, course: any) => {
     e.dataTransfer.setData("searchCourse", JSON.stringify(course));
     setDraggedSearchCourse(course);
-    // Call the Carousel's handler through a custom event
     window.dispatchEvent(
       new CustomEvent("searchCourseDragStart", {
         detail: { course },
@@ -58,7 +57,6 @@ export default function BearTracks(props: BearTracksProps) {
     setDraggedSearchCourse(null);
   };
 
-  // Modified function to handle drop in the larger trash zone
   const handleDropToTrash = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsTrashHovered(false);
@@ -70,7 +68,7 @@ export default function BearTracks(props: BearTracksProps) {
     if (courseCode && semesterId) {
       window.dispatchEvent(
         new CustomEvent("removeCourse", {
-          detail: { courseCode, semesterId }, // ✅ use courseCode instead of courseId
+          detail: { courseCode, semesterId },
         })
       );
 
@@ -159,7 +157,6 @@ export default function BearTracks(props: BearTracksProps) {
         expanded={props.expanded}
         setRefreshSidebar={props.setRefreshSidebar}
       />
-      {/* Enlarged trash area with the visible trash can in the center */}
       <div
         className="enlarged-trash-zone"
         onDragOver={handleDragOverTrashZone}

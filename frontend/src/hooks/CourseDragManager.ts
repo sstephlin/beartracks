@@ -7,8 +7,6 @@ type Course = CourseItem;
 export function CourseDragManager(
   uid: string,
   {
-    setSelectedSemester,
-    setUsedSemesters,
     courses,
     setCourses,
   }: {
@@ -248,7 +246,7 @@ export function CourseDragManager(
             }, 500);
           }, 100);
         } catch (err) {
-          console.error("❌ Error syncing course move:", err);
+          console.error("Error syncing course move:", err);
           // Clear tracking set in case of error
           setRecentlyMovedCourses(new Set());
         }
