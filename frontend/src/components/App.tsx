@@ -15,14 +15,9 @@ function App() {
   const [expanded, setExpanded] = useState<boolean>(true);
   const [degree, setDegree] = useState<string>("");
   const [refreshSidebar, setRefreshSidebar] = useState(false);
-
-  // add state to toggle visibility of disclaimer
   const [showDisclaimer, setShowDisclaimer] = useState(false);
-
   const [numCompleted, setNumCompleted] = useState(0);
   const [numRequired, setNumRequired] = useState(0);
-
-  // click outside the modal box closes it
   const handleClickOutside = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).classList.contains("disclaimer-overlay")) {
       setShowDisclaimer(false);
@@ -52,7 +47,6 @@ function App() {
             <div className="logo">
               <div className="logo-title">
                 <a href="index.html" className="logo-link">
-                  {/* BearTracks */}
                   <img
                     src="/beartracks_logo4.png"
                     alt="Bear Logo"
@@ -97,31 +91,24 @@ function App() {
               setRefreshSidebar={setRefreshSidebar}
             />
 
-            {/* floating help icon that toggles the disclaimer */}
             <div>
               <button
                 className="floating-icon help-icon"
-                onClick={() => setShowDisclaimer(true)} // shows the disclaimer when clicked
+                onClick={() => setShowDisclaimer(true)}
               >
                 <HelpCircle />
               </button>
             </div>
 
-            {/* model disclaimer component */}
             {showDisclaimer && (
-              <div
-                className="disclaimer-overlay" // full-screen background (for visual effects)
-                onClick={handleClickOutside} // close when clicking outside box
-              >
+              <div className="disclaimer-overlay" onClick={handleClickOutside}>
                 <div className="disclaimer-box">
-                  {/* close button in the top right of the box */}
                   <button
                     className="close-disclaimer"
                     onClick={() => setShowDisclaimer(false)}
                   >
                     ×
                   </button>
-                  {/* modal content */}
                   <h2>How to Use BearTracks</h2>
                   <p>
                     Search for courses and drag and drop them into semesters.

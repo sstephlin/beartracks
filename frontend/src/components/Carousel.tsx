@@ -1,21 +1,19 @@
 import { useEffect, useState, useRef } from "react";
 import SemesterBox from "./SemesterBox";
 import CourseDrag from "./CourseDrag";
-import { CarouselMover } from "../hooks/CarouselMover";
 import { CourseDragManager } from "../hooks/CourseDragManager";
 import { CourseItem } from "../types";
-import { SignOutButton, useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { checkPrereqs } from "../utils/prereqUtils";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
 import RightClickComponent from "./RightClick.tsx";
-import { Award } from "lucide-react";
 
 interface CarouselProps {
   viewCount: string;
   setViewCount: React.Dispatch<React.SetStateAction<string>>;
   draggedSearchCourse: any | null;
-  expanded: boolean; // uid: string | undefined;
+  expanded: boolean;
   setRefreshSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -41,17 +39,9 @@ const allSemesters = [
   "Spring 26",
 ];
 
-// interface CarouselProps {
-//   viewCount: number;
-//   setViewCount: React.Dispatch<React.SetStateAction<number>>;
-//   draggedSearchCourse: any | null;
-//   expanded: boolean;
-// }
-
 export default function Carousel({
   viewCount,
   setViewCount,
-  draggedSearchCourse,
   expanded,
   setRefreshSidebar,
 }: CarouselProps) {
@@ -279,7 +269,6 @@ export default function Carousel({
     return () => window.removeEventListener("click", handleClickOutside);
   }, []);
 
-  // Fetch all course availability data when component mounts
   useEffect(() => {
     const fetchCourseAvailability = async () => {
       try {
@@ -393,8 +382,6 @@ export default function Carousel({
     setDropError(null);
   };
 
-  // This is the updated handleSemesterDrop function for the Carousel component
-
   const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
     e.preventDefault();
     if (!user?.id) return;
@@ -404,7 +391,6 @@ export default function Carousel({
     const courseCode = e.dataTransfer.getData("courseCode");
     const sourceSemesterId = e.dataTransfer.getData("semesterId");
 
-    // Don't do anything if dropping on the same semester
     if (sourceSemesterId === semesterId) {
       return;
     }
@@ -562,9 +548,9 @@ export default function Carousel({
           { method: "POST" }
         );
 
-        console.log("✅ Removed course from old semester in backend");
+        console.log("Removed course from old semester in backend");
 
-        // Then, add it to the new semester
+        // add it to the new semester
         await fetch(
           `http://localhost:3232/add-course?uid=${
             user.id
@@ -576,7 +562,7 @@ export default function Carousel({
           { method: "POST" }
         );
 
-        console.log("✅ Added course to new semester in backend");
+        console.log("Added course to new semester in backend");
 
         // Check prerequisites for the moved course
         const prereqsMet = await checkPrereqs(
@@ -677,7 +663,7 @@ export default function Carousel({
         }
       );
 
-      console.log("✅ Saved course to backend:", courseCode);
+      console.log("Saved course to backend:", courseCode);
 
       // Now recheck all prerequisites with the updated courses
       setTimeout(() => {
@@ -692,7 +678,7 @@ export default function Carousel({
     const handleRemoveCourse = (e: any) => {
       const { courseCode, semesterId } = e.detail;
 
-      console.log("📥 removeCourse event received:", courseCode, semesterId);
+      console.log("removeCourse event received:", courseCode, semesterId);
       if (!user?.id) return;
 
       setCourses((prev) => {
@@ -933,11 +919,6 @@ export default function Carousel({
                     showCapstoneCheckbox={capstoneCodes.has(course.courseCode)}
                     onToggleCapstone={handleToggleCapstone}
                     aria-label={`Course ${course.courseCode}: ${course.title}`}
-                    // role="button"
-                    // tabIndex={0}
-                    // data-coursecode={course.courseCode}
-                    // data-title={course.title}
-                    // data-semesterid={boxSelections[boxId]}
                   />
                 ))}
 

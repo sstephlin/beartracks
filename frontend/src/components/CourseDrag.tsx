@@ -67,7 +67,7 @@ export default function CourseDrag({
   };
 
   useEffect(() => {
-    setIsChecked(isCapstone); // sync when isCapstone updates externally
+    setIsChecked(isCapstone);
   }, [isCapstone]);
 
   return (
