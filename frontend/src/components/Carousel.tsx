@@ -911,11 +911,6 @@ export default function Carousel({
                   : null
               }
               ref={boxRef}
-              aria-label={`Semester ${boxSelections[boxId]}. Courses: ${
-                courses.length > 0
-                  ? courses.map((c) => `${c.courseCode} ${c.title}`).join(", ")
-                  : "No courses yet"
-              }`}
             >
               {boxSelections[boxId] &&
                 getCoursesForSemester(boxSelections[boxId]).map((course) => (
@@ -938,8 +933,11 @@ export default function Carousel({
                     showCapstoneCheckbox={capstoneCodes.has(course.courseCode)}
                     onToggleCapstone={handleToggleCapstone}
                     aria-label={`Course ${course.courseCode}: ${course.title}`}
-                    role="button"
-                    tabIndex={0}
+                    // role="button"
+                    // tabIndex={0}
+                    // data-coursecode={course.courseCode}
+                    // data-title={course.title}
+                    // data-semesterid={boxSelections[boxId]}
                   />
                 ))}
 

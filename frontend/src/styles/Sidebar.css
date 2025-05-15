@@ -6,7 +6,7 @@
   border-right: 5px solid rgba(0, 0, 0, 0.1);
   align-items: center;
   transition: width 0.3s ease;
-  overflow-x: hidden; /* ✅ allow vertical overflow so SVGs don't get clipped */
+  overflow-x: hidden;
 }
 
 .sidebar-expanded {
@@ -53,7 +53,6 @@
   overflow: hidden;
 }
 
-/* Scoped button styling instead of global */
 .sidebar button {
   background-color: #213333;
   color: white;
@@ -75,7 +74,6 @@
   font-family: "khula", sans-serif;
 }
 
-/* Optional: space between concentration requirement sections */
 .concentration-req-container {
   margin-top: 1rem;
 }
@@ -83,8 +81,6 @@
 .concentration-category {
   display: flex;
   flex-direction: column;
-  /* justify-content: left; */
-  /* align-items: flex-start; 👈 align icon to top */
   gap: 8px;
   padding: 0.25rem 0;
   padding-left: 0.5rem;
@@ -93,7 +89,6 @@
 }
 .concentration-row {
   display: flex;
-  /* justify-content: left; */
   gap: 8px;
   padding: 0.25rem 0;
   padding-left: 0.5rem;
@@ -107,10 +102,7 @@
   padding: 0;
   margin: 0;
   display: flex;
-  /* align-items: center;
-  justify-content: center; */
   cursor: pointer;
-  /* flex-shrink: 0; ✅ prevents squishing when text wraps */
 }
 
 .button-icon {
@@ -121,19 +113,15 @@
 }
 
 .requirement-list {
-  /* list-style-position: inside; ✅ moves bullet inside text block */
-  /* padding-left: 0; ✅ removes extra indentation */
   border-radius: 4px;
   font-weight: bold;
   line-height: 1.8;
-  /* padding-left: 0; */
 }
 .requirement-list-container {
   display: flex;
   align-items: left;
   justify-content: left;
   padding: 0;
-  /* padding-left: 15px; */
 }
 
 .requirement_completed {
