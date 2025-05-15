@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/SemesterBox.css";
 
-interface CourseDragProps {
+interface CourseDragProps extends React.HTMLAttributes<HTMLDivElement> {
   id: string;
   courseCode: string;
   courseTitle?: string;
@@ -12,7 +12,7 @@ interface CourseDragProps {
   isCapstone: boolean;
   showCapstoneCheckbox?: boolean;
   isManual?: boolean;
-  
+
   onDragStart?: (
     e: React.DragEvent,
     course: { courseCode: string; title: string; semesterId: string }
@@ -41,12 +41,11 @@ export default function CourseDrag({
   onToggleCapstone,
   showCapstoneCheckbox,
   isManual = false,
+  ...rest
 }: CourseDragProps & { isCapstone?: boolean }) {
   const [code, setCode] = useState(courseCode);
   const [title, setTitle] = useState(courseTitle || "");
-  const [isChecked, setIsChecked] = useState<boolean>(!!isCapstone)
-
-
+  const [isChecked, setIsChecked] = useState<boolean>(!!isCapstone);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && onSaveCourse) {
@@ -86,6 +85,7 @@ export default function CourseDrag({
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}
       onDrop={onDrop}
+      {...rest}
     >
       {!isEmpty && isEditing ? (
         <div className="course-edit-fields">
@@ -106,24 +106,24 @@ export default function CourseDrag({
           />
         </div>
       ) : (
-    //     <div className="course-filled">
-    //       <div className="course-code">
-    //         {courseCode}
-    //         {isCapstone && (
-    //           <input
-    //             type="checkbox"
-    //             className="capstone-checkbox"
-    //             title="Capstone"
-    //             // checked={true}
-    //             onChange={(e) => onToggleCapstone?.(id, e.target.checked)}
-    //           />
-    //         )}
-    //       </div>
-    //       {title && <div className="course-title">{title}</div>}
-    //     </div>
-    //   )}
-    // </div>
-    <div className="course-filled">
+        //     <div className="course-filled">
+        //       <div className="course-code">
+        //         {courseCode}
+        //         {isCapstone && (
+        //           <input
+        //             type="checkbox"
+        //             className="capstone-checkbox"
+        //             title="Capstone"
+        //             // checked={true}
+        //             onChange={(e) => onToggleCapstone?.(id, e.target.checked)}
+        //           />
+        //         )}
+        //       </div>
+        //       {title && <div className="course-title">{title}</div>}
+        //     </div>
+        //   )}
+        // </div>
+        <div className="course-filled">
           <div className="course-header">
             <div className="course-code">{courseCode}</div>
             {showCapstoneCheckbox && (
@@ -133,7 +133,7 @@ export default function CourseDrag({
                 title="Capstone Course"
                 checked={isChecked}
                 onChange={(e) => {
-                  setIsChecked(e.target.checked)
+                  setIsChecked(e.target.checked);
                   onToggleCapstone?.(id, e.target.checked);
                 }}
               />

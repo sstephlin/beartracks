@@ -55,11 +55,6 @@ export default function Carousel({
   expanded,
   setRefreshSidebar,
 }: CarouselProps) {
-  // const [boxIds, setBoxIds] = useState<number[]>([]);
-  // const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
-  // const [boxSelections, setBoxSelections] = useState<{
-  //   [boxId: string]: string;
-  // }>({});
   const [boxIds, setBoxIds] = useState<string[]>(["1"]);
   const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
@@ -80,7 +75,6 @@ export default function Carousel({
     courseCode: string;
     isFromSearch: boolean;
   } | null>(null);
-  const [hoveredSemester, setHoveredSemester] = useState<string | null>(null);
   const [courseAvailabilityCache, setCourseAvailabilityCache] = useState<{
     [courseCode: string]: string[];
   }>({});
@@ -88,11 +82,8 @@ export default function Carousel({
   const [manualDisclaimerShown, setManualDisclaimerShown] = useState(false);
 
   const {
-    emptySlots,
     handleDragStart,
     handleDragEnd,
-    handleDragOver,
-    handleDrop,
     getCoursesForSemester,
     addCourse,
     setPrereqStatus,
@@ -411,7 +402,6 @@ export default function Carousel({
     const searchCourseRaw = e.dataTransfer.getData("searchCourse");
     const courseId = e.dataTransfer.getData("courseId");
     const courseCode = e.dataTransfer.getData("courseCode");
-    const title = e.dataTransfer.getData("title");
     const sourceSemesterId = e.dataTransfer.getData("semesterId");
 
     // Don't do anything if dropping on the same semester
@@ -921,6 +911,11 @@ export default function Carousel({
                   : null
               }
               ref={boxRef}
+              aria-label={`Semester ${boxSelections[boxId]}. Courses: ${
+                courses.length > 0
+                  ? courses.map((c) => `${c.courseCode} ${c.title}`).join(", ")
+                  : "No courses yet"
+              }`}
             >
               {boxSelections[boxId] &&
                 getCoursesForSemester(boxSelections[boxId]).map((course) => (
@@ -942,6 +937,9 @@ export default function Carousel({
                     isCapstone={course.isCapstone ?? false}
                     showCapstoneCheckbox={capstoneCodes.has(course.courseCode)}
                     onToggleCapstone={handleToggleCapstone}
+                    aria-label={`Course ${course.courseCode}: ${course.title}`}
+                    role="button"
+                    tabIndex={0}
                   />
                 ))}
 
@@ -1012,8 +1010,9 @@ export default function Carousel({
             </button>
             <h2>Manual Course Entry</h2>
             <p>
-              You're manually adding a course. Enter course code and course name for Non-CS
-              courses, and hit Enter to save this manually-added course. Please not that these courses will not be tracked on your
+              You're manually adding a course. Enter course code and course name
+              for Non-CS courses, and hit Enter to save this manually-added
+              course. Please not that these courses will not be tracked on your
               concentration progression meter.
             </p>
           </div>

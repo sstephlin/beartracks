@@ -129,6 +129,22 @@ export default function Sidebar(props: SidebarProps) {
     props.setExpanded(!props.expanded);
   }
 
+  async function handleChangeDegree(e: React.ChangeEvent<HTMLSelectElement>) {
+    const newDegree = e.target.value;
+    setSelectedDegree(newDegree);
+    props.setDegree(newDegree);
+    try {
+      await fetch(
+        `http://localhost:3232/store-concentration?uid=${uid}&concentration=${newDegree}`,
+        { method: "POST" }
+      );
+      console.log("Stored concentration");
+      displayConcentrationRequirements(newDegree);
+    } catch (err) {
+      console.error("Network error while storing concentration:", err);
+    }
+  }
+
   return (
     <aside
       className={`sidebar ${

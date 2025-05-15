@@ -141,6 +141,9 @@ export default function BearTracks(props: BearTracksProps) {
               draggable
               onDragStart={(e) => handleDragStartSearchCourse(e, course)}
               onDragEnd={handleDragEndSearchCourse}
+              aria-label={`Course ${course.courseCode}: ${course.courseName}`}
+              role="button"
+              tabIndex={0}
             >
               <div className="course-code">{course.courseCode}</div>
               <div className="course-title">{course.courseName}</div>
