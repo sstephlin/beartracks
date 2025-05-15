@@ -473,7 +473,7 @@ export default function Carousel({
           { method: "POST" }
         );
 
-        console.log("✅ Added course from search to semester in backend");
+        console.log("Added course from search to semester in backend");
 
         // Check if this added course affects any other courses in the same semester (for concurrent prereqs)
         for (const course of updatedCourses) {
@@ -485,7 +485,7 @@ export default function Carousel({
             );
             setPrereqStatus(course.id, prereqsMet);
             console.log(
-              `🔄 Rechecked concurrent course ${course.courseCode} after adding ${newCourse.courseCode}: prereqsMet=${prereqsMet}`
+              `Rechecked concurrent course ${course.courseCode} after adding ${newCourse.courseCode}: prereqsMet=${prereqsMet}`
             );
           }
         }
@@ -576,7 +576,7 @@ export default function Carousel({
           if (c.id === course.id) {
             setPrereqStatus(c.id, prereqsMet);
             console.log(
-              `🔄 Updated moved course ${c.courseCode} prereqsMet=${prereqsMet}`
+              `Updated moved course ${c.courseCode} prereqsMet=${prereqsMet}`
             );
             break;
           }
@@ -607,7 +607,7 @@ export default function Carousel({
             );
             setPrereqStatus(c.id, coursePrereqsMet);
             console.log(
-              `🔄 Rechecked course in target semester ${c.courseCode} after addition: prereqsMet=${coursePrereqsMet}`
+              `Rechecked course in target semester ${c.courseCode} after addition: prereqsMet=${coursePrereqsMet}`
             );
           }
         }

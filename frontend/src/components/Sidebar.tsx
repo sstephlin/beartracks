@@ -3,7 +3,11 @@ import "../styles/Sidebar.css";
 import "../styles/App.css";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
-
+/**
+ * This component addresses the sidebar functionality, displaying and
+ * updating concentration requirement information using the data in the
+ * user's current planner
+ */
 interface SidebarProps {
   expanded: boolean;
   setExpanded: Dispatch<SetStateAction<boolean>>;
@@ -25,7 +29,7 @@ export default function Sidebar(props: SidebarProps) {
   const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Load stored degree on mount
+  // fetch and Load stored degree, done at very beginning and changes when user id changes
   useEffect(() => {
     const fetchConcentration = async () => {
       if (!user?.id) return;
@@ -47,6 +51,7 @@ export default function Sidebar(props: SidebarProps) {
     fetchConcentration();
   }, [user?.id]); // Fetch and display requirements for a selected concentration
 
+  // this useEffect calls displayConcentrationRequiements when page is first rendered or when the  refresh sidebar prop changes
   useEffect(() => {
     console.log("effecting");
     if (selectedDegree) {
@@ -54,21 +59,23 @@ export default function Sidebar(props: SidebarProps) {
     }
   }, [props.refreshSidebar]);
 
-  // Fetch requirements from backend
+  // this function dislpays the concentration requirements of the user's stored concentration
   const displayConcentrationRequirements = async (degree: string) => {
     if (!user?.id || !degree) return;
     setLoading(true);
     try {
+      // get concen reqs from backend
       const response = await fetch(
         `http://localhost:3232/get-concen-reqs?uid=${user.id}`
       );
       const data = await response.json();
-      setDegreeInfo(data.requirements_options);
+      setDegreeInfo(data.requirements_options); // gets info about what courses user has taken and satisfies reqs
       console.log("Requirements for", degree, data.requirements_options);
     } catch (err) {
       console.error("Failed to fetch requirements:", err);
     }
     try {
+      // calculate how many courses satisfy, displayed in progress bar and message
       const response = await fetch(
         `http://localhost:3232/check-concentration-requirements?uid=${user.id}`
       );
@@ -88,7 +95,7 @@ export default function Sidebar(props: SidebarProps) {
     }
   };
 
-  // Toggle expansion per key
+  // Toggle expansion of sidebar
   const handleExpand = (key: string) => {
     setExpandedKeys((prev) => ({
       ...prev,
@@ -97,10 +104,12 @@ export default function Sidebar(props: SidebarProps) {
     console.log("key", key);
   };
 
+  // string to bool function to convert json response to frontend variable value
   function stringToBool(str: string): boolean {
     return str.toLowerCase() === "true";
   }
 
+  // get the last stored value for the expanded variable
   useEffect(() => {
     const getExpanded = async () => {
       if (!user?.id) return;
@@ -119,6 +128,7 @@ export default function Sidebar(props: SidebarProps) {
     getExpanded();
   }, [user?.id]);
 
+  // sets the expanded variable and stores in backend
   async function handleExpanded(stringValue: string) {
     await fetch(
       `http://localhost:3232/store-expanded?uid=${uid}&expanded=${stringValue}`,
@@ -129,6 +139,7 @@ export default function Sidebar(props: SidebarProps) {
     props.setExpanded(!props.expanded);
   }
 
+  // function that handles changing degree from the dropdown menu
   async function handleChangeDegree(e: React.ChangeEvent<HTMLSelectElement>) {
     const newDegree = e.target.value;
     setSelectedDegree(newDegree);
@@ -151,33 +162,24 @@ export default function Sidebar(props: SidebarProps) {
         props.expanded ? "sidebar-expanded" : "sidebar-collapsed"
       }`}
     >
-            
       <div className="header-row">
-                
         <button
           className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100"
           onClick={() => handleExpanded((!props.expanded).toString())}
         >
-                    
           <AlignJustify />
-                  
         </button>
-                
         {props.expanded && (
           <div className="logo-title">
-                        
             <p
               className="concentration-title"
               style={{ color: "#d6dadd", fontSize: "1.5rem" }}
             >
-                            Concentration Requirements             
+              Concentration Requirements
             </p>
-                      
           </div>
         )}
-              
       </div>
-            
       {props.expanded && (
         <div>
           <select
@@ -185,14 +187,11 @@ export default function Sidebar(props: SidebarProps) {
             onChange={(e) => handleChangeDegree(e)}
             className="concentration-dropdown"
           >
-                        <option value="">Select a Concentration</option>
-                        
+            <option value="">Select a Concentration</option>
             <option value="Computer Science Sc.B.">
-                            Computer Science Sc.B.             
+              Computer Science Sc.B.
             </option>
-                        
             <option value="Computer Science A.B.">Computer Science A.B.</option>
-                      
           </select>
 
           <div className="progress-check">
@@ -294,7 +293,6 @@ export default function Sidebar(props: SidebarProps) {
           </div>
         </div>
       )}
-          
     </aside>
   );
 }
