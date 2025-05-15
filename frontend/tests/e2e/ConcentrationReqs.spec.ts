@@ -45,11 +45,24 @@ test('concentration reqs, concentration, and progress bar persists after reload'
     );
     await expect(completedCourse).toBeVisible();
     
-    // check that the course in the sidebar turns green
+    // check that cs111 in the sidebar turns green
     const color = await completedCourse.evaluate(
     (el) => getComputedStyle(el).color
     );
-    expect(color).toBe("rgba(58, 94, 66, 0.824)"); // Equivalent to #3a5e42d2      
+    expect(color).toBe("rgba(58, 94, 66, 0.824)"); // Equivalent to #3a5e42d2   
+    
+    // check that cs0150 is still black bc it's not in course plan
+    const unfulfilledCourse = await page.locator(
+        'li.requirement_not_completed:has-text("CSCI 0150")'
+    );
+    await expect(unfulfilledCourse).toBeVisible();
+
+    const textColor = await unfulfilledCourse.evaluate(
+        (el) => getComputedStyle(el).color
+    );
+
+    // Match rgb(0, 0, 0) = black
+    expect(textColor).toMatch(/rgb\(0,\s*0,\s*0\)/);
 
     // Reload the page
     await page.reload();
