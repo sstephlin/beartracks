@@ -30,8 +30,8 @@ test.beforeEach(async ({ page }) => {
     page,
     signInParams: {
       strategy: "password",
-      password: process.env.E2E_CLERK_USER_PASSWORD!,
-      identifier: process.env.E2E_CLERK_USER_USERNAME!,
+      password: process.env.E2E_CLERK_USER1_PASSWORD!,
+      identifier: process.env.E2E_CLERK_USER1_USERNAME!,
     },
   });
 });
