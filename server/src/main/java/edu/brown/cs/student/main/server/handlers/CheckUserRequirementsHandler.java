@@ -51,11 +51,20 @@ public class CheckUserRequirementsHandler implements Route {
       // Step 3: instantiate checker that checks user's courses WITH concentration requirements
       CSRequirementChecker checker =
           new CSRequirementChecker(this.storageHandler, uid, userCourses, concentration);
-      Map<String, List<String>> requirementResults = checker.checkAllRequirements();
-
-      int coursesCompleted = checker.countCoursesCompleted(requirementResults);
+      Map<String, List<String>> requirementResults = new HashMap<>();
+      int coursesCompleted = -1;
       int totalRequired = checker.getTotalCoursesRequired();
 
+      try {
+        requirementResults = checker.checkAllRequirements();
+        coursesCompleted = checker.countCoursesCompleted(requirementResults);
+
+      } catch (IllegalArgumentException e) {
+        if ("No courses found for user.".equals(e.getMessage())) {
+          coursesCompleted = 0;
+          responseMap.put("courses_completed", coursesCompleted);
+        }
+      }
       responseMap.put("response_type", "success");
       responseMap.put("concentration", concentration);
       responseMap.put("user_requirements_breakdown", requirementResults);
@@ -66,6 +75,7 @@ public class CheckUserRequirementsHandler implements Route {
       e.printStackTrace();
       responseMap.put("response_type", "failure");
       responseMap.put("error", e.getMessage());
+      responseMap.put("courses_completed", 0);
     }
 
     return Utils.toMoshiJson(responseMap);

@@ -80,7 +80,11 @@ export default function Sidebar(props: SidebarProps) {
       const data = await response.json();
       setCourseInfo(data.user_requirements_breakdown);
       props.setNumCompleted(data.courses_completed);
-      props.setNumRequired(data.total_required);
+      if (degree === "Computer Science A.B.") {
+        props.setNumRequired(10);
+      } else if (degree === "Computer Science Sc.B.") {
+        props.setNumRequired(16);
+      }
       console.log("Breakdown for", user.id, data.user_requirements_breakdown);
     } catch (err) {
       console.error("Failed to fetch requirements:", err);
@@ -114,7 +118,7 @@ export default function Sidebar(props: SidebarProps) {
           props.setExpanded(stringToBool(data.expanded));
         }
       } catch (err) {
-        console.error("failed to fetch view-count", err);
+        console.error("failed to fetch expanded", err);
       }
     };
     getExpanded();

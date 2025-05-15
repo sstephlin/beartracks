@@ -103,7 +103,7 @@ public class CSRequirementChecker {
 
       results.put(requirementName, fulfillingCourses);
     }
-    System.out.println(results);
+    System.out.println("results" + results);
     return results;
   }
 
