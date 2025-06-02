@@ -84,7 +84,7 @@ function App() {
               </SignedOut>
               <SignedIn>
                 <div className="signed-in-buttons">
-                  <h3>Welcome!</h3>
+                  <h3>Welcome</h3>
                   <UserButton />
                 </div>
               </SignedIn>
