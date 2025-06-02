@@ -3,7 +3,7 @@ import "../styles/Sidebar.css";
 import "../styles/App.css";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
-import.meta.env.VITE_BACKEND_URL;
+// import.meta.env.VITE_BACKEND_URL;
 
 /**
  * This component addresses the sidebar functionality, displaying and

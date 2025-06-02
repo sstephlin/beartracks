@@ -8,7 +8,7 @@ import { checkPrereqs } from "../utils/prereqUtils";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
 import RightClickComponent from "./RightClick.tsx";
-import.meta.env.VITE_BACKEND_URL;
+// import.meta.env.VITE_BACKEND_URL;
 
 interface CarouselProps {
   viewCount: string;
