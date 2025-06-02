@@ -1,4 +1,4 @@
-# BearTracks--In Progress
+# BearTracks
 
 ### _A Course Planning Tool for Brown University Computer Science Students_
 
