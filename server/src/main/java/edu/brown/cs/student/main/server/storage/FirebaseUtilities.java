@@ -23,7 +23,7 @@ public class FirebaseUtilities implements StorageInterface {
     Path firebaseConfigPath =
         Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
 
-    FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
+    FileInputStream serviceAccount = new FileInputStream("/etc/secrets/firebase_config.json");
 
     FirebaseOptions options =
         new FirebaseOptions.Builder()
