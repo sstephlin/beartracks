@@ -7,9 +7,9 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class StoreManualHandler implements Route{
+public class StoreManualHandler implements Route {
 
- private final StorageInterface storageHandler;
+  private final StorageInterface storageHandler;
 
   public StoreManualHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
