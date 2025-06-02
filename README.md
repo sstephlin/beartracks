@@ -1,5 +1,7 @@
-# BearTracks
-###  *A Course Planning Tool for Brown University Computer Science Students*
+# BearTracks--In Progress
+
+### _A Course Planning Tool for Brown University Computer Science Students_
+
 BearTracks is a full-stack web application that helps Brown University students concentrating in either the A.B. or Sc.B. for Computer Science plan and track their courses across semesters, check course prerequisites, and visualize their concentration requirements.
 
 ---
@@ -59,11 +61,13 @@ npm run start
 ```
 
 ### Backend
+
 ```bash
 cd backend
 mvn package
 Run the Server.java file
 ```
+
 ---
 
 ## Usage
@@ -112,6 +116,7 @@ frontend/ # Frontend React app (TypeScript)
 ---
 
 ## Contributors
+
 - Noah Lim
 - Noreen Chen
 - Stephanie Lin
