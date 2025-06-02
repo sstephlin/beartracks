@@ -78,7 +78,9 @@ export function CourseDragManager(
     const [term, year] = course.semesterId.split(" ");
     try {
       await fetch(
-        `http://localhost:3232/add-course?uid=${uid}&code=${encodeURIComponent(
+        `${
+          process.env.REACT_APP_BACKEND_URL
+        }/add-course?uid=${uid}&code=${encodeURIComponent(
           course.courseCode
         )}&title=${encodeURIComponent(course.title)}&term=${term}&year=${year}`,
         { method: "POST" }
@@ -177,7 +179,9 @@ export function CourseDragManager(
         try {
           // removes from old semester
           await fetch(
-            `http://localhost:3232/remove-course?uid=${userId}&code=${encodeURIComponent(
+            `${
+              process.env.REACT_APP_BACKEND_URL
+            }/remove-course?uid=${userId}&code=${encodeURIComponent(
               courseCode
             )}&term=${oldTerm}&year=${oldYear}`,
             { method: "POST" }
@@ -185,7 +189,9 @@ export function CourseDragManager(
 
           // adds to new semester
           await fetch(
-            `http://localhost:3232/add-course?uid=${userId}&code=${encodeURIComponent(
+            `${
+              process.env.REACT_APP_BACKEND_URL
+            }/add-course?uid=${userId}&code=${encodeURIComponent(
               courseCode
             )}&title=${encodeURIComponent(
               title
@@ -253,9 +259,8 @@ export function CourseDragManager(
     semesterId: string,
     course?: Partial<CourseItem>,
     source: "search" | "new" = "search",
-    isManual: boolean = source === "new",
+    isManual: boolean = source === "new"
   ) => {
-
     const newCourse: CourseItem = {
       id: course?.id ?? crypto.randomUUID(),
       courseCode: course?.courseCode ?? (source === "new" ? "" : "Course Code"),
@@ -267,7 +272,6 @@ export function CourseDragManager(
     };
 
     setCourses((prev) => [...prev, newCourse]);
-
   };
 
   const buildSemesterMap = () => {

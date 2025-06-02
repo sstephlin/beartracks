@@ -8,11 +8,11 @@ export async function checkPrereqs(
   const [term, year] = semesterId.split(" ");
   console.log("course", courseCode, " semesterId: ", semesterId);
   const resp = await fetch(
-    `http://localhost:3232/check-prereqs?uid=${encodeURIComponent(
-      uid
-    )}&code=${encodeURIComponent(courseCode)}&term=${encodeURIComponent(
-      term
-    )}&year=${encodeURIComponent(year)}`,
+    `${
+      process.env.REACT_APP_BACKEND_URL
+    }/check-prereqs?uid=${encodeURIComponent(uid)}&code=${encodeURIComponent(
+      courseCode
+    )}&term=${encodeURIComponent(term)}&year=${encodeURIComponent(year)}`,
     { method: "GET" }
   );
   const body = await resp.json();

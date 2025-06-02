@@ -35,7 +35,7 @@ export default function Sidebar(props: SidebarProps) {
       if (!user?.id) return;
       try {
         const response = await fetch(
-          `http://localhost:3232/get-concentration?uid=${user.id}`
+          `${process.env.REACT_APP_BACKEND_URL}/get-concentration?uid=${user.id}`
         );
         const data = await response.json();
         if (data.concentration) {
@@ -66,7 +66,7 @@ export default function Sidebar(props: SidebarProps) {
     try {
       // get concen reqs from backend
       const response = await fetch(
-        `http://localhost:3232/get-concen-reqs?uid=${user.id}`
+        `${process.env.REACT_APP_BACKEND_URL}/get-concen-reqs?uid=${user.id}`
       );
       const data = await response.json();
       setDegreeInfo(data.requirements_options); // gets info about what courses user has taken and satisfies reqs
@@ -77,7 +77,7 @@ export default function Sidebar(props: SidebarProps) {
     try {
       // calculate how many courses satisfy, displayed in progress bar and message
       const response = await fetch(
-        `http://localhost:3232/check-concentration-requirements?uid=${user.id}`
+        `${process.env.REACT_APP_BACKEND_URL}/check-concentration-requirements?uid=${user.id}`
       );
       const data = await response.json();
       setCourseInfo(data.user_requirements_breakdown);
@@ -115,7 +115,7 @@ export default function Sidebar(props: SidebarProps) {
       if (!user?.id) return;
       try {
         const res = await fetch(
-          `http://localhost:3232/get-expanded?uid=${user.id}`
+          `${process.env.REACT_APP_BACKEND_URL}/get-expanded?uid=${user.id}`
         );
         const data = await res.json();
         if (data.expanded) {
@@ -131,7 +131,7 @@ export default function Sidebar(props: SidebarProps) {
   // sets the expanded variable and stores in backend
   async function handleExpanded(stringValue: string) {
     await fetch(
-      `http://localhost:3232/store-expanded?uid=${uid}&expanded=${stringValue}`,
+      `${process.env.REACT_APP_BACKEND_URL}/store-expanded?uid=${uid}&expanded=${stringValue}`,
       {
         method: "POST",
       }
@@ -146,7 +146,7 @@ export default function Sidebar(props: SidebarProps) {
     props.setDegree(newDegree);
     try {
       await fetch(
-        `http://localhost:3232/store-concentration?uid=${uid}&concentration=${newDegree}`,
+        `${process.env.REACT_APP_BACKEND_URL}/store-concentration?uid=${uid}&concentration=${newDegree}`,
         { method: "POST" }
       );
       console.log("Stored concentration");
