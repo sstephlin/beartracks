@@ -21,7 +21,7 @@ export default function BearTracks(props: BearTracksProps) {
     null
   );
   const [isTrashHovered, setIsTrashHovered] = useState(false);
-  
+
   // this handles searching courses from the backend
   const handleSearch = async (query: string) => {
     if (!query.trim()) {
@@ -31,7 +31,9 @@ export default function BearTracks(props: BearTracksProps) {
 
     try {
       const response = await fetch(
-        `http://localhost:3232/search-course?query=${encodeURIComponent(query)}`
+        `${
+          process.env.REACT_APP_BACKEND_URL
+        }/search-course?query=${encodeURIComponent(query)}`
       );
       const data = await response.json();
 
@@ -58,12 +60,12 @@ export default function BearTracks(props: BearTracksProps) {
     );
   };
 
-  // this is in charge when the dragging ends 
+  // this is in charge when the dragging ends
   const handleDragEndSearchCourse = (e: React.DragEvent) => {
     setDraggedSearchCourse(null);
   };
 
-  // this is in charge of dragging to the trash can 
+  // this is in charge of dragging to the trash can
   const handleDropToTrash = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsTrashHovered(false);
@@ -82,7 +84,9 @@ export default function BearTracks(props: BearTracksProps) {
       const [term, year] = semesterId.split(" ");
       if (!uid) return;
 
-      const url = `http://localhost:3232/remove-course?uid=${uid}&code=${encodeURIComponent(
+      const url = `${
+        process.env.REACT_APP_BACKEND_URL
+      }/remove-course?uid=${uid}&code=${encodeURIComponent(
         courseCode
       )}&title=${encodeURIComponent(title)}&term=${term}&year=${year}`;
       console.log("Dropped to trash:", { courseCode, semesterId });
@@ -103,9 +107,12 @@ export default function BearTracks(props: BearTracksProps) {
   };
 
   async function handleViewCount(value: string) {
-    await fetch(`http://localhost:3232/store-view?uid=${uid}&view=${value}`, {
-      method: "POST",
-    });
+    await fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/store-view?uid=${uid}&view=${value}`,
+      {
+        method: "POST",
+      }
+    );
     setViewCount(value);
   }
 

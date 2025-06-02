@@ -120,12 +120,17 @@ export default function Carousel({
       });
       // this adds the new cpastone course to the api fetch
       if (checked) {
-        query.append("courseCode", courseCode); 
+        query.append("courseCode", courseCode);
       }
 
-      await fetch(`http://localhost:3232/update-capstone?${query.toString()}`, {
-        method: "POST",
-      });
+      await fetch(
+        `${
+          process.env.REACT_APP_BACKEND_URL
+        }/update-capstone?${query.toString()}`,
+        {
+          method: "POST",
+        }
+      );
 
       setCourses((prev) =>
         prev.map((c) => ({
@@ -148,7 +153,7 @@ export default function Carousel({
       if (!user?.id) return;
       try {
         const res = await fetch(
-          `http://localhost:3232/check-capstones?uid=${user.id}`
+          `${process.env.REACT_APP_BACKEND_URL}/check-capstones?uid=${user.id}`
         );
         const data = await res.json();
         if (data.user_capstone_eligible_courses) {
@@ -167,7 +172,7 @@ export default function Carousel({
 
       try {
         const response = await fetch(
-          `http://localhost:3232/get-user-courses-detailed?uid=${user.id}`
+          `${process.env.REACT_APP_BACKEND_URL}/get-user-courses-detailed?uid=${user.id}`
         );
         const data = await response.json();
         const semestersData = data.semesters as Record<
@@ -254,7 +259,7 @@ export default function Carousel({
 
     try {
       await fetch(
-        `http://localhost:3232/add-semester?uid=${user.id}&term=${term}&year=${year}`,
+        `${process.env.REACT_APP_BACKEND_URL}/add-semester?uid=${user.id}&term=${term}&year=${year}`,
         {
           method: "POST",
         }
@@ -368,7 +373,7 @@ export default function Carousel({
       });
       return;
     }
-    
+
     // checks if the course is offered
     const isOffered = await checkCourseOfferedInSemester(
       draggedCourse.courseCode,
@@ -692,7 +697,7 @@ export default function Carousel({
           (c) => !(c.courseCode === courseCode && c.semesterId === semesterId)
         );
 
-        // checks all prerequisites after course removal but uses the updated courses array 
+        // checks all prerequisites after course removal but uses the updated courses array
         // that no longer includes the deleted course
         setTimeout(() => {
           if (recheckAllPrereqs) {
@@ -723,8 +728,8 @@ export default function Carousel({
     if (currSemNum === "0") {
       newID = "1";
       index = 0;
-    // considers the case of an invalid semester id
-    } else if (index === -1) return boxIds; 
+      // considers the case of an invalid semester id
+    } else if (index === -1) return boxIds;
     else {
       newID = (Math.max(...boxIds.map(Number)) + 1).toString();
     }
@@ -738,7 +743,7 @@ export default function Carousel({
   const handleAddLeftSemester = (currSemNum: string) => {
     const index = boxIds.indexOf(`${currSemNum}`);
     // considers the case of an invalid semester id
-    if (index === -1) return boxIds; 
+    if (index === -1) return boxIds;
     const newID = (Math.max(...boxIds.map(Number)) + 1).toString();
 
     const newBoxIds = [...boxIds];
@@ -829,9 +834,9 @@ export default function Carousel({
       );
     };
     // handles viewport resize
-    updateScrollButtons(); 
+    updateScrollButtons();
     container.addEventListener("scroll", updateScrollButtons);
-    window.addEventListener("resize", updateScrollButtons); 
+    window.addEventListener("resize", updateScrollButtons);
 
     return () => {
       container.removeEventListener("scroll", updateScrollButtons);
