@@ -34,6 +34,7 @@ public class FirebaseUtilities implements StorageInterface {
             .build();
 
     FirebaseApp.initializeApp(options);
+    System.out.println("Apps initialized: " + FirebaseApp.getApps().size());
     this.db = FirestoreClient.getFirestore();
   }
 
