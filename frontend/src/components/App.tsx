@@ -51,7 +51,7 @@ function App() {
               <div className="logo-title">
                 <a href="index.html" className="logo-link">
                   <img
-                    src="public/beartracks_logo4.png"
+                    src="/beartracks_logo4.png"
                     alt="Bear Logo"
                     className="logo-image"
                   />
