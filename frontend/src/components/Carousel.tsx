@@ -126,7 +126,7 @@ export default function Carousel({
 
       await fetch(
         `${
-          process.env.REACT_APP_BACKEND_URL
+          import.meta.env.VITE_BACKEND_URL
         }/update-capstone?${query.toString()}`,
         {
           method: "POST",
@@ -154,7 +154,7 @@ export default function Carousel({
       if (!user?.id) return;
       try {
         const res = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/check-capstones?uid=${user.id}`
+          `${import.meta.env.VITE_BACKEND_URL}/check-capstones?uid=${user.id}`
         );
         const data = await res.json();
         if (data.user_capstone_eligible_courses) {
@@ -173,7 +173,9 @@ export default function Carousel({
 
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/get-user-courses-detailed?uid=${user.id}`
+          `${import.meta.env.VITE_BACKEND_URL}/get-user-courses-detailed?uid=${
+            user.id
+          }`
         );
         const data = await response.json();
         const semestersData = data.semesters as Record<
@@ -260,7 +262,9 @@ export default function Carousel({
 
     try {
       await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/add-semester?uid=${user.id}&term=${term}&year=${year}`,
+        `${import.meta.env.VITE_BACKEND_URL}/add-semester?uid=${
+          user.id
+        }&term=${term}&year=${year}`,
         {
           method: "POST",
         }
@@ -283,7 +287,8 @@ export default function Carousel({
     const fetchCourseAvailability = async () => {
       try {
         const response = await fetch(
-          "${process.env.REACT_APP_BACKEND_URL}/get-all-course-availability"
+          `${import.meta.env.VITE_BACKEND_URL}
+/get-all-course-availability`
         );
         const data = await response.json();
 
@@ -311,7 +316,7 @@ export default function Carousel({
     try {
       const response = await fetch(
         `${
-          process.env.REACT_APP_BACKEND_URL
+          import.meta.env.VITE_BACKEND_URL
         }/check-semester?courseCode=${encodeURIComponent(courseCode)}`
       );
       const data = await response.json();
@@ -475,7 +480,7 @@ export default function Carousel({
       const [term, year] = semesterId.split(" ");
       try {
         await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/add-course?uid=${
+          `${import.meta.env.VITE_BACKEND_URL}/add-course?uid=${
             user.id
           }&code=${encodeURIComponent(
             searchCourse.courseCode
@@ -552,7 +557,7 @@ export default function Carousel({
       try {
         // deletes the course from the old semester
         await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/remove-course?uid=${
+          `${import.meta.env.VITE_BACKEND_URL}/remove-course?uid=${
             user.id
           }&code=${encodeURIComponent(
             course.courseCode
@@ -564,7 +569,7 @@ export default function Carousel({
 
         // adds the course to the new semester
         await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/add-course?uid=${
+          `${import.meta.env.VITE_BACKEND_URL}/add-course?uid=${
             user.id
           }&code=${encodeURIComponent(
             course.courseCode
@@ -665,7 +670,7 @@ export default function Carousel({
     try {
       // syncs to the backend
       await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/add-course?uid=${
+        `${import.meta.env.VITE_BACKEND_URL}/add-course?uid=${
           user.id
         }&code=${encodeURIComponent(courseCode)}&title=${encodeURIComponent(
           title
@@ -762,7 +767,9 @@ export default function Carousel({
 
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/remove-semester?uid=${user.id}&term=${term}&year=${year}`,
+        `${import.meta.env.VITE_BACKEND_URL}/remove-semester?uid=${
+          user.id
+        }&term=${term}&year=${year}`,
         {
           method: "POST",
         }
@@ -849,7 +856,7 @@ export default function Carousel({
       if (!user?.id) return;
       try {
         const res = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/get-view?uid=${user.id}`
+          `${import.meta.env.VITE_BACKEND_URL}/get-view?uid=${user.id}`
         );
         const data = await res.json();
         if (data.view) {

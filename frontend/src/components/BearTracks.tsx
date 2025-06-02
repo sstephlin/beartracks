@@ -33,7 +33,7 @@ export default function BearTracks(props: BearTracksProps) {
     try {
       const response = await fetch(
         `${
-          process.env.REACT_APP_BACKEND_URL
+          import.meta.env.VITE_BACKEND_URL
         }/search-course?query=${encodeURIComponent(query)}`
       );
       const data = await response.json();
@@ -86,7 +86,7 @@ export default function BearTracks(props: BearTracksProps) {
       if (!uid) return;
 
       const url = `${
-        process.env.REACT_APP_BACKEND_URL
+        import.meta.env.VITE_BACKEND_URL
       }/remove-course?uid=${uid}&code=${encodeURIComponent(
         courseCode
       )}&title=${encodeURIComponent(title)}&term=${term}&year=${year}`;
@@ -109,7 +109,7 @@ export default function BearTracks(props: BearTracksProps) {
 
   async function handleViewCount(value: string) {
     await fetch(
-      `${process.env.REACT_APP_BACKEND_URL}/store-view?uid=${uid}&view=${value}`,
+      `${import.meta.env.VITE_BACKEND_URL}/store-view?uid=${uid}&view=${value}`,
       {
         method: "POST",
       }
