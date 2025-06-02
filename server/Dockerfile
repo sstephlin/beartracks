@@ -5,4 +5,4 @@ COPY . .
 
 RUN ./mvnw clean package
 
-CMD ["java", "-jar", "target/s0-1.0-SNAPSHOT.jar.jar"]
+CMD ["java", "-jar", "target/s0-1.0-SNAPSHOT.jar"]

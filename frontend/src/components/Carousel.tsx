@@ -282,7 +282,7 @@ export default function Carousel({
     const fetchCourseAvailability = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3232/get-all-course-availability"
+          "${process.env.REACT_APP_BACKEND_URL}/get-all-course-availability"
         );
         const data = await response.json();
 
@@ -309,9 +309,9 @@ export default function Carousel({
     // if not in cache, fetch and update cache
     try {
       const response = await fetch(
-        `http://localhost:3232/check-semester?courseCode=${encodeURIComponent(
-          courseCode
-        )}`
+        `${
+          process.env.REACT_APP_BACKEND_URL
+        }/check-semester?courseCode=${encodeURIComponent(courseCode)}`
       );
       const data = await response.json();
 
@@ -474,7 +474,7 @@ export default function Carousel({
       const [term, year] = semesterId.split(" ");
       try {
         await fetch(
-          `http://localhost:3232/add-course?uid=${
+          `${process.env.REACT_APP_BACKEND_URL}/add-course?uid=${
             user.id
           }&code=${encodeURIComponent(
             searchCourse.courseCode
@@ -551,7 +551,7 @@ export default function Carousel({
       try {
         // deletes the course from the old semester
         await fetch(
-          `http://localhost:3232/remove-course?uid=${
+          `${process.env.REACT_APP_BACKEND_URL}/remove-course?uid=${
             user.id
           }&code=${encodeURIComponent(
             course.courseCode
@@ -563,7 +563,7 @@ export default function Carousel({
 
         // adds the course to the new semester
         await fetch(
-          `http://localhost:3232/add-course?uid=${
+          `${process.env.REACT_APP_BACKEND_URL}/add-course?uid=${
             user.id
           }&code=${encodeURIComponent(
             course.courseCode
@@ -664,7 +664,7 @@ export default function Carousel({
     try {
       // syncs to the backend
       await fetch(
-        `http://localhost:3232/add-course?uid=${
+        `${process.env.REACT_APP_BACKEND_URL}/add-course?uid=${
           user.id
         }&code=${encodeURIComponent(courseCode)}&title=${encodeURIComponent(
           title
@@ -761,7 +761,7 @@ export default function Carousel({
 
     try {
       const res = await fetch(
-        `http://localhost:3232/remove-semester?uid=${user.id}&term=${term}&year=${year}`,
+        `${process.env.REACT_APP_BACKEND_URL}/remove-semester?uid=${user.id}&term=${term}&year=${year}`,
         {
           method: "POST",
         }
@@ -848,7 +848,7 @@ export default function Carousel({
       if (!user?.id) return;
       try {
         const res = await fetch(
-          `http://localhost:3232/get-view?uid=${user.id}`
+          `${process.env.REACT_APP_BACKEND_URL}/get-view?uid=${user.id}`
         );
         const data = await res.json();
         if (data.view) {
