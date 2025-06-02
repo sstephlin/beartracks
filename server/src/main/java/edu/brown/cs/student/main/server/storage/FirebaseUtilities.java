@@ -23,7 +23,11 @@ public class FirebaseUtilities implements StorageInterface {
 //    Path firebaseConfigPath =
 //        Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
 
+    System.out.println("Checking for Firebase config file...");
     FileInputStream serviceAccount = new FileInputStream("/etc/secrets/firebase_config.json");
+    File file = new File("/etc/secrets/firebase_config.json");
+    System.out.println("Exists: " + file.exists());
+    System.out.println("Readable: " + file.canRead());
 
     FirebaseOptions options =
         new FirebaseOptions.Builder()
