@@ -51,7 +51,7 @@ function App() {
               <div className="logo-title">
                 <a href="index.html" className="logo-link">
                   <img
-                    src="/beartracks_logo4.png"
+                    src="https://drive.google.com/file/d/1Lfugs3IwqXD_h0JG-r-Ymk64p_YV1so9/view?usp=sharing"
                     alt="Bear Logo"
                     className="logo-image"
                   />
@@ -104,7 +104,7 @@ function App() {
                 <HelpCircle />
               </button>
             </div>
-            {/* handles the disclaimer functionality */}        
+            {/* handles the disclaimer functionality */}
             {showDisclaimer && (
               <div className="disclaimer-overlay" onClick={handleClickOutside}>
                 <div className="disclaimer-box">
