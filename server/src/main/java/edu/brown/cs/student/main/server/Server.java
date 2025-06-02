@@ -33,7 +33,7 @@ import spark.Spark;
 public class Server {
 
   public static void setUpServer() {
-    int port = 3232;
+    int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "3232"));
     Spark.port(port);
 
     // Enable CORS
