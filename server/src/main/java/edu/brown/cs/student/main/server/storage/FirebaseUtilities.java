@@ -7,10 +7,9 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -19,9 +18,9 @@ public class FirebaseUtilities implements StorageInterface {
   private final Firestore db;
 
   public FirebaseUtilities() throws IOException {
-//    String workingDirectory = System.getProperty("user.dir");
-//    Path firebaseConfigPath =
-//        Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
+    //    String workingDirectory = System.getProperty("user.dir");
+    //    Path firebaseConfigPath =
+    //        Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
 
     System.out.println("Checking for Firebase config file...");
     FileInputStream serviceAccount = new FileInputStream("/etc/secrets/firebase_config.json");
