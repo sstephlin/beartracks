@@ -19,9 +19,9 @@ public class FirebaseUtilities implements StorageInterface {
   private final Firestore db;
 
   public FirebaseUtilities() throws IOException {
-    String workingDirectory = System.getProperty("user.dir");
-    Path firebaseConfigPath =
-        Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
+//    String workingDirectory = System.getProperty("user.dir");
+//    Path firebaseConfigPath =
+//        Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
 
     FileInputStream serviceAccount = new FileInputStream("/etc/secrets/firebase_config.json");
 
