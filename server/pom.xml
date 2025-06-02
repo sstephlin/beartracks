@@ -90,7 +90,22 @@
       <version>5.4.0</version>
       <scope>test</scope>
     </dependency>
+    <!-- gRPC core -->
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+      <version>1.61.1</version> <!-- or latest compatible with Firebase Admin SDK -->
+    </dependency>
+
+    <!-- gRPC Load Balancer for pick_first -->
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-core</artifactId>
+      <version>1.61.1</version>
+    </dependency>
   </dependencies>
+
+
   <build>
     <plugins>
       <!--
