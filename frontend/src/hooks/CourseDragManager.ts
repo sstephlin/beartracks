@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CourseItem } from "../types";
 import { checkPrereqs } from "../utils/prereqUtils";
+import.meta.env.VITE_BACKEND_URL;
 
 type Course = CourseItem;
 

@@ -1,4 +1,5 @@
 import { CourseItem } from "../types";
+import.meta.env.VITE_BACKEND_URL;
 
 export async function checkPrereqs(
   uid: string,

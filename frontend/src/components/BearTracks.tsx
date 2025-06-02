@@ -4,6 +4,7 @@ import Carousel from "./Carousel";
 import { Trash2 } from "lucide-react";
 import "../styles/BearTracks.css";
 import { useUser } from "@clerk/clerk-react";
+import.meta.env.VITE_BACKEND_URL;
 
 // this defines the props for the BearTracks component
 interface BearTracksProps {
