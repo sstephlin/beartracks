@@ -80,7 +80,7 @@ export function CourseDragManager(
     try {
       await fetch(
         `${
-          process.env.REACT_APP_BACKEND_URL
+          import.meta.env.VITE_BACKEND_URL
         }/add-course?uid=${uid}&code=${encodeURIComponent(
           course.courseCode
         )}&title=${encodeURIComponent(course.title)}&term=${term}&year=${year}`,
@@ -181,7 +181,7 @@ export function CourseDragManager(
           // removes from old semester
           await fetch(
             `${
-              process.env.REACT_APP_BACKEND_URL
+              import.meta.env.VITE_BACKEND_URL
             }/remove-course?uid=${userId}&code=${encodeURIComponent(
               courseCode
             )}&term=${oldTerm}&year=${oldYear}`,
@@ -191,7 +191,7 @@ export function CourseDragManager(
           // adds to new semester
           await fetch(
             `${
-              process.env.REACT_APP_BACKEND_URL
+              import.meta.env.VITE_BACKEND_URL
             }/add-course?uid=${userId}&code=${encodeURIComponent(
               courseCode
             )}&title=${encodeURIComponent(
