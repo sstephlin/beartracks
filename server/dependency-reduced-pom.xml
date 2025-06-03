@@ -172,6 +172,7 @@
                 <transformer>
                   <mainClass>edu.brown.cs.student.main.server.Server</mainClass>
                 </transformer>
+                <transformer />
               </transformers>
             </configuration>
           </execution>

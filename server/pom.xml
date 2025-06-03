@@ -74,6 +74,28 @@
       <version>4.13.1</version>
       <scope>compile</scope>
     </dependency>
+
+    <!-- gRPC Load Balancer for pick_first -->
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-core</artifactId>
+      <version>1.61.1</version>
+    </dependency>
+
+    <!-- gRPC core -->
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+      <version>1.61.1</version>
+      <!-- or latest compatible with Firebase Admin SDK -->
+    </dependency>
+
+    <!-- Logging and context utils, may help with internal gRPC crashes -->
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-context</artifactId>
+      <version>1.61.1</version>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-nop</artifactId>
@@ -90,21 +112,8 @@
       <version>5.4.0</version>
       <scope>test</scope>
     </dependency>
-    <!-- gRPC core -->
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-netty-shaded</artifactId>
-      <version>1.61.1</version> <!-- or latest compatible with Firebase Admin SDK -->
-    </dependency>
 
-    <!-- gRPC Load Balancer for pick_first -->
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-core</artifactId>
-      <version>1.61.1</version>
-    </dependency>
   </dependencies>
-
 
   <build>
     <plugins>
@@ -317,6 +326,7 @@
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>edu.brown.cs.student.main.server.Server</mainClass>
                 </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
               </transformers>
             </configuration>
           </execution>
