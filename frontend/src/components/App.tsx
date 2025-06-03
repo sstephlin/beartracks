@@ -41,8 +41,6 @@ function App() {
           setNumRequired={setNumRequired}
         />
         <div className="header-and-content">
-          <h3>Full Deployment in Progress</h3>
-
           <header
             className={`App-header ${
               expanded ? "header-sidebar-expanded" : "header-sidebar-collapsed"
