@@ -7,9 +7,8 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -22,20 +21,58 @@ public class FirebaseUtilities implements StorageInterface {
     //    Path firebaseConfigPath =
     //        Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
 
-    System.out.println("Checking for Firebase config file...");
-    FileInputStream serviceAccount = new FileInputStream("/etc/secrets/firebase_config.json");
-    File file = new File("/etc/secrets/firebase_config.json");
-    System.out.println("Exists: " + file.exists());
-    System.out.println("Readable: " + file.canRead());
+    //    System.out.println("Checking for Firebase config file...");
+    //    FileInputStream serviceAccount = new FileInputStream("/etc/secrets/firebase_config.json");
+    //    File file = new File("/etc/secrets/firebase_config.json");
+    //    System.out.println("Exists: " + file.exists());
+    //    System.out.println("Readable: " + file.canRead());
+    //
+    //    FirebaseOptions options =
+    //        new FirebaseOptions.Builder()
+    //            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+    //            .build();
+    //
+    //    FirebaseApp.initializeApp(options);
+    //    System.out.println("Apps initialized: " + FirebaseApp.getApps().size());
 
-    FirebaseOptions options =
-        new FirebaseOptions.Builder()
-            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-            .build();
+    try {
+      System.out.println("Checking for Firebase config file...");
 
-    FirebaseApp.initializeApp(options);
-    System.out.println("Apps initialized: " + FirebaseApp.getApps().size());
-    this.db = FirestoreClient.getFirestore();
+      // Use ClassLoader to load from resources
+      InputStream serviceAccount =
+          FirebaseUtilities.class.getClassLoader().getResourceAsStream("data/firebase_config.json");
+
+      if (serviceAccount == null) {
+        throw new IOException(
+            "Firebase config file not found in classpath at data/firebase_config.json");
+      }
+
+      FirebaseOptions options =
+          FirebaseOptions.builder()
+              .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+              // .setDatabaseUrl("https://<YOUR_DATABASE_NAME>.firebaseio.com")
+              .build();
+
+      if (FirebaseApp.getApps().isEmpty()) {
+        FirebaseApp.initializeApp(options);
+        System.out.println("Firebase initialized successfully!");
+      } else {
+        System.out.println("Firebase already initialized.");
+      }
+
+      this.db = FirestoreClient.getFirestore(); // Initialize the db field here
+
+    } catch (IOException e) {
+      System.err.println("Error: Could not initialize Firebase. " + e.getMessage());
+      e.printStackTrace();
+      throw e;
+    } catch (Exception e) {
+      System.err.println(
+          "An unexpected error occurred during Firebase initialization: " + e.getMessage());
+      e.printStackTrace();
+      throw new IOException(
+          "Unexpected error during Firebase initialization", e); // <--- CHANGE THIS
+    }
   }
 
   @Override

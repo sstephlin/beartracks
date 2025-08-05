@@ -27,6 +27,7 @@ import edu.brown.cs.student.main.server.parser.CourseCSVParser;
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
+import io.github.cdimascio.dotenv.Dotenv;
 import java.io.IOException;
 import spark.Spark;
 
@@ -35,6 +36,14 @@ public class Server {
   public static void setUpServer() {
     int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "3232"));
     Spark.port(port);
+
+    // Load environment variables from .env file
+    Dotenv dotenv = Dotenv.load();
+
+    // Fetch all required environment variables once
+    String masterSheetId = dotenv.get("MASTER_GOOGLE_SHEET_ID");
+    String csAbTabGid = dotenv.get("CS_AB_TAB_GID");
+    String csScbTabGid = dotenv.get("CS_SCB_TAB_GID");
 
     // Enable CORS
     options(
@@ -69,6 +78,9 @@ public class Server {
       // 2. Parse CourseCatalog once at startup
       CourseCatalog catalog = CourseCSVParser.parse("data/clean_prereqs.csv");
 
+      // read in google sheet id, for NEW concentration checker implementation
+      String csABSheetId = System.getenv("CS_AB_SHEET_ID");
+
       Spark.post("add-course", new AddCourseHandler(firebaseUtils, catalog));
       Spark.post("add-semester", new AddSemesterHandler(firebaseUtils));
       Spark.post("remove-course", new RemoveCourseHandler(firebaseUtils, catalog));
@@ -84,12 +96,20 @@ public class Server {
       Spark.get("get-expanded", new GetExpandedHandler(firebaseUtils));
       Spark.get("get-user-courses", new GetUserCoursesHandler(firebaseUtils));
       Spark.get("get-user-courses-detailed", new GetUserCoursesWithTitleHandler(firebaseUtils));
+      //      Spark.get(
+      //          "check-concentration-requirements", new
+      // CheckUserRequirementsHandler(firebaseUtils));
       Spark.get(
-          "check-concentration-requirements", new CheckUserRequirementsHandler(firebaseUtils));
+          "check-concentration-requirements",
+          new CheckUserRequirementsHandler(firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid));
+      Spark.get(
+          "get-concen-reqs",
+          new GetConcentrationRequirementsHandler(
+              firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid));
       Spark.get("check-prereqs", new CheckPrereqsHandler(firebaseUtils, catalog));
       Spark.post("update-capstone", new UpdateCapstoneHandler(firebaseUtils));
       Spark.get("check-capstones", new CheckCapstoneHandler(firebaseUtils));
-      Spark.get("get-concen-reqs", new GetConcentrationRequirementsHandler(firebaseUtils));
+      //      Spark.get("get-concen-reqs", new GetConcentrationRequirementsHandler(firebaseUtils));
 
       Spark.notFound(
           (request, response) -> {
