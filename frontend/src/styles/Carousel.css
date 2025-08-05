@@ -1,7 +1,10 @@
+body {
+  overflow-x: hidden;
+}
 .carousel-outer-wrapper {
   display: flex;
   position: relative;
-  width: 80vw;
+  width: 78vw;
   overflow: hidden;
   align-items: center;
   justify-content: center;
@@ -38,7 +41,7 @@
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  padding: 16px 0;
+  padding: 0;
 }
 
 .add-box.expanded {

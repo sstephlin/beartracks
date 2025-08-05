@@ -13,6 +13,7 @@ body {
   font-family: "Angkor", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 /* Main App Layout */

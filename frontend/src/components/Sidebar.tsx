@@ -63,7 +63,16 @@ export default function Sidebar(props: SidebarProps) {
 
   // this function dislpays the concentration requirements of the user's stored concentration
   const displayConcentrationRequirements = async (degree: string) => {
-    if (!user?.id || !degree) return;
+    if (!user?.id || !degree || degree === "Select a Concentration" || degree.trim() === "") {
+      console.log("Skipping requirement display: Invalid user ID or concentration.", { userId: user?.id, concentrationValue: degree });
+      setLoading(false); // Ensure loading state is reset
+      setDegreeInfo({}); // Clear previous info
+      setCourseInfo({}); // Clear previous info
+      props.setNumCompleted(0);
+      props.setNumRequired(0);
+      return; // Exit the function early
+    }
+
     setLoading(true);
     try {
       // get concen reqs from backend
@@ -76,21 +85,24 @@ export default function Sidebar(props: SidebarProps) {
     } catch (err) {
       console.error("Failed to fetch requirements:", err);
     }
+
+    // --- CRITICAL MODIFICATION HERE ---
     try {
+      // Build the URL explicitly and log it
+      const encodedConcentration = encodeURIComponent(degree);
+      const requestUrl = `${import.meta.env.VITE_BACKEND_URL}/check-concentration-requirements?uid=${user.id}&concentration=${encodedConcentration}`;
+
+      console.log("Attempting to fetch /check-concentration-requirements. FULL URL being sent:", requestUrl);
+      // --- END CRITICAL MODIFICATION ---
+
       // calculate how many courses satisfy, displayed in progress bar and message
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/check-concentration-requirements?uid=${user.id}`
+      const response = await fetch(requestUrl
       );
       const data = await response.json();
       setCourseInfo(data.user_requirements_breakdown);
       props.setNumCompleted(data.courses_completed);
-      if (degree === "Computer Science A.B.") {
-        props.setNumRequired(10);
-      } else if (degree === "Computer Science Sc.B.") {
-        props.setNumRequired(16);
-      }
+      props.setNumRequired(data.total_required)
+      
       console.log("Breakdown for", user.id, data.user_requirements_breakdown);
     } catch (err) {
       console.error("Failed to fetch requirements:", err);
@@ -157,7 +169,7 @@ export default function Sidebar(props: SidebarProps) {
         }/store-concentration?uid=${uid}&concentration=${newDegree}`,
         { method: "POST" }
       );
-      console.log("Stored concentration");
+      console.log(`"Stored concentration"${newDegree}`);
       displayConcentrationRequirements(newDegree);
     } catch (err) {
       console.error("Network error while storing concentration:", err);
@@ -207,7 +219,7 @@ export default function Sidebar(props: SidebarProps) {
               <h3>Loading your progress...</h3>
             ) : (
               <h3>
-                {props.numCompleted} out of {props.numRequired} courses
+                {props.numCompleted} out of {props.numRequired} credits
                 completed!
               </h3>
             )}
@@ -215,7 +227,7 @@ export default function Sidebar(props: SidebarProps) {
 
           <div className="concentration-req-container">
             {props.degree !== "Undeclared" &&
-              !loading &&
+              !loading && degreeInfo &&
               Object.keys(degreeInfo).map((key) => {
                 const isExpanded = expandedKeys[key];
                 return (

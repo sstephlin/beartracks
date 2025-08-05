@@ -1,8 +1,12 @@
 package edu.brown.cs.student.main.server.handlers;
 
-import edu.brown.cs.student.main.server.concentrationRequirements.*;
+import edu.brown.cs.student.main.server.googleSheetsRequirements.RequirementChecker;
+import edu.brown.cs.student.main.server.googleSheetsRequirements.RequirementLoader;
+import edu.brown.cs.student.main.server.googleSheetsRequirements.RequirementRow;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,15 +16,25 @@ import spark.Route;
 
 // checks which courses satisfy each requirement of a user's concentration
 public class CheckUserRequirementsHandler implements Route {
-  public StorageInterface storageHandler;
+  private final StorageInterface storageHandler;
+  private final String masterSheetId;
+  private final String csAbTabGid;
+  private final String csScbTabGid;
 
   /**
    * constructor for CheckUserRequirementsHandler
    *
    * @param storageHandler - contains all the methods connecting to firebase
    */
-  public CheckUserRequirementsHandler(StorageInterface storageHandler) {
+  public CheckUserRequirementsHandler(
+      StorageInterface storageHandler,
+      String masterSheetId,
+      String csAbTabGid,
+      String csScbTabGid) {
     this.storageHandler = storageHandler;
+    this.masterSheetId = masterSheetId;
+    this.csAbTabGid = csAbTabGid;
+    this.csScbTabGid = csScbTabGid;
   }
 
   /**
@@ -30,6 +44,7 @@ public class CheckUserRequirementsHandler implements Route {
    * @param response - response object used to return success or error messages
    * @return A JSON response indicating success or failure.
    */
+  @Override
   public Object handle(Request request, Response response) throws Exception {
     Map<String, Object> responseMap = new HashMap<>();
     try {
@@ -39,43 +54,118 @@ public class CheckUserRequirementsHandler implements Route {
         throw new IllegalArgumentException("Missing required query parameter: uid");
       }
 
-      // Step 1: Get user concentration
+      // 1. Get user's concentration from Firebase first
       String concentration = storageHandler.getConcentration(uid);
-      if (concentration == null) {
-        concentration = "Undeclared"; // Default
+      if (concentration == null || concentration.trim().isEmpty()) {
+        concentration = "Undeclared";
       }
 
-      // Step 2: Get all user courses
+      // If concentration is Undeclared, return an empty map
+      if ("Undeclared".equals(concentration)) {
+        responseMap.put("response_type", "success");
+        responseMap.put("concentration", concentration);
+        responseMap.put("user_requirements_breakdown", new LinkedHashMap<>());
+        responseMap.put("courses_completed", 0);
+        responseMap.put("total_required", 0);
+        return Utils.toMoshiJson(responseMap);
+      }
+
+      // 2. Get user's courses from Firebase using StorageInterface
       Set<String> userCourses = storageHandler.getAllUserCourses(uid);
 
-      // Step 3: instantiate checker that checks user's courses WITH concentration requirements
-      CSRequirementChecker checker =
-          new CSRequirementChecker(this.storageHandler, uid, userCourses, concentration);
-      Map<String, List<String>> requirementResults = new HashMap<>();
-      int coursesCompleted = -1;
-      int totalRequired = checker.getTotalCoursesRequired();
+      // 3. Get Google Sheet ID from injected dependency
+      if (this.masterSheetId == null || this.masterSheetId.isEmpty()) {
+        throw new IllegalStateException("MASTER_GOOGLE_SHEET_ID environment variable not set.");
+      }
 
-      try {
-        requirementResults = checker.checkAllRequirements();
-        coursesCompleted = checker.countCoursesCompleted(requirementResults);
+      // 4. Determine the GID based on the fetched concentration
+      String tabGid;
+      switch (concentration.trim().toUpperCase()) {
+        case "COMPUTER SCIENCE A.B.":
+          tabGid = this.csAbTabGid;
+          break;
+        case "COMPUTER SCIENCE SC.B.":
+          tabGid = this.csScbTabGid;
+          break;
+        default:
+          throw new IllegalArgumentException(
+              "Unsupported concentration: "
+                  + concentration
+                  + ". Please provide a valid concentration like 'Computer Science A.B.' or 'Computer Science Sc.B.'.");
+      }
 
-      } catch (IllegalArgumentException e) {
-        if ("No courses found for user.".equals(e.getMessage())) {
-          coursesCompleted = 0;
-          responseMap.put("courses_completed", coursesCompleted);
+      if (tabGid == null || tabGid.isEmpty()) {
+        throw new IllegalStateException(
+            "Environment variable for " + concentration + " GID not set.");
+      }
+
+      // 5. Load requirements from Google Sheets using the master ID and specific tab GID
+      Map<String, RequirementRow> requirements =
+          RequirementLoader.loadRequirementRows(masterSheetId, tabGid);
+
+      if (requirements.isEmpty()) {
+        throw new IllegalStateException(
+            "No requirements loaded for concentration: "
+                + concentration
+                + ". Check sheet ID and GID.");
+      }
+
+      // 6. Instantiate checker with dynamic requirements
+      RequirementChecker checker =
+          new RequirementChecker(requirements, userCourses, storageHandler, uid);
+
+      // 7. Run checks
+      Map<String, List<String>> internalRequirementResults = checker.checkAllRequirements();
+
+      // Map internal category names to display names for the frontend
+      Map<String, List<String>> displayRequirementResults = new LinkedHashMap<>();
+      for (Map.Entry<String, List<String>> entry : internalRequirementResults.entrySet()) {
+        String internalName = entry.getKey();
+        List<String> courses = entry.getValue();
+
+        RequirementRow row = requirements.get(internalName);
+        if (row != null) {
+          displayRequirementResults.put(row.getDisplayName(), courses);
         }
       }
+
+      int coursesCompleted = checker.countCoursesCompleted(internalRequirementResults);
+      int totalRequired = checker.getTotalCoursesRequired();
+
       responseMap.put("response_type", "success");
       responseMap.put("concentration", concentration);
-      responseMap.put("user_requirements_breakdown", requirementResults);
+      responseMap.put("user_requirements_breakdown", displayRequirementResults);
       responseMap.put("courses_completed", coursesCompleted);
-      responseMap.put("total_required", totalRequired); // 10 for AB, 16 for ScB
+      responseMap.put("total_required", totalRequired);
 
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (IllegalArgumentException e) {
+      // Catch specific argument errors and return a cleaner message
       responseMap.put("response_type", "failure");
       responseMap.put("error", e.getMessage());
       responseMap.put("courses_completed", 0);
+      responseMap.put("total_required", 0);
+      response.status(400); // Bad Request
+    } catch (IllegalStateException e) {
+      // Catch errors related to missing environment variables or sheet loading
+      responseMap.put("response_type", "failure");
+      responseMap.put("error", "Server configuration error: " + e.getMessage());
+      responseMap.put("courses_completed", 0);
+      responseMap.put("total_required", 0);
+      response.status(500); // Internal Server Error
+    } catch (IOException e) {
+      // Catch network/file I/O errors
+      responseMap.put("response_type", "failure");
+      responseMap.put("error", "Failed to access Google Sheet: " + e.getMessage());
+      responseMap.put("courses_completed", 0);
+      responseMap.put("total_required", 0);
+      response.status(500); // Internal Server Error
+    } catch (Exception e) {
+      e.printStackTrace(); // Log the full stack trace for debugging
+      responseMap.put("response_type", "failure");
+      responseMap.put("error", "An unexpected error occurred: " + e.getMessage());
+      responseMap.put("courses_completed", 0); // Default to 0 on error
+      responseMap.put("total_required", 0); // Default to 0 on error
+      response.status(500); // Internal Server Error
     }
 
     return Utils.toMoshiJson(responseMap);

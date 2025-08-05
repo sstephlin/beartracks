@@ -7,7 +7,6 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,6 +21,21 @@ public class FirebaseUtilities implements StorageInterface {
     //    String workingDirectory = System.getProperty("user.dir");
     //    Path firebaseConfigPath =
     //        Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
+    //
+    //    System.out.println("Checking for Firebase config file...");
+    //    FileInputStream serviceAccount = new FileInputStream("/resources/firebase_config.json");
+    //    File file = new File("/etc/secrets/firebase_config.json");
+    //    System.out.println("Exists: " + file.exists());
+    //    System.out.println("Readable: " + file.canRead());
+    //
+    //    FirebaseOptions options =
+    //        new FirebaseOptions.Builder()
+    //            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+    //            .build();
+    //
+    //    FirebaseApp.initializeApp(options);
+    //    System.out.println("Apps initialized: " + FirebaseApp.getApps().size());
+    //    this.db = FirestoreClient.getFirestore();
 
     String workingDirectory = System.getProperty("user.dir");
     Path firebaseConfigPath =
@@ -36,21 +50,6 @@ public class FirebaseUtilities implements StorageInterface {
 
     FirebaseApp.initializeApp(options);
     this.db = FirestoreClient.getFirestore();
-
-    // System.out.println("Checking for Firebase config file...");
-    // FileInputStream serviceAccount = new FileInputStream("/etc/secrets/firebase_config.json");
-    // File file = new File("/etc/secrets/firebase_config.json");
-    // System.out.println("Exists: " + file.exists());
-    // System.out.println("Readable: " + file.canRead());
-
-    // FirebaseOptions options =
-    //     new FirebaseOptions.Builder()
-    //         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-    //         .build();
-
-    // FirebaseApp.initializeApp(options);
-    // System.out.println("Apps initialized: " + FirebaseApp.getApps().size());
-    // this.db = FirestoreClient.getFirestore();
   }
 
   @Override
