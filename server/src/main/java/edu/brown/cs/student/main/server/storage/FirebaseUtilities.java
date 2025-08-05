@@ -20,10 +20,10 @@ public class FirebaseUtilities implements StorageInterface {
   private final Firestore db;
 
   public FirebaseUtilities() throws IOException {
-    //    String workingDirectory = System.getProperty("user.dir");
-    //    Path firebaseConfigPath =
-    //        Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
-
+//    String workingDirectory = System.getProperty("user.dir");
+//    Path firebaseConfigPath =
+//        Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
+//
 //    System.out.println("Checking for Firebase config file...");
 //    FileInputStream serviceAccount = new FileInputStream("/resources/firebase_config.json");
 //    File file = new File("/etc/secrets/firebase_config.json");
@@ -39,19 +39,20 @@ public class FirebaseUtilities implements StorageInterface {
 //    System.out.println("Apps initialized: " + FirebaseApp.getApps().size());
 //    this.db = FirestoreClient.getFirestore();
 
-    String workingDirectory = System.getProperty("user.dir");
-    Path firebaseConfigPath =
-        Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
+        String workingDirectory = System.getProperty("user.dir");
+        Path firebaseConfigPath =
+            Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
 
-    FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
+        FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
 
-    FirebaseOptions options =
-        new FirebaseOptions.Builder()
-            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-            .build();
 
-    FirebaseApp.initializeApp(options);
-    this.db = FirestoreClient.getFirestore();
+        FirebaseOptions options =
+            new FirebaseOptions.Builder()
+                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                .build();
+
+        FirebaseApp.initializeApp(options);
+        this.db = FirestoreClient.getFirestore();
   }
 
   @Override

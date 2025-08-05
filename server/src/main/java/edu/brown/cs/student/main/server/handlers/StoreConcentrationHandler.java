@@ -32,7 +32,9 @@ public class StoreConcentrationHandler implements Route {
 
       responseMap.put("response_type", "success");
       responseMap.put("message", "Set concentration as: " + concentration + " for user " + uid);
+      System.out.println("Set concentration as: " + concentration + " for user " + uid);
     } catch (Exception e) {
+      System.out.println(e.getMessage());
       e.printStackTrace();
       responseMap.put("response_type", "failure");
       responseMap.put("error", e.getMessage());
