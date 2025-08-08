@@ -23,5 +23,5 @@ playwright/.cache/
 
 # firebase json
 server/src/main/resources/data/firebase_config.json
-server/src/main/resources/data/beartracks-concentrations-google-sheet.json
+etc/secrets/firebase_config.json
 frontend/cache_semesters/cookies.json
