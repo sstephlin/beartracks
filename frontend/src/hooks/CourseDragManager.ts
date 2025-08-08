@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CourseItem } from "../types";
 import { checkPrereqs } from "../utils/prereqUtils";
+import { sessionStorageUtils } from "../utils/sessionStorageUtils";
 // import.meta.env.VITE_BACKEND_URL;
 
 type Course = CourseItem;
@@ -272,7 +273,19 @@ export function CourseDragManager(
       isManual,
     };
 
-    setCourses((prev) => [...prev, newCourse]);
+    setCourses((prev) => {
+      const updated = [...prev, newCourse];
+      
+      // Save to session storage if user is not signed in
+      if (!uid) {
+        const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+        sessionData.courses = updated;
+        // Note: semesters should be passed from parent component
+        sessionStorageUtils.saveSessionData(sessionData);
+      }
+      
+      return updated;
+    });
   };
 
   const buildSemesterMap = () => {
