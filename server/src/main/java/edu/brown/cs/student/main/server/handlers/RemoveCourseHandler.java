@@ -33,6 +33,7 @@ public class RemoveCourseHandler implements Route {
       if (uid == null || courseCode == null || term == null || year == null) {
         throw new IllegalArgumentException("Missing required query parameters");
       }
+      // Use 4-digit year format consistently
       String semesterKey = term + " " + year;
 
       // 1) Delete the dropped course

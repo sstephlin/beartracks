@@ -1,4 +1,4 @@
-Course Code,Course Name,Fall 2021,Winter 2021,Spring 2022,Summer 2022,Fall 2022,Winter 2022,Spring 2023,Summer 2023,Fall 2023,Winter 2023,Spring 2024,Summer 2024,Fall 2024,Winter 2024,Spring 2025,Summer 2025,Fall 2025,Winter 2025,Spring 2026
+Course Code,Course Name,Fall 21,Winter 21,Spring 22,Summer 22,Fall 22,Winter 22,Spring 23,Summer 23,Fall 23,Winter 23,Spring 24,Summer 24,Fall 24,Winter 24,Spring 25,Summer 25,Fall 25,Winter 25,Spring 26
 CSCI 0020,The Digital World,[],,,,[],,,,[],,,,[],,,,,,
 CSCI 0081,TA Apprenticeship: Full Credit,[],,[],,[],,[],,[],,[],,[],,[],,[],,[]
 CSCI 0100,Data Fluency for All,[],,,,[],,,,,,,,,,,,,,
@@ -120,7 +120,7 @@ CSCI 2450,Exchange Scholar Program,,,,,,,,,,,[],,,,[],,,,
 CSCI 2500B,Optimization Algorithms for Planar Graphs,,,,,,,,,,,[{CSCI 1570}],,,,,,,,
 CSCI 2951U,Topics in Software Security,,,,,,,,,,,"[{CSCI 1951H, CSCI 1650, CSCI 1670}]",,,,"[{CSCI 1951H, CSCI 1650, CSCI 1670}]",,,,
 CSCI 2999A,"Cybersecurity Management Within Business, Government, and Non-Profit Organizations",,,,,,,,,,,[],,[],,,,[],,
-CSCI 0410,Foundations of AI,,,,,,,,,,,,,"[{CSCI 0200}, {CSCI 0220, APMA 1650, APMA 1655, CSCI 1410}, {MATH 0520*, MATH 0540*, CSCI 0530*}]",,"[{CSCI 0200, CSCI 0190}, {APMA 1655, CSCI 0220, APMA 1650, CSCI 0450, CSCI 1450}, {MATH 0520*, APMA 0260*, MATH 0540*, CSCI 0530*}]",,"[{CSCI 0200, CSCI 0190}, {APMA 1655, CSCI 0220, APMA 1650, CSCI 0450, CSCI 1450}, {MATH 0520*, APMA 0260*, MATH 0540*, CSCI 0530*}]",,"[{CSCI 0200, CSCI 0190}, {APMA 1655, CSCI 0220, APMA 1650, CSCI 0450, CSCI 1450}, {MATH 0520*, APMA 0260*, MATH 0540*, CSCI 0530*}]"
+CSCI 0410,Foundations of AI,,,,,,,,,,,,,"[{CSCI 0200}, {CSCI 0220, APMA 1650, APMA 1655, CSCI 1410}, {MATH 0520*, MATH 0540*, CSCI 0530*}]",,[],,[],,"[{CSCI 0200, CSCI 0190}, {APMA 1655, CSCI 0220, APMA 1650, CSCI 0450, CSCI 1450}, {MATH 0520*, APMA 0260*, MATH 0540*, CSCI 0530*}]"
 CSCI 1411,Foundations in AI,,,,,,,,,,,,,"[{CSCI 0200}, {CSCI 0220, APMA 1650, APMA 1655, CSCI 1410}, {MATH 0520*, MATH 0540*, CSCI 0530*}]",,"[{CSCI 0200, CSCI 0190}, {APMA 1655, CSCI 0220, APMA 1650, CSCI 0450, CSCI 1450}, {MATH 0520*, MATH 0540*, CSCI 0530*}]",,"[{CSCI 0200, CSCI 0190}, {APMA 1655, CSCI 0220, APMA 1650, CSCI 0450, CSCI 1450}, {MATH 0520*, APMA 0260*, MATH 0540*, CSCI 0530*}]",,"[{CSCI 0200, CSCI 0190}, {APMA 1655, CSCI 0220, APMA 1650, CSCI 0450, CSCI 1450}, {MATH 0520*, APMA 0260*, MATH 0540*, CSCI 0530*}]"
 CSCI 1953A,Accessible and Inclusive Cybersecurity and Privacy,,,,,,,,,,,,,[],,,,[],,
 CSCI 2680,Computer Networks and the Internet,,,,,,,,,,,,,[{CSCI 1680}],,,,,,
