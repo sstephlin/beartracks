@@ -22,25 +22,25 @@ interface CarouselProps {
 
 // defines all the possible semesters the user can select
 const allSemesters = [
-  "Fall 21",
-  "Winter 21",
-  "Spring 22",
-  "Summer 22",
-  "Fall 22",
-  "Winter 22",
-  "Spring 23",
-  "Summer 23",
-  "Fall 23",
-  "Winter 23",
-  "Spring 24",
-  "Summer 24",
-  "Fall 24",
-  "Winter 24",
-  "Spring 25",
-  "Summer 25",
-  "Fall 25",
-  "Winter 25",
-  "Spring 26",
+  "Fall 2021",
+  "Winter 2021",
+  "Spring 2022",
+  "Summer 2022",
+  "Fall 2022",
+  "Winter 2022",
+  "Spring 2023",
+  "Summer 2023",
+  "Fall 2023",
+  "Winter 2023",
+  "Spring 2024",
+  "Summer 2024",
+  "Fall 2024",
+  "Winter 2024",
+  "Spring 2025",
+  "Summer 2025",
+  "Fall 2025",
+  "Winter 2025",
+  "Spring 2026",
 ];
 
 // defines all of the constant variables
@@ -1189,7 +1189,7 @@ export default function Carousel({
                   addCourse(boxSelections[boxId], undefined, "new", true);
                 }}
               >
-                + New course
+                + New Course
               </button>
             </SemesterBox>
           ))}

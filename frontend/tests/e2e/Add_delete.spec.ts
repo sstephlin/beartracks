@@ -43,7 +43,7 @@ test("add-left-delete", async ({ page }) => {
   await expect(page.getByRole("main")).toContainText("Fall 21");
   await page
     .locator("div")
-    .filter({ hasText: /^\+ New course$/ })
+    .filter({ hasText: /^\+ New Course$/ })
     .click({
       button: "right",
     });
@@ -59,7 +59,7 @@ test("add-left-delete", async ({ page }) => {
   await expect(page.getByRole("main")).toContainText("Fall 21");
   await page
     .locator("div")
-    .filter({ hasText: /^\+ New course$/ })
+    .filter({ hasText: /^\+ New Course$/ })
     .first()
     .click({
       button: "right",
@@ -77,7 +77,7 @@ test("add-right-delete", async ({ page }) => {
   await expect(page.getByRole("main")).toContainText("Fall 21");
   await page
     .locator("div")
-    .filter({ hasText: /^\+ New course$/ })
+    .filter({ hasText: /^\+ New Course$/ })
     .click({
       button: "right",
     });
@@ -93,7 +93,7 @@ test("add-right-delete", async ({ page }) => {
   await expect(page.getByRole("main")).toContainText("Winter 21");
   await page
     .locator("div")
-    .filter({ hasText: /^\+ New course$/ })
+    .filter({ hasText: /^\+ New Course$/ })
     .nth(1)
     .click({
       button: "right",
@@ -119,7 +119,7 @@ test("test", async ({ page }) => {
   await expect(page.getByRole("main")).toContainText("Fall 22");
   await page
     .locator("div")
-    .filter({ hasText: /^\+ New course$/ })
+    .filter({ hasText: /^\+ New Course$/ })
     .nth(1)
     .click({
       button: "right",

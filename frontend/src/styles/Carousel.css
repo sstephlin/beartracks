@@ -5,12 +5,10 @@ body {
   display: flex;
   position: relative;
   width: 78vw;
-  overflow: hidden;
+  /* overflow: hidden; */
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  border: #e4e4e4 3px solid;
-  border-radius: 16px;
 }
 .carousel-outer-wrapper.collapsed {
   width: 94vw;
@@ -52,11 +50,12 @@ body {
   width: 250px;
   min-height: 400px;
   background-color: #e4e4e4;
-  border: 3px #e4e4e4 solid;
-  border-radius: 8px;
+  /* border: 3px #e4e4e4 solid; */
+  /* border-radius: 8px; */
   margin: 0 8px;
   font: 300px;
 }
+
 .add-box.collapsed {
   display: flex;
   flex-direction: column;
@@ -65,7 +64,7 @@ body {
   width: 300px;
   min-height: 400px;
   background-color: #e4e4e4;
-  border: 3px #e4e4e4 solid;
+  border: 1.5px #c4c7c5 solid;
   border-radius: 8px;
   margin: 0 8px;
 }
@@ -100,9 +99,9 @@ body {
   transform: translateY();
   z-index: 1000;
   background: white;
-  border: 2px solid lightgray;
-  border-radius: 8px;
-  width: 2vw;
+  border: 2px solid #1B1B1B;
+  border-radius: 100px;
+  width: 1vw;
   height: 6vh;
   font-size: 24px;
   font-weight: bold;
@@ -115,11 +114,11 @@ body {
 }
 
 .carousel-button.left {
-  left: 0vw;
+  left: -3vw;
 }
 
 .carousel-button.right {
-  right: 0;
+  right: -3vw;
 }
 
 .carousel-button:disabled {
