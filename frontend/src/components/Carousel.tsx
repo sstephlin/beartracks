@@ -191,9 +191,30 @@ export default function Carousel({
     courseCode: string,
     semesterId: string
   ) => {
-    if (!user?.id) return;
-
     const [term, year] = semesterId.split(" ");
+
+    // Handle local delete for non-signed-in users
+    if (!user?.id) {
+      setCourses((prev) => {
+        const updated = prev.filter((c) => c.id !== courseId);
+
+        // Persist to session storage
+        const sessionData =
+          sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+        sessionData.courses = updated;
+        sessionStorageUtils.saveSessionData(sessionData);
+
+        // Recheck prerequisites locally
+        setTimeout(() => {
+          recheckAllPrereqs(updated);
+        }, 100);
+
+        return updated;
+      });
+
+      setRefreshSidebar((prev) => !prev);
+      return;
+    }
 
     try {
       // Remove from backend
@@ -689,12 +710,13 @@ export default function Carousel({
         return;
       }
 
-      // checks the prerequisites first
-      let met = undefined;
-      if (user?.id) {
-        met = await checkPrereqs(user.id, searchCourse.courseCode, semesterId);
-        console.log(`Prereq check for ${searchCourse.courseCode}: ${met}`);
-      }
+      // checks the prerequisites first (works for signed-in and unsigned users)
+      const met = await checkPrereqs(
+        user?.id ?? "",
+        searchCourse.courseCode,
+        semesterId
+      );
+      console.log(`Prereq check for ${searchCourse.courseCode}: ${met}`);
 
       const isEligible = capstoneCodes.has(searchCourse.courseCode);
 
@@ -723,6 +745,24 @@ export default function Carousel({
         const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
         sessionData.courses = updatedCourses;
         sessionStorageUtils.saveSessionData(sessionData);
+
+        // Re-check any courses in this same semester that might depend on the
+        // newly added concurrent prerequisite
+        for (const course of updatedCourses) {
+          if (course.semesterId === semesterId && course.id !== newCourse.id && !course.isManual) {
+            const prereqsMet = await checkPrereqs(
+              user?.id ?? "",
+              course.courseCode,
+              course.semesterId
+            );
+            setPrereqStatus(course.id, prereqsMet);
+          }
+        }
+
+        // Global recheck to keep everything consistent
+        setTimeout(() => {
+          recheckAllPrereqs(updatedCourses);
+        }, 100);
       } else {
         // syncs with the backend for search results
         const [term, year] = semesterId.split(" ");
@@ -808,6 +848,45 @@ export default function Carousel({
         const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
         sessionData.courses = updatedCourses;
         sessionStorageUtils.saveSessionData(sessionData);
+
+        // Check prerequisites for the moved course (local CSV flow)
+        if (!course.isManual) {
+          const movedPrereqsMet = await checkPrereqs(
+            "",
+            course.courseCode,
+            semesterId
+          );
+          setPrereqStatus(course.id, movedPrereqsMet);
+        }
+
+        // Re-evaluate courses impacted in the source semester (lost concurrent prereq)
+        for (const c of updatedCourses) {
+          if (c.semesterId === sourceSemesterId && c.id !== course.id && !c.isManual) {
+            const coursePrereqsMet = await checkPrereqs(
+              "",
+              c.courseCode,
+              c.semesterId
+            );
+            setPrereqStatus(c.id, coursePrereqsMet);
+          }
+        }
+
+        // Re-evaluate courses impacted in the target semester (gained concurrent prereq)
+        for (const c of updatedCourses) {
+          if (c.semesterId === semesterId && c.id !== course.id && !c.isManual) {
+            const coursePrereqsMet = await checkPrereqs(
+              "",
+              c.courseCode,
+              c.semesterId
+            );
+            setPrereqStatus(c.id, coursePrereqsMet);
+          }
+        }
+
+        // Final pass to keep everything consistent
+        setTimeout(() => {
+          recheckAllPrereqs(updatedCourses);
+        }, 100);
       } else {
         try {
           // deletes the course from the old semester

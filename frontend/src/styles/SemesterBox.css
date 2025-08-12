@@ -11,6 +11,7 @@
   flex-shrink: 0;
   scroll-snap-align: start;
   overflow: visible;
+  border: 1.5px #c4c7c5 solid;
 }
 
 .semester-box.collapsed {

@@ -51,7 +51,7 @@ body {
   min-height: 400px;
   background-color: #e4e4e4;
   /* border: 3px #e4e4e4 solid; */
-  /* border-radius: 8px; */
+  border-radius: 8px;
   margin: 0 8px;
   font: 300px;
 }
