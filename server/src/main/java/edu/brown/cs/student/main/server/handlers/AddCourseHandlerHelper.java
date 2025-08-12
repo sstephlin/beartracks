@@ -15,6 +15,7 @@ public class AddCourseHandlerHelper {
       String targetSemester, // when the course is being taken
       Map<String, String> courseToSemester // all courseCode -> semester
       ) {
+    //    System.out.println(("course to semester " + courseToSemester));
     PrereqTreeNode prereqTree = catalog.getPrereqTree(courseCode, targetSemester);
     if (prereqTree == null || prereqTree.isEmpty()) {
       return true;

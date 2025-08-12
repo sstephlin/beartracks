@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "../styles/SemesterBox.css";
 
 // these are all the props for the CourseDrag component
@@ -12,7 +12,15 @@ interface CourseDragProps {
   prereqsMet: boolean;
   isCapstone: boolean;
   showCapstoneCheckbox?: boolean;
+  onDeleteCourse?: (
+    courseId: string,
+    courseCode: string,
+    courseTitle: string,
+    semesterId: string
+  ) => void;
+  onDeleteManualCourse?: (courseId: string) => void;
   isManual?: boolean;
+  userId?: string; // Add userId prop for prerequisite fetching
 
   onDragStart?: (
     e: React.DragEvent,
@@ -23,6 +31,26 @@ interface CourseDragProps {
   onDrop?: (e: React.DragEvent) => void;
   onSaveCourse?: (id: string, code: string, title: string) => void;
   onToggleCapstone?: (id: string, newValue: boolean) => void;
+}
+
+interface PrerequisiteData {
+  type: string;
+  courseCode?: string;
+  isConcurrent?: boolean;
+  isCompleted?: boolean;
+  completedInSemester?: string;
+  satisfied: boolean;
+  children?: PrerequisiteData[];
+}
+
+// Updated interface to match your backend response
+interface PrerequisiteResponse {
+  hasPrereqs: boolean;
+  prerequisiteTree?: PrerequisiteData;
+  message?: string;
+  displayText?: string; // Add this new property
+  overallStatus?: string; // Add this new property
+  summary?: string; // Add this new property
 }
 
 export default function CourseDrag({
@@ -41,11 +69,21 @@ export default function CourseDrag({
   onSaveCourse,
   onToggleCapstone,
   showCapstoneCheckbox,
+  onDeleteCourse,
+  onDeleteManualCourse,
   isManual = false,
+  userId,
 }: CourseDragProps & { isCapstone?: boolean }) {
   const [code, setCode] = useState(courseCode);
   const [title, setTitle] = useState(courseTitle || "");
   const [isChecked, setIsChecked] = useState<boolean>(!!isCapstone);
+  const [showPrereqPopup, setShowPrereqPopup] = useState(false);
+  // Updated state type to use the new interface
+  const [prerequisiteData, setPrerequisiteData] =
+    useState<PrerequisiteResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+  const popupRef = useRef<HTMLDivElement>(null);
 
   // this handles enter key press to save course
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -66,6 +104,306 @@ export default function CourseDrag({
     e.dataTransfer.setData("courseCode", courseCode);
     e.dataTransfer.setData("title", title || "");
     e.dataTransfer.setData("semesterId", semesterId);
+  };
+
+  // Updated handlePrereqClick function with positioning logic
+  const handlePrereqClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (showPrereqPopup) {
+      setShowPrereqPopup(false);
+      return;
+    }
+
+    if (!userId) {
+      console.error("User ID is required to fetch prerequisites");
+      return;
+    }
+
+    // Calculate popup position - bottom of popup aligns with top of link
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Default popup dimensions (adjust these based on your typical popup size)
+    const popupWidth = 500; // Increased width for box layout
+    const popupHeight = 400;
+
+    let left = rect.left;
+    let top = rect.top - popupHeight; // Position popup so its bottom aligns with top of link
+
+    // Adjust if popup would go off the right edge
+    if (left + popupWidth > viewportWidth) {
+      left = viewportWidth - popupWidth - 10;
+    }
+
+    // Adjust if popup would go off the left edge
+    if (left < 10) {
+      left = 10;
+    }
+
+    // If popup would go off the top edge, position it below the link instead
+    if (top < 10) {
+      top = rect.bottom + 5; // 5px below the button
+    }
+
+    // Final check: if it still goes off bottom when positioned below, center it vertically
+    if (
+      top + popupHeight > viewportHeight &&
+      rect.bottom + 5 + popupHeight > viewportHeight
+    ) {
+      top = Math.max(10, (viewportHeight - popupHeight) / 2);
+    }
+
+    setPopupPosition({ top, left });
+
+    setLoading(true);
+    const [term, year] = semesterId.split(" ");
+    const url = `${
+      import.meta.env.VITE_BACKEND_URL
+    }/get-prereqs?uid=${userId}&code=${encodeURIComponent(
+      courseCode
+    )}&term=${term}&year=${year}`;
+
+    console.log("Fetching prerequisites from URL:", url);
+
+    try {
+      const response = await fetch(url);
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        console.error("HTTP error:", response.status, response.statusText);
+        setLoading(false);
+        return;
+      }
+
+      const responseText = await response.text();
+      console.log(
+        "Raw response (first 100 chars):",
+        responseText.substring(0, 100)
+      );
+      console.log(
+        "Response starts with:",
+        JSON.stringify(responseText.substring(0, 10))
+      );
+
+      if (!responseText.trim()) {
+        console.error("Empty response received");
+        setLoading(false);
+        return;
+      }
+
+      let data;
+      try {
+        data = JSON.parse(responseText.trim());
+      } catch (parseError) {
+        console.error("Failed to parse JSON:", parseError);
+        console.error("Full response text:", responseText);
+        console.error("Response length:", responseText.length);
+        // Show character codes for debugging
+        for (let i = 0; i < Math.min(20, responseText.length); i++) {
+          console.log(
+            `Char ${i}: '${responseText[i]}' (code: ${responseText.charCodeAt(
+              i
+            )})`
+          );
+        }
+        setLoading(false);
+        return;
+      }
+
+      if (data.response_type === "success") {
+        setPrerequisiteData(data);
+        setShowPrereqPopup(true);
+      } else {
+        console.error("Failed to fetch prerequisites:", data.error);
+      }
+    } catch (err) {
+      console.error("Error fetching prerequisites:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Close popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        setShowPrereqPopup(false);
+      }
+    };
+
+    if (showPrereqPopup) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [showPrereqPopup]);
+  // Replace your renderPrereqTreeBoxes function with this condensed version:
+
+  const renderPrereqTreeBoxes = (
+    node: PrerequisiteData,
+    depth: number = 0
+  ): React.ReactNode => {
+    if (node.type === "course") {
+      return (
+        <span
+          className={`prereq-course-chip ${
+            node.satisfied ? "satisfied" : "not-satisfied"
+          }`}
+          style={{
+            backgroundColor: node.satisfied ? "#d1f2d1" : "#f8d0d0",
+            border: `1px solid ${node.satisfied ? "#28a745" : "#dc3545"}`,
+            borderRadius: "16px",
+            padding: "2px 4px",
+            margin: "0px",
+            display: "inline-block",
+            fontSize: "11px",
+            fontWeight: "600",
+            color: node.satisfied ? "#155724" : "#721c24",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <span className="course-code">{node.courseCode}</span>
+          {node.isConcurrent && (
+            <span
+              style={{
+                fontSize: "9px",
+                fontStyle: "italic",
+              }}
+            >
+              (conc)
+            </span>
+          )}
+          <span style={{ fontSize: "9px" }}></span>
+        </span>
+      );
+    }
+
+    const isOrGroup = node.type === "or";
+
+    // Skip the outermost AND group (depth 0) and just render its children directly
+    if (depth === 0 && node.type === "and") {
+      return (
+        <div
+          className="prereq-root-children"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "4px",
+            alignItems: "center",
+          }}
+        >
+          {node.children?.map((child, index) => (
+            <React.Fragment key={index}>
+              {index > 0 && (
+                <span
+                  className="connector-compact"
+                  style={{
+                    fontSize: "9px",
+                    fontWeight: "bold",
+                    color: "#6c757d",
+                    padding: "2px 4px",
+                    backgroundColor: "#f1f3f4",
+                    borderRadius: "3px",
+                    margin: "0 2px",
+                  }}
+                >
+                  AND
+                </span>
+              )}
+              {renderPrereqTreeBoxes(child, depth + 1)}
+            </React.Fragment>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className={`prereq-group-compact ${node.type}-group`}
+        style={{
+          border: `1px solid ${node.satisfied ? "#28a745" : "#dc3545"}`,
+          borderRadius: "6px",
+          padding: "6px 8px",
+          margin: "3px 0",
+          backgroundColor: node.satisfied ? "#f8fff9" : "#fff8f8",
+          display: "inline-block",
+          maxWidth: "100%",
+        }}
+      >
+        <div
+          className="group-header-compact"
+          style={{
+            fontSize: "10px",
+            fontWeight: "bold",
+            color: node.satisfied ? "#155724" : "#721c24",
+            marginBottom: "4px",
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+            justifyContent: "flex-start",
+          }}
+        >
+          <span>{isOrGroup ? " ONE OF:" : "ALL:"}</span>
+          <span style={{ fontSize: "12px" }}>{node.satisfied ? "✓" : "✗"}</span>
+        </div>
+
+        <div
+          className="group-children-compact"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "4px",
+            alignItems: "center",
+          }}
+        >
+          {node.children?.map((child, index) => (
+            <React.Fragment key={index}>
+              {index > 0 && (
+                <span
+                  className="connector-compact"
+                  style={{
+                    fontSize: "9px",
+                    fontWeight: "bold",
+                    color: "#6c757d",
+                    padding: "2px 4px",
+                    backgroundColor: "#f1f3f4",
+                    borderRadius: "3px",
+                    margin: "0 2px",
+                  }}
+                >
+                  {isOrGroup ? "OR" : "&"}
+                </span>
+              )}
+              {renderPrereqTreeBoxes(child, depth + 1)}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // Handle delete button click for regular courses (with confirmation)
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (onDeleteCourse) {
+      onDeleteCourse(id, courseCode, courseTitle || "", semesterId);
+    }
+  };
+
+  // NEW: Handle delete button click for manual courses (immediate deletion)
+  const handleManualDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (onDeleteManualCourse) {
+      onDeleteManualCourse(id);
+    }
   };
 
   // this ensures to keep thecapstone checkbox state in sync with props
@@ -90,6 +428,53 @@ export default function CourseDrag({
       role="button"
       tabIndex={0}
     >
+      {/* Delete button - different logic for manual vs regular courses */}
+      {!isEmpty && !isEditing && (
+        <>
+          {isManual && onDeleteManualCourse ? (
+            // X button for manual courses (immediate deletion)
+            <button
+              className="delete-manual-course-btn"
+              onClick={handleManualDeleteClick}
+              aria-label={`Delete manual course ${courseCode}`}
+              title={`Delete ${courseCode} (manual course)`}
+              style={{
+                position: "absolute",
+                top: "4px",
+                right: "4px",
+                background: "#ff4444",
+                color: "white",
+                border: "none",
+                borderRadius: "50%",
+                width: "18px",
+                height: "18px",
+                fontSize: "12px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 10,
+                lineHeight: 1,
+              }}
+            >
+              ×
+            </button>
+          ) : (
+            // Regular delete button for backend courses (with confirmation)
+            onDeleteCourse && (
+              <button
+                className="delete-course-btn"
+                onClick={handleDeleteClick}
+                aria-label={`Delete ${courseCode}`}
+                title={`Delete ${courseCode}`}
+              >
+                ×
+              </button>
+            )
+          )}
+        </>
+      )}
+
       {!isEmpty && isEditing ? (
         <div className="course-edit-fields">
           <input
@@ -127,6 +512,103 @@ export default function CourseDrag({
             )}
           </div>
           {title && <div className="course-title">{title}</div>}
+
+          {/* Prerequisites link - only show for non-manual courses */}
+          {!isManual && !isEditing && (
+            <div className="prereq-section">
+              <button
+                className="prereq-link"
+                onClick={handlePrereqClick}
+                disabled={loading}
+              >
+                {loading ? "Loading..." : "Prerequisites"}
+              </button>
+
+              {/* Prerequisites popup - Updated with box layout */}
+              {showPrereqPopup && prerequisiteData && (
+                <div
+                  className="prereq-popup"
+                  ref={popupRef}
+                  style={{
+                    position: "fixed",
+                    top: `${popupPosition.top}px`,
+                    left: `${popupPosition.left}px`,
+                    backgroundColor: "white",
+                    border: "2px solid #ccc",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                    zIndex: 1000,
+                    maxWidth: "450px", // Slightly smaller
+                    maxHeight: "300px", // Reduced height
+                    overflow: "auto",
+                    fontSize: "12px", // Smaller base font
+                  }}
+                >
+                  <div
+                    className="prereq-popup-header"
+                    style={{
+                      padding: "6px 9px", // Reduced padding
+                      borderBottom: "1px solid #ddd",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      backgroundColor: "#f8f9fa",
+                    }}
+                  >
+                    <h4 style={{ margin: 0, fontSize: "14px" }}>
+                      Prerequisites for {courseCode}
+                    </h4>
+                    <button
+                      className="close-popup-btn"
+                      onClick={() => setShowPrereqPopup(false)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        fontSize: "16px",
+                        cursor: "pointer",
+                        padding: "0 4px",
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div
+                    className="prereq-popup-content"
+                    style={{
+                      padding: "6px 9px", // Changed from 0px to 6px 9px to match header
+                      margin: "0px",
+                      lineHeight: "1",
+                    }}
+                  >
+                    {prerequisiteData.hasPrereqs ? (
+                      <div className="prereq-tree">
+                        {prerequisiteData.prerequisiteTree &&
+                          renderPrereqTreeBoxes(
+                            prerequisiteData.prerequisiteTree
+                          )}
+                      </div>
+                    ) : (
+                      <div
+                        className="no-prereqs"
+                        style={{
+                          textAlign: "center",
+                          padding: "16px", // Reduced padding
+                          backgroundColor: "#d4edda",
+                          border: "1px solid #28a745",
+                          borderRadius: "6px",
+                          color: "#155724",
+                          fontSize: "12px",
+                        }}
+                      >
+                        {prerequisiteData.displayText ||
+                          prerequisiteData.message}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
