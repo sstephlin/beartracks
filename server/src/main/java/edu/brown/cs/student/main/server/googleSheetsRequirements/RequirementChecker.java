@@ -28,6 +28,7 @@ public class RequirementChecker {
   // Maps the category being overridden to its active alternative (e.g., "Intro Part 2 Standard" ->
   // "Intro Part 2 - Alt")
   private final Map<String, String> activeCategoryAlternatives = new HashMap<>();
+  private final Map<String, Integer> categoryUsageCounts = new HashMap<>();
 
   // CRITICAL FIX: Constructor signature to match how it's called and how 'requirements' is used
   public RequirementChecker(
@@ -214,44 +215,45 @@ public class RequirementChecker {
    * @param row The RequirementRow containing the course list and min courses required.
    * @return A list of courses that matched.
    */
+  /**
+   * Matches user courses against a list of accepted courses.
+   *
+   * @param row The RequirementRow containing the course list and min courses required.
+   * @return A list of courses that matched.
+   */
+  /**
+   * Debug version of matchCourseList with detailed logging
+   */
   private List<String> matchCourseList(RequirementRow row) {
     List<String> matches = new ArrayList<>();
-    boolean isCapstone = "Capstone".equalsIgnoreCase(row.getCategoryName());
+    String categoryName = row.getCategoryName();
+
+    Integer maxUsesObj = row.getMaxUses();
+    int maxUses = (maxUsesObj == null) ? -1 : maxUsesObj.intValue();
 
     for (String course : userCourses) {
-      // Check if the course is in the list of accepted courses for this row.
       if (row.getAcceptedCourses().contains(course)) {
-        // If it's a capstone, we process it and do not mark it as used for other categories.
-        // If it's not a capstone, we only process it if it hasn't been used yet.
-        if (isCapstone || !usedCourses.contains(course)) {
+        // Check current usage for this category
+        int currentUsage = categoryUsageCounts.getOrDefault(categoryName, 0);
+
+        // Stop if we've hit the max for this category
+        if (maxUses > 0 && currentUsage >= maxUses) {
+          break;
+        }
+
+        if (!usedCourses.contains(course)) {
           matches.add(course);
-          if (!isCapstone) {
-            // All courses matched by this method, except capstones, are now considered used.
-            // This is the fix for the elective issue.
-            usedCourses.add(course);
+          usedCourses.add(course);
+
+          // INCREMENT HERE: one more course matched in this category
+          categoryUsageCounts.put(categoryName, currentUsage + 1);
+
+          if (matches.size() >= row.getMinCoursesRequired()) {
+            break;
           }
         }
       }
     }
-
-    // After matching all courses, we check if the minimum requirement is met and prune the list.
-    // This handles cases where minCoursesRequired is 0, and we want to capture all courses.
-    if (matches.size() < row.getMinCoursesRequired() && row.getSubstitutions() != null) {
-      for (String sub : row.getSubstitutions()) {
-        if (userCourses.contains(sub) && (isCapstone || !usedCourses.contains(sub))) {
-          matches.add(sub);
-          if (!isCapstone) {
-            usedCourses.add(sub);
-          }
-        }
-      }
-    }
-
-    // Prune the matches list if its size exceeds the minCoursesRequired, unless min is 0.
-    if (row.getMinCoursesRequired() > 0 && matches.size() > row.getMinCoursesRequired()) {
-      return new ArrayList<>(matches.subList(0, row.getMinCoursesRequired()));
-    }
-
     return matches;
   }
 
@@ -364,37 +366,49 @@ public class RequirementChecker {
   /**
    * Calculates the total number of courses required for the concentration. This sums up
    * `minCoursesRequired` for all requirements, dynamically adjusting for conditional overrides.
+   * Only counts categories where minCoursesRequired > 0.
    *
    * @return The total number of courses required.
    */
   public int getTotalCoursesRequired() {
-    int total = 0;
-    Set<String> categoriesConsideredForTotal =
-        new HashSet<>(); // To avoid double counting categories in conditional logic
+    System.out.println("=== CALCULATING TOTAL COURSES REQUIRED ===");
+    System.out.println("Total requirements loaded: " + requirements.size());
 
-    for (RequirementRow row :
-        requirements.values()) { // Iterate over values() because 'requirements' is a Map
+    int total = 0;
+    Set<String> categoriesConsideredForTotal = new HashSet<>();
+
+    System.out.println("Processing all requirements:");
+    for (RequirementRow row : requirements.values()) {
       String categoryName = row.getCategoryName();
       String ruleType = row.getRuleType();
+      int minRequired = row.getMinCoursesRequired();
 
-      // Skip rules that don't directly contribute to the total or are handled conditionally
-      if ("elective_total".equals(ruleType) || "conditional_path".equals(ruleType)) {
+      System.out.println("- Category: " + categoryName +
+          ", RuleType: " + ruleType +
+          ", MinRequired: " + minRequired +
+          ", DisplayName: '" + row.getDisplayName() + "'");
+
+      // Skip rules that don't directly contribute to the total
+      // Only skip conditional_path, but include elective_total as it represents required courses
+      if ("conditional_path".equals(ruleType)) {
+        System.out.println("  → SKIPPED (conditional_path)");
         continue;
       }
 
-      // If this category is overridden by an active conditional path, skip it for the default sum
+      // CRITICAL FIX: Only count categories where minCoursesRequired > 0
+      if (minRequired <= 0) {
+        System.out.println("  → SKIPPED (minRequired <= 0)");
+        continue;
+      }
+
+      // If this category is overridden by an active conditional path, skip it
       if (categoriesToSkip.contains(categoryName)) {
+        System.out.println("  → SKIPPED (overridden by conditional)");
         continue;
       }
 
-      // If this category is an *alternative* that was activated, and its *overridden* counterpart
-      // hasn't been added yet,
-      // it will be added when we iterate through `activeCategoryAlternatives`.
-      // We explicitly check if it's a value in activeCategoryAlternatives
+      // If this category is an alternative that was activated, handle it separately
       if (activeCategoryAlternatives.containsValue(categoryName)) {
-        // This ensures we count the correct path (either original or alternative) once.
-        // If a category is an alternative for an active conditional, it will be handled
-        // when we sum up activeCategoryAlternatives below. So, skip it in this main loop.
         boolean skipThisInMainLoop = false;
         for (Map.Entry<String, String> entry : activeCategoryAlternatives.entrySet()) {
           if (entry.getValue().equals(categoryName) && categoriesToSkip.contains(entry.getKey())) {
@@ -403,28 +417,36 @@ public class RequirementChecker {
           }
         }
         if (skipThisInMainLoop) {
+          System.out.println("  → SKIPPED (alternative category in main loop)");
           continue;
         }
       }
 
       // Add to total only if it hasn't been explicitly excluded
       if (!categoriesConsideredForTotal.contains(categoryName)) {
-        total += row.getMinCoursesRequired();
+        total += minRequired;
         categoriesConsideredForTotal.add(categoryName);
+        System.out.println("  → ADDED: " + categoryName + " (" + minRequired + " courses) - Running total: " + total);
+      } else {
+        System.out.println("  → SKIPPED (already considered)");
       }
     }
 
-    // Now, add the minCoursesRequired for the actively chosen alternative categories
-    // Ensure we don't double count if the alternative was already part of the initial sum
+    // Add the minCoursesRequired for the actively chosen alternative categories
+    System.out.println("Processing active alternative categories: " + activeCategoryAlternatives);
     for (String altCategoryName : activeCategoryAlternatives.values()) {
-      RequirementRow altRow =
-          requirements.get(altCategoryName); // Use .get() because 'requirements' is a Map
+      RequirementRow altRow = requirements.get(altCategoryName);
       if (altRow != null && !categoriesConsideredForTotal.contains(altCategoryName)) {
-        total += altRow.getMinCoursesRequired();
-        categoriesConsideredForTotal.add(altCategoryName);
+        int altMinRequired = altRow.getMinCoursesRequired();
+        if (altMinRequired > 0) {
+          total += altMinRequired;
+          categoriesConsideredForTotal.add(altCategoryName);
+          System.out.println("  → ADDED ALTERNATIVE: " + altCategoryName + " (" + altMinRequired + " courses) - Running total: " + total);
+        }
       }
     }
 
+    System.out.println("=== FINAL TOTAL COURSES REQUIRED: " + total + " ===");
     return total;
   }
 
