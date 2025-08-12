@@ -40,6 +40,14 @@ function parsePrerequisiteString(prereqStr: string): PrerequisiteRule | null {
 
   // Remove outer brackets
   prereqStr = prereqStr.trim();
+
+  // CSV wraps fields that contain commas in quotes. These quotes can leak
+  // into the tokenization and appear as standalone requirements. Strip a
+  // single pair of wrapping quotes if present.
+  if ((prereqStr.startsWith('"') && prereqStr.endsWith('"')) ||
+      (prereqStr.startsWith("'") && prereqStr.endsWith("'"))) {
+    prereqStr = prereqStr.slice(1, -1).trim();
+  }
   if (prereqStr.startsWith("[") && prereqStr.endsWith("]")) {
     prereqStr = prereqStr.slice(1, -1).trim();
   }
@@ -69,34 +77,36 @@ function parsePrerequisiteString(prereqStr: string): PrerequisiteRule | null {
         currentGroup += char;
       }
     } else if (char === "{") {
+      // Start of a group. Ignore any text that might have appeared
+      // before the first opening brace (e.g., stray quotes).
       braceLevel++;
-      if (braceLevel === 1 && currentGroup.trim()) {
-        // We have content before the brace, save it
-        groups.push(currentGroup.trim());
+      if (braceLevel === 1) {
         currentGroup = "";
+      } else {
+        currentGroup += char;
       }
     } else if (char === "}") {
       braceLevel--;
       if (braceLevel === 0) {
         // End of a group
-        if (currentGroup.trim()) {
-          groups.push(currentGroup.trim());
+        const trimmed = currentGroup.trim();
+        if (trimmed) {
+          groups.push(trimmed);
           currentGroup = "";
         }
         // Skip any comma and whitespace after the closing brace
         while (i + 1 < prereqStr.length && (prereqStr[i + 1] === "," || prereqStr[i + 1] === " ")) {
           i++;
         }
+      } else if (braceLevel > 0) {
+        currentGroup += char;
       }
     } else {
       currentGroup += char;
     }
   }
   
-  // Add any remaining content
-  if (currentGroup.trim()) {
-    groups.push(currentGroup.trim());
-  }
+  // Do not push remaining content outside of braces (e.g., trailing quotes)
 
   if (groups.length === 0) {
     return null;
@@ -113,8 +123,8 @@ function parsePrerequisiteString(prereqStr: string): PrerequisiteRule | null {
     if (courses.length === 1) {
       // Single course - check for concurrent marker (*)
       let course = courses[0];
-      // Remove any remaining brackets from course code
-      course = course.replace(/[\[\]]/g, '').trim();
+      // Remove any remaining brackets/quotes from course code
+      course = course.replace(/[\[\]"]+/g, '').trim();
       const isConcurrent = course.endsWith("*");
       const courseCode = isConcurrent ? course.slice(0, -1).trim() : course;
       
@@ -126,8 +136,8 @@ function parsePrerequisiteString(prereqStr: string): PrerequisiteRule | null {
     } else {
       // Multiple courses in a group = OR condition
       const orChildren: PrerequisiteRule[] = courses.map(course => {
-        // Remove any remaining brackets from course code
-        course = course.replace(/[\[\]]/g, '').trim();
+        // Remove any remaining brackets/quotes from course code
+        course = course.replace(/[\[\]"]+/g, '').trim();
         const isConcurrent = course.endsWith("*");
         const courseCode = isConcurrent ? course.slice(0, -1).trim() : course;
         return {
