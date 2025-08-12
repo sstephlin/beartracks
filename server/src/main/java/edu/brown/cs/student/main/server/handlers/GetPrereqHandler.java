@@ -49,7 +49,8 @@ public class GetPrereqHandler implements Route {
       out.put("hasPrereqs", true);
 
       // Create structured data for box-based display
-      Map<String, Object> structuredData = convertTreeToDisplayFormat(prereqTree, semesterKey, courseToSemester);
+      Map<String, Object> structuredData =
+          convertTreeToDisplayFormat(prereqTree, semesterKey, courseToSemester);
 
       // Also create readable display text as backup
       String readableText = formatPrereqsForDisplay(prereqTree, semesterKey, courseToSemester, 0);
@@ -59,19 +60,23 @@ public class GetPrereqHandler implements Route {
 
       // Add summary with enhanced status information
       PrereqStatus status = checkOverallStatus(prereqTree, semesterKey, courseToSemester);
-      out.put("overallStatus", status.satisfied ? "All prerequisites satisfied" : "Prerequisites not met");
+      out.put(
+          "overallStatus",
+          status.satisfied ? "All prerequisites satisfied" : "Prerequisites not met");
       out.put("summary", status.summary);
 
       // Add detailed completion information for frontend
-      out.put("completionDetails", generateCompletionDetails(prereqTree, semesterKey, courseToSemester));
+      out.put(
+          "completionDetails",
+          generateCompletionDetails(prereqTree, semesterKey, courseToSemester));
     }
 
     response.type("application/json");
     return Utils.toMoshiJson(out);
   }
 
-  private String formatPrereqsForDisplay(PrereqTreeNode node, String targetSemester,
-      Map<String, String> courseToSemester, int depth) {
+  private String formatPrereqsForDisplay(
+      PrereqTreeNode node, String targetSemester, Map<String, String> courseToSemester, int depth) {
     StringBuilder result = new StringBuilder();
     String indent = "  ".repeat(depth);
 
@@ -95,11 +100,17 @@ public class GetPrereqHandler implements Route {
       // Format the course line
       String status = satisfied ? "✅" : "❌";
       String concurrentText = isConcurrent ? " (can be taken concurrently)" : "";
-      String completionText = prereqSemester != null ?
-          " - Completed in " + prereqSemester : " - Not completed";
+      String completionText =
+          prereqSemester != null ? " - Completed in " + prereqSemester : " - Not completed";
 
-      result.append(indent).append(status).append(" ").append(lookupCode)
-          .append(concurrentText).append(completionText).append("\n");
+      result
+          .append(indent)
+          .append(status)
+          .append(" ")
+          .append(lookupCode)
+          .append(concurrentText)
+          .append(completionText)
+          .append("\n");
 
     } else {
       // This is an AND/OR node
@@ -113,7 +124,13 @@ public class GetPrereqHandler implements Route {
         // Add connecting word between children if needed
         if (i < node.children.size() - 1) {
           String connectionWord = node.type == PrereqTreeNode.Type.AND ? "AND" : "OR";
-          result.append(indent).append("  ").append("--- ").append(connectionWord).append(" ---").append("\n");
+          result
+              .append(indent)
+              .append("  ")
+              .append("--- ")
+              .append(connectionWord)
+              .append(" ---")
+              .append("\n");
         }
       }
     }
@@ -121,11 +138,12 @@ public class GetPrereqHandler implements Route {
     return result.toString();
   }
 
-  private PrereqStatus checkOverallStatus(PrereqTreeNode node, String targetSemester,
-      Map<String, String> courseToSemester) {
+  private PrereqStatus checkOverallStatus(
+      PrereqTreeNode node, String targetSemester, Map<String, String> courseToSemester) {
     List<String> missing = new ArrayList<>();
     List<String> completed = new ArrayList<>();
-    boolean satisfied = checkNodeSatisfied(node, targetSemester, courseToSemester, missing, completed);
+    boolean satisfied =
+        checkNodeSatisfied(node, targetSemester, courseToSemester, missing, completed);
 
     StringBuilder summary = new StringBuilder();
     if (!completed.isEmpty()) {
@@ -138,9 +156,12 @@ public class GetPrereqHandler implements Route {
     return new PrereqStatus(satisfied, summary.toString());
   }
 
-  private boolean checkNodeSatisfied(PrereqTreeNode node, String targetSemester,
+  private boolean checkNodeSatisfied(
+      PrereqTreeNode node,
+      String targetSemester,
       Map<String, String> courseToSemester,
-      List<String> missing, List<String> completed) {
+      List<String> missing,
+      List<String> completed) {
     if (node.isLeaf()) {
       String prereqCode = node.courseCode.toUpperCase();
       String lookupCode = prereqCode.replace("*", "");
@@ -180,7 +201,8 @@ public class GetPrereqHandler implements Route {
           List<String> childMissing = new ArrayList<>();
           List<String> childCompleted = new ArrayList<>();
 
-          if (checkNodeSatisfied(child, targetSemester, courseToSemester, childMissing, childCompleted)) {
+          if (checkNodeSatisfied(
+              child, targetSemester, courseToSemester, childMissing, childCompleted)) {
             satisfied = true;
             completed.addAll(childCompleted);
             break; // For OR, we only need one satisfied
@@ -253,11 +275,9 @@ public class GetPrereqHandler implements Route {
     return result;
   }
 
-  /**
-   * Generate detailed completion information for enhanced frontend display
-   */
-  private Map<String, Object> generateCompletionDetails(PrereqTreeNode node, String targetSemester,
-      Map<String, String> courseToSemester) {
+  /** Generate detailed completion information for enhanced frontend display */
+  private Map<String, Object> generateCompletionDetails(
+      PrereqTreeNode node, String targetSemester, Map<String, String> courseToSemester) {
     Map<String, Object> details = new HashMap<>();
 
     List<Map<String, Object>> allCourses = new ArrayList<>();
@@ -265,23 +285,24 @@ public class GetPrereqHandler implements Route {
 
     details.put("allCourses", allCourses);
 
-    long completedCount = allCourses.stream()
-        .mapToLong(course -> (Boolean) course.get("satisfied") ? 1L : 0L)
-        .sum();
+    long completedCount =
+        allCourses.stream().mapToLong(course -> (Boolean) course.get("satisfied") ? 1L : 0L).sum();
 
     details.put("completedCount", completedCount);
     details.put("totalCount", allCourses.size());
-    details.put("completionPercentage", allCourses.isEmpty() ? 100.0 :
-        (double) completedCount / allCourses.size() * 100.0);
+    details.put(
+        "completionPercentage",
+        allCourses.isEmpty() ? 100.0 : (double) completedCount / allCourses.size() * 100.0);
 
     return details;
   }
 
-  /**
-   * Recursively collect all individual course requirements
-   */
-  private void collectAllCourses(PrereqTreeNode node, String targetSemester,
-      Map<String, String> courseToSemester, List<Map<String, Object>> allCourses) {
+  /** Recursively collect all individual course requirements */
+  private void collectAllCourses(
+      PrereqTreeNode node,
+      String targetSemester,
+      Map<String, String> courseToSemester,
+      List<Map<String, Object>> allCourses) {
     if (node.isLeaf()) {
       String prereqCode = node.courseCode.toUpperCase();
       String lookupCode = prereqCode.replace("*", "");
