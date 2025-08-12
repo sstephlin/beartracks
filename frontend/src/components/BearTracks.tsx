@@ -4,6 +4,7 @@ import Carousel from "./Carousel";
 import { Trash2 } from "lucide-react";
 import "../styles/BearTracks.css";
 import { useUser } from "@clerk/clerk-react";
+import { sessionStorageUtils } from "../utils/sessionStorageUtils";
 
 // this defines the props for the BearTracks component
 interface BearTracksProps {
@@ -107,13 +108,21 @@ export default function BearTracks(props: BearTracksProps) {
   };
 
   async function handleViewCount(value: string) {
-    await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/store-view?uid=${uid}&view=${value}`,
-      {
-        method: "POST",
-      }
-    );
     setViewCount(value);
+    
+    if (!uid) {
+      // Save to session storage for unsigned users
+      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+      sessionData.viewCount = value;
+      sessionStorageUtils.saveSessionData(sessionData);
+    } else {
+      await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/store-view?uid=${uid}&view=${value}`,
+        {
+          method: "POST",
+        }
+      );
+    }
   }
 
   return (

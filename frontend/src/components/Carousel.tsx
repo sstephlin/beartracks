@@ -6,6 +6,7 @@ import { CourseItem } from "../types";
 import { useUser } from "@clerk/clerk-react";
 import { checkPrereqs } from "../utils/prereqUtils";
 import { sessionStorageUtils } from "../utils/sessionStorageUtils";
+import { concentrationUtils } from "../utils/concentrationUtils";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
 import RightClickComponent from "./RightClick.tsx";
@@ -168,7 +169,15 @@ export default function Carousel({
   // all these useEffects relate to a section in the backend
   useEffect(() => {
     const fetchCapstones = async () => {
-      if (!user?.id) return;
+      if (!user?.id) {
+        // For non-signed-in users, use local capstone data
+        const sessionData = sessionStorageUtils.getSessionData();
+        const concentration = sessionData?.concentration || "Computer Science Sc.B.";
+        const requirements = concentrationUtils.getRequirements(concentration);
+        const capstoneCourses = requirements.requirements_options["Capstone"] || [];
+        setCapstoneCodes(new Set(capstoneCourses));
+        return;
+      }
       try {
         const res = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/check-capstones?uid=${user.id}`
@@ -184,12 +193,38 @@ export default function Carousel({
     fetchCapstones();
   }, [user?.id]);
 
+  // Update capstone codes when concentration changes for non-signed-in users
+  useEffect(() => {
+    if (!user?.id) {
+      const handleStorageChange = () => {
+        const sessionData = sessionStorageUtils.getSessionData();
+        const concentration = sessionData?.concentration || "Computer Science Sc.B.";
+        const requirements = concentrationUtils.getRequirements(concentration);
+        const capstoneCourses = requirements.requirements_options["Capstone"] || [];
+        setCapstoneCodes(new Set(capstoneCourses));
+      };
+
+      // Listen for storage events (changes from other tabs/windows)
+      window.addEventListener('storage', handleStorageChange);
+      
+      // Also check periodically for changes in the same tab
+      const interval = setInterval(() => {
+        handleStorageChange();
+      }, 1000);
+
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        clearInterval(interval);
+      };
+    }
+  }, [user?.id]);
+
   useEffect(() => {
     const fetchData = async () => {
       if (!user?.id) {
         // Load from session storage if user is not signed in
         const sessionData = sessionStorageUtils.getSessionData();
-        if (sessionData) {
+        if (sessionData && sessionData.semesters && Object.keys(sessionData.semesters).length > 0) {
           const { courses: sessionCourses, semesters, capstoneId } = sessionData;
           
           // Restore box selections and IDs
@@ -197,11 +232,18 @@ export default function Carousel({
           setBoxIds(newBoxIds);
           setBoxSelections(semesters);
           setUsedSemesters(Object.values(semesters));
-          setCourses(sessionCourses);
+          setCourses(sessionCourses || []);
           
           if (capstoneId) {
             setCapstoneCourseId(capstoneId);
           }
+        } else {
+          // If no session data, create default 1 box for new users
+          // This gives them 1 semester box + the add semester box
+          setBoxIds(["1"]);
+          setBoxSelections({});
+          setUsedSemesters([]);
+          setCourses([]);
         }
         return;
       }
@@ -942,7 +984,15 @@ export default function Carousel({
   }, []);
   useEffect(() => {
     const getView = async () => {
-      if (!user?.id) return;
+      if (!user?.id) {
+        // Load from session storage for unsigned users
+        const sessionData = sessionStorageUtils.getSessionData();
+        if (sessionData?.viewCount) {
+          setViewCount(sessionData.viewCount);
+        }
+        return;
+      }
+      
       try {
         const res = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/get-view?uid=${user.id}`

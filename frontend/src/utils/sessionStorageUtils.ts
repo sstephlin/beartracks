@@ -6,6 +6,9 @@ export interface SessionData {
   courses: CourseItem[];
   semesters: { [boxId: string]: string };
   capstoneId?: string;
+  concentration?: string;
+  expandedSidebar?: boolean;
+  viewCount?: string;
 }
 
 export const sessionStorageUtils = {
@@ -40,7 +43,7 @@ export const sessionStorageUtils = {
       const sessionData = sessionStorageUtils.getSessionData();
       if (!sessionData) return false;
 
-      const { courses, semesters, capstoneId } = sessionData;
+      const { courses, semesters, capstoneId, concentration, expandedSidebar, viewCount } = sessionData;
 
       // First, add all semesters
       for (const semester of Object.values(semesters)) {
@@ -74,6 +77,30 @@ export const sessionStorageUtils = {
             method: "POST",
           });
         }
+      }
+
+      // Transfer concentration if it exists
+      if (concentration) {
+        await fetch(
+          `${backendUrl}/store-concentration?uid=${userId}&concentration=${concentration}`,
+          { method: "POST" }
+        );
+      }
+      
+      // Transfer expanded sidebar state if it exists
+      if (expandedSidebar !== undefined) {
+        await fetch(
+          `${backendUrl}/store-expanded?uid=${userId}&expanded=${expandedSidebar}`,
+          { method: "POST" }
+        );
+      }
+      
+      // Transfer view count if it exists
+      if (viewCount) {
+        await fetch(
+          `${backendUrl}/store-view?uid=${userId}&view=${viewCount}`,
+          { method: "POST" }
+        );
       }
 
       // Clear session storage after successful transfer
