@@ -148,6 +148,97 @@ export default function Carousel({
     }
   };
 
+  // NEW: Handle deletion of manual courses (frontend only)
+  const handleDeleteManualCourse = (courseId: string) => {
+    setCourses((prev) => {
+      const updated = prev.filter((c) => c.id !== courseId);
+
+      // Recheck prerequisites after removal for remaining courses
+      setTimeout(() => {
+        recheckAllPrereqs(updated);
+      }, 100);
+
+      return updated;
+    });
+
+    console.log("Deleted manual course (frontend only):", courseId);
+    setRefreshSidebar((prev) => !prev);
+  };
+
+  // handling deleting semesters (backend courses)
+  const handleDeleteCourse = async (
+    courseId: string,
+    courseCode: string,
+    semesterId: string
+  ) => {
+    if (!user?.id) return;
+
+    const [term, year] = semesterId.split(" ");
+
+    try {
+      // Remove from backend
+      await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/remove-course?uid=${
+          user.id
+        }&code=${encodeURIComponent(courseCode)}&term=${term}&year=${year}`,
+        { method: "POST" }
+      );
+
+      // Remove from state
+      setCourses((prev) => {
+        const updated = prev.filter((c) => c.id !== courseId);
+
+        // Recheck prerequisites after removal
+        setTimeout(() => {
+          recheckAllPrereqs(updated);
+        }, 100);
+
+        return updated;
+      });
+
+      console.log("Deleted course:", courseCode);
+      setRefreshSidebar((prev) => !prev);
+    } catch (err) {
+      console.error("Failed to delete course:", err);
+    }
+  };
+
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    courseId: string;
+    courseCode: string;
+    courseTitle: string;
+    semesterId: string;
+  } | null>(null);
+
+  const handleDeleteRequest = (
+    courseId: string,
+    courseCode: string,
+    courseTitle: string,
+    semesterId: string
+  ) => {
+    setDeleteConfirmation({
+      courseId,
+      courseCode,
+      courseTitle,
+      semesterId,
+    });
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteConfirmation) {
+      handleDeleteCourse(
+        deleteConfirmation.courseId,
+        deleteConfirmation.courseCode,
+        deleteConfirmation.semesterId
+      );
+      setDeleteConfirmation(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmation(null);
+  };
+
   // all these useEffects relate to a section in the backend
   useEffect(() => {
     const fetchCapstones = async () => {
@@ -273,6 +364,7 @@ export default function Carousel({
       console.error("Network error while adding semester:", err);
     }
   };
+
   useEffect(() => {
     const handleClickOutside = () => {
       setMenuPosition(null);
@@ -287,8 +379,7 @@ export default function Carousel({
     const fetchCourseAvailability = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}
-/get-all-course-availability`
+          `${import.meta.env.VITE_BACKEND_URL}/get-all-course-availability`
         );
         const data = await response.json();
 
@@ -809,6 +900,7 @@ export default function Carousel({
       behavior: "smooth",
     });
   };
+
   const boxRef = useRef<HTMLDivElement>(null);
   const [boxWidth, setBoxWidth] = useState<number>(270);
 
@@ -831,6 +923,7 @@ export default function Carousel({
       );
     };
   }, []);
+
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -851,6 +944,7 @@ export default function Carousel({
       window.removeEventListener("resize", updateScrollButtons);
     };
   }, []);
+
   useEffect(() => {
     const getView = async () => {
       if (!user?.id) return;
@@ -934,6 +1028,9 @@ export default function Carousel({
                     }
                     onDragEnd={handleCourseDragEnd}
                     onSaveCourse={handleSaveCourse}
+                    onDeleteCourse={handleDeleteRequest}
+                    onDeleteManualCourse={handleDeleteManualCourse} // NEW: Pass the manual delete handler
+                    userId={user?.id}
                     isManual={course.isManual ?? false}
                     prereqsMet={course.prereqsMet ?? false}
                     isCapstone={course.isCapstone ?? false}
@@ -990,6 +1087,7 @@ export default function Carousel({
       >
         ›
       </button>
+
       {showManualAddDisclaimer && (
         <div
           className="disclaimer-overlay"
@@ -1012,9 +1110,47 @@ export default function Carousel({
             <p>
               You're manually adding a course. Enter course code and course name
               for Non-CS courses, and hit Enter to save this manually-added
-              course. Please not that these courses will not be tracked on your
+              course. Please note that these courses will not be tracked on your
               concentration progression meter.
             </p>
+          </div>
+        </div>
+      )}
+
+      {deleteConfirmation && (
+        <div
+          className="confirmation-overlay"
+          onClick={(e) => {
+            if (
+              (e.target as HTMLElement).classList.contains(
+                "confirmation-overlay"
+              )
+            ) {
+              handleCancelDelete();
+            }
+          }}
+        >
+          <div className="confirmation-box">
+            <h2>Delete Course</h2>
+            <p>
+              Are you sure you want to delete{" "}
+              <strong>{deleteConfirmation.courseTitle}</strong> (
+              {deleteConfirmation.courseCode})?
+            </p>
+            <div className="confirmation-buttons">
+              <button
+                className="confirm-delete-btn"
+                onClick={handleConfirmDelete}
+              >
+                Yes, Delete
+              </button>
+              <button
+                className="cancel-delete-btn"
+                onClick={handleCancelDelete}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -163,7 +163,7 @@
 }
 
 .display-view {
-  position: relative;
+  /* position: fixed; */
   display: flex;
   border: 2px solid #1e3a8a;
   border-radius: 9999px;
@@ -173,9 +173,7 @@
   background-color: white;
   align-items: center;
   right: 0;
-  margin-right: 10px;
-  position: absolute;
-  right: 120px;
+  margin-top: 20px;
 }
 
 .display-view-button {

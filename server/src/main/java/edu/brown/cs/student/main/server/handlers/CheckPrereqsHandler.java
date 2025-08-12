@@ -43,6 +43,7 @@ public class CheckPrereqsHandler implements Route {
     out.put("response_type", "success");
     out.put("prereqsMet", prereqsMet);
     response.type("application/json");
+    //    System.out.println("handle check prereqs"+out);
     return Utils.toMoshiJson(out);
   }
 }

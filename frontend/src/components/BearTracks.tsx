@@ -124,19 +124,6 @@ export default function BearTracks(props: BearTracksProps) {
     >
       <div className="searchbar-and-trash-container">
         <SearchBar onSearch={handleSearch} />
-        <div className="display-view">
-          {["2", "4"].map((value) => (
-            <button
-              key={value}
-              onClick={() => handleViewCount(value)}
-              className={`display-view-button ${
-                viewCount === value ? "selected" : "unselected"
-              }`}
-            >
-              {value}
-            </button>
-          ))}
-        </div>
       </div>
 
       {searchResults.length > 0 && (
@@ -170,15 +157,19 @@ export default function BearTracks(props: BearTracksProps) {
         expanded={props.expanded}
         setRefreshSidebar={props.setRefreshSidebar}
       />
-      <div
-        className="enlarged-trash-zone"
-        onDragOver={handleDragOverTrashZone}
-        onDragLeave={() => setIsTrashHovered(false)}
-        onDrop={handleDropToTrash}
-      >
-        <div className={`trash-area ${isTrashHovered ? "trash-hovered" : ""}`}>
-          <Trash2 size={48} strokeWidth={2} />
-        </div>
+
+      <div className="display-view">
+        {["2", "4"].map((value) => (
+          <button
+            key={value}
+            onClick={() => handleViewCount(value)}
+            className={`display-view-button ${
+              viewCount === value ? "selected" : "unselected"
+            }`}
+          >
+            {value}
+          </button>
+        ))}
       </div>
     </div>
   );
