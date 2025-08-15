@@ -1,10 +1,11 @@
 .search-bar-input {
   padding: 8px 12px;
-  font-size: 16px;
+  font-size: 14px;
   border-radius: 50px;
-  border: 1px solid #213333;
-  width: 30vw;
-  background-color: #d6dadd;
+  border: 1px solid #2c4444;
+  width: 100%;
+  min-width: 350px;
+  background-color: #e9ecef;
   color: black;
   font-family: "khula";
 }

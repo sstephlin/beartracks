@@ -89,8 +89,9 @@
   height: 18vh;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 12px;
-  margin-top: 8px;
+  padding: 12px 20px;
+  margin: 0;
+  border-bottom: 1px solid #e2e2e2;
 }
 .search-results-container.collapsed {
   width: 90vw;
