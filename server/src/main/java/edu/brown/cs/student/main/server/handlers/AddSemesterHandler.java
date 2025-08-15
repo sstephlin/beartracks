@@ -26,6 +26,7 @@ public class AddSemesterHandler implements Route {
         throw new IllegalArgumentException("Missing required query parameters");
       }
 
+      // Use 4-digit year format consistently
       String semesterKey = term + " " + year;
 
       // Create a semester document with a dummy field so that getAllUserCourses function can

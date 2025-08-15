@@ -33,7 +33,13 @@ public class CourseCSVParser {
     // columns[0] = "Course Code"
     // columns[1] = "Course Name"
     // columns[2..] = each semester label
-    String[] semesters = Arrays.copyOfRange(columns, 2, columns.length);
+    String[] rawSemesters = Arrays.copyOfRange(columns, 2, columns.length);
+
+    // Convert semester headers to 4-digit year format
+    String[] semesters = new String[rawSemesters.length];
+    for (int i = 0; i < rawSemesters.length; i++) {
+      semesters[i] = convertTo4DigitYear(rawSemesters[i]);
+    }
 
     String line;
     while ((line = br.readLine()) != null) {
@@ -94,6 +100,33 @@ public class CourseCSVParser {
     //    System.out.println(catalog.getPrereqTree("CSCI 1230", "Fall 22"));
 
     return catalog;
+  }
+
+  /**
+   * Convert semester string to 4-digit year format. Handles: "Fall 21" -> "Fall 2021", "Spring
+   * 2022" -> "Spring 2022"
+   */
+  private static String convertTo4DigitYear(String semester) {
+    if (semester == null || semester.isEmpty()) {
+      return semester;
+    }
+
+    String[] parts = semester.split(" ");
+    if (parts.length != 2) {
+      return semester;
+    }
+
+    String term = parts[0];
+    String year = parts[1];
+
+    // If year is 2-digit, convert to 4-digit
+    if (year.length() == 2) {
+      int yearNum = Integer.parseInt(year);
+      // Assume years 00-99 map to 2000-2099
+      year = "20" + year;
+    }
+
+    return term + " " + year;
   }
 
   /**

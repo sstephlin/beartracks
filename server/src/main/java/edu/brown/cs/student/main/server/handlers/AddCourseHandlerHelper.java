@@ -80,8 +80,9 @@ public class AddCourseHandlerHelper {
     String[] aParts = a.split(" ");
     String[] bParts = b.split(" ");
 
-    int yearA = Integer.parseInt(aParts[1]);
-    int yearB = Integer.parseInt(bParts[1]);
+    // Parse years - they could be 2-digit or 4-digit
+    int yearA = parseYear(aParts[1]);
+    int yearB = parseYear(bParts[1]);
 
     if (yearA != yearB) return Integer.compare(yearA, yearB);
 
@@ -89,5 +90,14 @@ public class AddCourseHandlerHelper {
     int termB = Arrays.asList(terms).indexOf(bParts[0]);
 
     return Integer.compare(termA, termB);
+  }
+
+  private static int parseYear(String year) {
+    if (year.length() == 2) {
+      // Convert 2-digit to 4-digit (assuming 20xx)
+      return 2000 + Integer.parseInt(year);
+    } else {
+      return Integer.parseInt(year);
+    }
   }
 }

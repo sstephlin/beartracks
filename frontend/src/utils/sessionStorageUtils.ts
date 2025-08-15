@@ -9,6 +9,7 @@ export interface SessionData {
   concentration?: string;
   expandedSidebar?: boolean;
   viewCount?: string;
+  manualCourses?: string[];
 }
 
 export const sessionStorageUtils = {
@@ -45,7 +46,7 @@ export const sessionStorageUtils = {
 
       const { courses, semesters, capstoneId, concentration, expandedSidebar, viewCount } = sessionData;
 
-      // First, add all semesters
+      // First, add all semesters  
       for (const semester of Object.values(semesters)) {
         const [term, year] = semester.split(" ");
         await fetch(

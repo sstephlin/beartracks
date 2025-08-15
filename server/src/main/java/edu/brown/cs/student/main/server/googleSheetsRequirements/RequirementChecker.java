@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class RequirementChecker {
-  // CRITICAL FIX: Change from List to Map for requirements for direct lookup
   private final Map<String, RequirementRow> requirements;
   private final Set<String> userCourses;
   private final Set<String> usedCourses =
@@ -27,6 +27,7 @@ public class RequirementChecker {
   // Maps the category being overridden to its active alternative (e.g., "Intro Part 2 Standard" ->
   // "Intro Part 2 - Alt")
   private final Map<String, String> activeCategoryAlternatives = new HashMap<>();
+  private final Map<String, Integer> categoryUsageCounts = new HashMap<>();
 
   // CRITICAL FIX: Constructor signature to match how it's called and how 'requirements' is used
   public RequirementChecker(
@@ -44,7 +45,7 @@ public class RequirementChecker {
    * Checks all defined concentration requirements against the user's courses.
    *
    * @return A map where keys are requirement category names and values are lists of courses that
-   *     satisfy that requirement.
+   * satisfy that requirement.
    */
   public Map<String, List<String>> checkAllRequirements() {
 
@@ -72,17 +73,19 @@ public class RequirementChecker {
       }
     }
 
+    // NEW: Separate course_list and pattern_match rules to enforce processing order
+    Map<String, RequirementRow> courseListRules = new LinkedHashMap<>();
+    Map<String, RequirementRow> patternMatchRules = new LinkedHashMap<>();
+
     // PHASE 2: Process standard requirements
     // Exclude 'conditional_path' rules themselves, categories that are overridden by active
     // conditionals,
     // and rules that depend on other categories ('from_category', 'elective_total').
     // Also explicitly exclude any categories that are themselves marked as 'alternativeCategory'
     // because they will be processed specifically in Phase 3 if their parent conditional is active.
-    // Iterate over values() because 'requirements' is now a Map
     for (RequirementRow row : requirements.values()) {
       String categoryName = row.getCategoryName();
       String ruleType = row.getRuleType();
-      List<String> matched = new ArrayList<>();
 
       // Skip rules that are:
       // 1. A conditional_path definition itself.
@@ -101,14 +104,12 @@ public class RequirementChecker {
 
       switch (ruleType) {
         case "course_list":
-          matched = matchCourseList(row);
+          courseListRules.put(categoryName, row);
           break;
         case "pattern_match":
-          matched = matchPattern(row);
+          patternMatchRules.put(categoryName, row);
           break;
         default:
-          // Handle other specific rule types here if they are simple and not conditional
-          // It's good practice to log or throw an error for unhandled types
           System.err.println(
               "Warning: Unhandled rule type for category: "
                   + categoryName
@@ -116,7 +117,18 @@ public class RequirementChecker {
                   + ruleType);
           break;
       }
-      intermediateResults.put(categoryName, matched);
+    }
+
+    // NEW: Process course_list rules first
+    for (RequirementRow row : courseListRules.values()) {
+      List<String> matched = matchCourseList(row);
+      intermediateResults.put(row.getCategoryName(), matched);
+    }
+
+    // NEW: Process pattern_match rules second
+    for (RequirementRow row : patternMatchRules.values()) {
+      List<String> matched = matchPattern(row);
+      intermediateResults.put(row.getCategoryName(), matched);
     }
 
     // PHASE 3: Process the active alternative categories
@@ -136,7 +148,7 @@ public class RequirementChecker {
           case "pattern_match":
             matchedAlt = matchPattern(altRow);
             break;
-            // Add other rule types if your alternative categories can be of those types
+          // Add other rule types if your alternative categories can be of those types
           default:
             System.err.println(
                 "Warning: Unhandled rule type for alternative category: "
@@ -202,31 +214,39 @@ public class RequirementChecker {
    * @param row The RequirementRow containing the course list and min courses required.
    * @return A list of courses that matched.
    */
+  /**
+   * Matches user courses against a list of accepted courses.
+   *
+   * @param row The RequirementRow containing the course list and min courses required.
+   * @return A list of courses that matched.
+   */
+  /**
+   * Debug version of matchCourseList with detailed logging
+   */
   private List<String> matchCourseList(RequirementRow row) {
     List<String> matches = new ArrayList<>();
-    boolean isCapstone = "Capstone".equalsIgnoreCase(row.getCategoryName());
+    String categoryName = row.getCategoryName();
 
-    for (String course : row.getAcceptedCourses()) {
-      if (userCourses.contains(course) && (isCapstone || !usedCourses.contains(course))) {
-        matches.add(course);
-        if (!isCapstone) { // Capstone courses are not added to `usedCourses` for general
-          // consumption
-          usedCourses.add(course);
-        }
-        if (matches.size() >= row.getMinCoursesRequired()) {
+    Integer maxUsesObj = row.getMaxUses();
+    int maxUses = (maxUsesObj == null) ? -1 : maxUsesObj.intValue();
+
+    for (String course : userCourses) {
+      if (row.getAcceptedCourses().contains(course)) {
+        // Check current usage for this category
+        int currentUsage = categoryUsageCounts.getOrDefault(categoryName, 0);
+
+        // Stop if we've hit the max for this category
+        if (maxUses > 0 && currentUsage >= maxUses) {
           break;
         }
-      }
-    }
 
-    // Handle substitutions if not enough courses are matched
-    if (matches.size() < row.getMinCoursesRequired() && row.getSubstitutions() != null) {
-      for (String sub : row.getSubstitutions()) {
-        if (userCourses.contains(sub) && (isCapstone || !usedCourses.contains(sub))) {
-          matches.add(sub);
-          if (!isCapstone) {
-            usedCourses.add(sub);
-          }
+        if (!usedCourses.contains(course)) {
+          matches.add(course);
+          usedCourses.add(course);
+
+          // INCREMENT HERE: one more course matched in this category
+          categoryUsageCounts.put(categoryName, currentUsage + 1);
+
           if (matches.size() >= row.getMinCoursesRequired()) {
             break;
           }
@@ -249,7 +269,7 @@ public class RequirementChecker {
     for (String course : userCourses) {
       if ((isCapstone || !usedCourses.contains(course))
           && row.getAcceptedCourses().stream()
-              .anyMatch(pattern -> course.matches(convertPatternToRegex(pattern)))) {
+          .anyMatch(pattern -> course.matches(convertPatternToRegex(pattern)))) {
         matches.add(course);
         if (!isCapstone) {
           usedCourses.add(course);
@@ -281,8 +301,15 @@ public class RequirementChecker {
 
     List<String> matchedCourses = new ArrayList<>();
     for (String course : sourceMatches) {
+      // This check ensures courses already consumed by their primary category are not re-counted
+      // here.
+      // This aligns with "should not be counted again for Elective: Extra Systems"
       if (!usedCourses.contains(course)) {
         matchedCourses.add(course);
+        // Do NOT add to usedCourses here, as these courses are consumed by their original category.
+        // If they were added here, it would double-count them for 'usedCourses' tracking.
+        // 'from_category' typically reuses the *identification* of courses, not consume them again
+        // for usedCourses.
         if (matchedCourses.size() >= row.getMinCoursesRequired()) {
           break;
         }
@@ -336,24 +363,97 @@ public class RequirementChecker {
   }
 
   /**
-   * Calculates the total number of courses required for the concentration, only including rows that
-   * have a display name.
+   * Calculates the total number of courses required for the concentration. This sums up
+   * `minCoursesRequired` for all requirements, dynamically adjusting for conditional overrides.
+   * Only counts categories where minCoursesRequired > 0.
    *
    * @return The total number of courses required.
    */
   public int getTotalCoursesRequired() {
+    System.out.println("=== CALCULATING TOTAL COURSES REQUIRED ===");
+    System.out.println("Total requirements loaded: " + requirements.size());
+
     int total = 0;
+    Set<String> categoriesConsideredForTotal = new HashSet<>();
+
+    System.out.println("Processing all requirements:");
     for (RequirementRow row : requirements.values()) {
-      // Only count rows that have a display name
-      if (row.getDisplayName() != null && !row.getDisplayName().isEmpty()) {
-        total += row.getMinCoursesRequired();
+      String categoryName = row.getCategoryName();
+      String ruleType = row.getRuleType();
+      int minRequired = row.getMinCoursesRequired();
+
+      System.out.println("- Category: " + categoryName +
+          ", RuleType: " + ruleType +
+          ", MinRequired: " + minRequired +
+          ", DisplayName: '" + row.getDisplayName() + "'");
+
+      // Skip rules that don't directly contribute to the total
+      // Only skip conditional_path, but include elective_total as it represents required courses
+      if ("conditional_path".equals(ruleType)) {
+        System.out.println("  → SKIPPED (conditional_path)");
+        continue;
+      }
+
+      // CRITICAL FIX: Only count categories where minCoursesRequired > 0
+      if (minRequired <= 0) {
+        System.out.println("  → SKIPPED (minRequired <= 0)");
+        continue;
+      }
+
+      // If this category is overridden by an active conditional path, skip it
+      if (categoriesToSkip.contains(categoryName)) {
+        System.out.println("  → SKIPPED (overridden by conditional)");
+        continue;
+      }
+
+      // If this category is an alternative that was activated, handle it separately
+      if (activeCategoryAlternatives.containsValue(categoryName)) {
+        boolean skipThisInMainLoop = false;
+        for (Map.Entry<String, String> entry : activeCategoryAlternatives.entrySet()) {
+          if (entry.getValue().equals(categoryName) && categoriesToSkip.contains(entry.getKey())) {
+            skipThisInMainLoop = true;
+            break;
+          }
+        }
+        if (skipThisInMainLoop) {
+          System.out.println("  → SKIPPED (alternative category in main loop)");
+          continue;
+        }
+      }
+
+      // Add to total only if it hasn't been explicitly excluded
+      if (!categoriesConsideredForTotal.contains(categoryName)) {
+        total += minRequired;
+        categoriesConsideredForTotal.add(categoryName);
+        System.out.println("  → ADDED: " + categoryName + " (" + minRequired + " courses) - Running total: " + total);
+      } else {
+        System.out.println("  → SKIPPED (already considered)");
       }
     }
+
+    // Add the minCoursesRequired for the actively chosen alternative categories
+    System.out.println("Processing active alternative categories: " + activeCategoryAlternatives);
+    for (String altCategoryName : activeCategoryAlternatives.values()) {
+      RequirementRow altRow = requirements.get(altCategoryName);
+      if (altRow != null && !categoriesConsideredForTotal.contains(altCategoryName)) {
+        int altMinRequired = altRow.getMinCoursesRequired();
+        if (altMinRequired > 0) {
+          total += altMinRequired;
+          categoriesConsideredForTotal.add(altCategoryName);
+          System.out.println("  → ADDED ALTERNATIVE: " + altCategoryName + " (" + altMinRequired + " courses) - Running total: " + total);
+        }
+      }
+    }
+
+    System.out.println("=== FINAL TOTAL COURSES REQUIRED: " + total + " ===");
     return total;
   }
 
   private String convertPatternToRegex(String pattern) {
-    String escapedPattern = Pattern.quote(pattern);
-    return escapedPattern.replace("xxx", "\\E\\d{3,4}\\Q");
+    // Escapes special regex characters if they are part of the literal course name
+    // and then replaces 'xxx' with digits.
+    // Example: "CSCI 2xxx" -> "CSCI 2\d{3,4}"
+    String escapedPattern = Pattern.quote(pattern); // Escapes literal characters
+    return escapedPattern.replace("xxx", "\\E\\d{3,4}\\Q"); // \\E and \\Q for literal block
   }
 }

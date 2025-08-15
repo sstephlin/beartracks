@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/SemesterBox.css";
+import { getPrerequisiteDataFromCSV } from "../utils/prerequisiteLoader";
 
 // these are all the props for the CourseDrag component
 interface CourseDragProps {
@@ -9,7 +10,7 @@ interface CourseDragProps {
   semesterId: string;
   isEmpty: boolean;
   isEditing?: boolean;
-  prereqsMet: boolean;
+  prereqsMet?: boolean;
   isCapstone: boolean;
   showCapstoneCheckbox?: boolean;
   onDeleteCourse?: (
@@ -116,10 +117,14 @@ export default function CourseDrag({
       return;
     }
 
-    if (!userId) {
-      console.error("User ID is required to fetch prerequisites");
-      return;
-    }
+    console.log(
+      "Prerequisites button clicked for:",
+      courseCode,
+      "userId:",
+      userId,
+      "isManual:",
+      isManual
+    );
 
     // Get both button position and mouse position for debugging
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -168,47 +173,83 @@ export default function CourseDrag({
 
     console.log("Final popup position:", { top, left });
     setPopupPosition({ top, left });
-
     setLoading(true);
-    const [term, year] = semesterId.split(" ");
-    const url = `${
-      import.meta.env.VITE_BACKEND_URL
-    }/get-prereqs?uid=${userId}&code=${encodeURIComponent(
-      courseCode
-    )}&term=${term}&year=${year}`;
 
     try {
-      const response = await fetch(url);
+      let data: PrerequisiteResponse;
 
-      if (!response.ok) {
-        console.error("HTTP error:", response.status, response.statusText);
-        setLoading(false);
-        return;
-      }
-
-      const responseText = await response.text();
-
-      if (!responseText.trim()) {
-        console.error("Empty response received");
-        setLoading(false);
-        return;
-      }
-
-      let data;
-      try {
-        data = JSON.parse(responseText.trim());
-      } catch (parseError) {
-        console.error("Failed to parse JSON:", parseError);
-        setLoading(false);
-        return;
-      }
-
-      if (data.response_type === "success") {
-        setPrerequisiteData(data);
-        setShowPrereqPopup(true);
+      if (!userId) {
+        // Use CSV-based prerequisite checking for non-signed-in users
+        data = await getPrerequisiteDataFromCSV(courseCode, semesterId);
+        console.log("CSV prerequisite data:", data);
       } else {
-        console.error("Failed to fetch prerequisites:", data.error);
+        // Use backend for signed-in users
+        const [term, year] = semesterId.split(" ");
+        const url = `${
+          import.meta.env.VITE_BACKEND_URL
+        }/get-prereqs?uid=${userId}&code=${encodeURIComponent(
+          courseCode
+        )}&term=${term}&year=${year}`;
+
+        console.log("Fetching prerequisites from URL:", url);
+
+        const response = await fetch(url);
+        console.log("Response status:", response.status);
+
+        if (!response.ok) {
+          console.error("HTTP error:", response.status, response.statusText);
+          setLoading(false);
+          return;
+        }
+
+        const responseText = await response.text();
+        console.log(
+          "Raw response (first 100 chars):",
+          responseText.substring(0, 100)
+        );
+        console.log(
+          "Response starts with:",
+          JSON.stringify(responseText.substring(0, 10))
+        );
+
+        if (!responseText.trim()) {
+          console.error("Empty response received");
+          setLoading(false);
+          return;
+        }
+
+        try {
+          data = JSON.parse(responseText.trim());
+        } catch (parseError) {
+          console.error("Failed to parse JSON:", parseError);
+          console.error("Full response text:", responseText);
+          console.error("Response length:", responseText.length);
+          // Show character codes for debugging
+          for (let i = 0; i < Math.min(20, responseText.length); i++) {
+            console.log(
+              `Char ${i}: '${responseText[i]}' (code: ${responseText.charCodeAt(
+                i
+              )})`
+            );
+          }
+          setLoading(false);
+          return;
+        }
+
+        // Only check response_type for backend responses
+        if (
+          userId &&
+          (data as any).response_type &&
+          (data as any).response_type !== "success"
+        ) {
+          console.error("Failed to fetch prerequisites:", (data as any).error);
+          setLoading(false);
+          return;
+        }
       }
+
+      setPrerequisiteData(data);
+      setShowPrereqPopup(true);
     } catch (err) {
       console.error("Error fetching prerequisites:", err);
     } finally {
@@ -418,7 +459,13 @@ export default function CourseDrag({
       className={`
         course-slot 
         ${isEmpty ? "empty" : "filled"} 
-        ${!isEmpty ? (prereqsMet ? "pr-met" : "pr-not-met") : ""}
+        ${
+          !isEmpty && prereqsMet !== undefined
+            ? prereqsMet
+              ? "pr-met"
+              : "pr-not-met"
+            : ""
+        }
         ${isCapstone ? "capstone" : ""}
         ${isManual ? "manual-course" : "search-course"}
       `}
