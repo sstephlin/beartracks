@@ -5,6 +5,9 @@ import { CourseDragManager } from "../hooks/CourseDragManager";
 import { CourseItem } from "../types";
 import { useUser } from "@clerk/clerk-react";
 import { checkPrereqs } from "../utils/prereqUtils";
+import { sessionStorageUtils } from "../utils/sessionStorageUtils";
+import { concentrationUtils } from "../utils/concentrationUtils";
+import { loadPrerequisites } from "../utils/prerequisiteLoader";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
 import RightClickComponent from "./RightClick.tsx";
@@ -20,25 +23,25 @@ interface CarouselProps {
 
 // defines all the possible semesters the user can select
 const allSemesters = [
-  "Fall 21",
-  "Winter 21",
-  "Spring 22",
-  "Summer 22",
-  "Fall 22",
-  "Winter 22",
-  "Spring 23",
-  "Summer 23",
-  "Fall 23",
-  "Winter 23",
-  "Spring 24",
-  "Summer 24",
-  "Fall 24",
-  "Winter 24",
-  "Spring 25",
-  "Summer 25",
-  "Fall 25",
-  "Winter 25",
-  "Spring 26",
+  "Fall 2021",
+  "Winter 2021",
+  "Spring 2022",
+  "Summer 2022",
+  "Fall 2022",
+  "Winter 2022",
+  "Spring 2023",
+  "Summer 2023",
+  "Fall 2023",
+  "Winter 2023",
+  "Spring 2024",
+  "Summer 2024",
+  "Fall 2024",
+  "Winter 2024",
+  "Spring 2025",
+  "Summer 2025",
+  "Fall 2025",
+  "Winter 2025",
+  "Spring 2026",
 ];
 
 // defines all of the constant variables
@@ -73,6 +76,8 @@ export default function Carousel({
   }>({});
   const [capstoneCourseId, setCapstoneCourseId] = useState<string | null>(null);
   const [manualDisclaimerShown, setManualDisclaimerShown] = useState(false);
+  const [hasTransferredSessionData, setHasTransferredSessionData] = useState(false);
+  const [manualCourseCodes, setManualCourseCodes] = useState<Set<string>>(new Set());
 
   const {
     handleDragStart,
@@ -108,10 +113,34 @@ export default function Carousel({
 
   const handleToggleCapstone = async (courseId: string, checked: boolean) => {
     const course = courses.find((c) => c.id === courseId);
-    if (!course || !user?.id) return;
+    if (!course) return;
 
     const { courseCode, semesterId } = course;
     const [term, year] = semesterId.split(" ");
+    
+    // Update state regardless of sign-in status
+    setCourses((prev) =>
+      prev.map((c) => ({
+        ...c,
+        isCapstone: checked && c.id === courseId,
+      }))
+    );
+
+    // update which course is being capstoned
+    const newCapstoneId = checked ? courseId : null;
+    setCapstoneCourseId(newCapstoneId);
+    
+    if (!user?.id) {
+      // Save to session storage if user is not signed in
+      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: boxSelections };
+      sessionData.courses = courses.map((c) => ({
+        ...c,
+        isCapstone: checked && c.id === courseId,
+      }));
+      sessionData.capstoneId = newCapstoneId || undefined;
+      sessionStorageUtils.saveSessionData(sessionData);
+      return;
+    }
 
     try {
       const query = new URLSearchParams({
@@ -133,25 +162,136 @@ export default function Carousel({
         }
       );
 
-      setCourses((prev) =>
-        prev.map((c) => ({
-          ...c,
-          isCapstone: checked && c.id === courseId,
-        }))
-      );
-
-      // update which course is being capstoned
-      const newCapstoneId = checked ? courseId : null;
-      setCapstoneCourseId(newCapstoneId);
+      // State already updated above
     } catch (err) {
       console.error("Failed to update capstone:", err);
     }
   };
 
+  // NEW: Handle deletion of manual courses (frontend only)
+  const handleDeleteManualCourse = (courseId: string) => {
+    setCourses((prev) => {
+      const updated = prev.filter((c) => c.id !== courseId);
+
+      // Recheck prerequisites after removal for remaining courses
+      setTimeout(() => {
+        recheckAllPrereqs(updated);
+      }, 100);
+
+      return updated;
+    });
+
+    console.log("Deleted manual course (frontend only):", courseId);
+    setRefreshSidebar((prev) => !prev);
+  };
+
+  // handling deleting semesters (backend courses)
+  const handleDeleteCourse = async (
+    courseId: string,
+    courseCode: string,
+    semesterId: string
+  ) => {
+    const [term, year] = semesterId.split(" ");
+
+    // Handle local delete for non-signed-in users
+    if (!user?.id) {
+      setCourses((prev) => {
+        const updated = prev.filter((c) => c.id !== courseId);
+
+        // Persist to session storage
+        const sessionData =
+          sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+        sessionData.courses = updated;
+        sessionStorageUtils.saveSessionData(sessionData);
+
+        // Recheck prerequisites locally
+        setTimeout(() => {
+          recheckAllPrereqs(updated);
+        }, 100);
+
+        return updated;
+      });
+
+      setRefreshSidebar((prev) => !prev);
+      return;
+    }
+
+    try {
+      // Remove from backend
+      await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/remove-course?uid=${
+          user.id
+        }&code=${encodeURIComponent(courseCode)}&term=${term}&year=${year}`,
+        { method: "POST" }
+      );
+
+      // Remove from state
+      setCourses((prev) => {
+        const updated = prev.filter((c) => c.id !== courseId);
+
+        // Recheck prerequisites after removal
+        setTimeout(() => {
+          recheckAllPrereqs(updated);
+        }, 100);
+
+        return updated;
+      });
+
+      console.log("Deleted course:", courseCode);
+      setRefreshSidebar((prev) => !prev);
+    } catch (err) {
+      console.error("Failed to delete course:", err);
+    }
+  };
+
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    courseId: string;
+    courseCode: string;
+    courseTitle: string;
+    semesterId: string;
+  } | null>(null);
+
+  const handleDeleteRequest = (
+    courseId: string,
+    courseCode: string,
+    courseTitle: string,
+    semesterId: string
+  ) => {
+    setDeleteConfirmation({
+      courseId,
+      courseCode,
+      courseTitle,
+      semesterId,
+    });
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteConfirmation) {
+      handleDeleteCourse(
+        deleteConfirmation.courseId,
+        deleteConfirmation.courseCode,
+        deleteConfirmation.semesterId
+      );
+      setDeleteConfirmation(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmation(null);
+  };
+
   // all these useEffects relate to a section in the backend
   useEffect(() => {
     const fetchCapstones = async () => {
-      if (!user?.id) return;
+      if (!user?.id) {
+        // For non-signed-in users, use local capstone data
+        const sessionData = sessionStorageUtils.getSessionData();
+        const concentration = sessionData?.concentration || "Computer Science Sc.B.";
+        const requirements = concentrationUtils.getRequirements(concentration);
+        const capstoneCourses = requirements.requirements_options["Capstone"] || [];
+        setCapstoneCodes(new Set(capstoneCourses));
+        return;
+      }
       try {
         const res = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/check-capstones?uid=${user.id}`
@@ -167,9 +307,105 @@ export default function Carousel({
     fetchCapstones();
   }, [user?.id]);
 
+  // Update capstone codes when concentration changes for non-signed-in users
+  useEffect(() => {
+    if (!user?.id) {
+      const handleStorageChange = () => {
+        const sessionData = sessionStorageUtils.getSessionData();
+        const concentration = sessionData?.concentration || "Computer Science Sc.B.";
+        const requirements = concentrationUtils.getRequirements(concentration);
+        const capstoneCourses = requirements.requirements_options["Capstone"] || [];
+        setCapstoneCodes(new Set(capstoneCourses));
+      };
+
+      // Listen for storage events (changes from other tabs/windows)
+      window.addEventListener('storage', handleStorageChange);
+      
+      // Also check periodically for changes in the same tab
+      const interval = setInterval(() => {
+        handleStorageChange();
+      }, 1000);
+
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        clearInterval(interval);
+      };
+    }
+  }, [user?.id]);
+
+  // Load manual course codes from localStorage for signed-in users
+  useEffect(() => {
+    const storedManualCourses = localStorage.getItem('manualCourseCodes');
+    if (storedManualCourses) {
+      try {
+        setManualCourseCodes(new Set(JSON.parse(storedManualCourses)));
+      } catch (e) {
+        console.error('Failed to parse manual course codes:', e);
+      }
+    }
+  }, []);
+
+  // Save manual course codes to localStorage whenever they change
+  useEffect(() => {
+    if (manualCourseCodes.size > 0) {
+      localStorage.setItem('manualCourseCodes', JSON.stringify(Array.from(manualCourseCodes)));
+    }
+  }, [manualCourseCodes]);
+
   useEffect(() => {
     const fetchData = async () => {
-      if (!user?.id) return;
+      if (!user?.id) {
+        // Load prerequisites CSV for non-signed-in users
+        await loadPrerequisites();
+        
+        // Load from session storage if user is not signed in
+        const sessionData = sessionStorageUtils.getSessionData();
+        if (sessionData && sessionData.semesters && Object.keys(sessionData.semesters).length > 0) {
+          const { courses: sessionCourses, semesters, capstoneId, manualCourses } = sessionData;
+          
+          // Restore box selections and IDs
+          const newBoxIds = Object.keys(semesters);
+          setBoxIds(newBoxIds);
+          setBoxSelections(semesters);
+          setUsedSemesters(Object.values(semesters));
+          setCourses(sessionCourses || []);
+          
+          if (capstoneId) {
+            setCapstoneCourseId(capstoneId);
+          }
+          
+          if (manualCourses) {
+            setManualCourseCodes(new Set(manualCourses));
+          }
+          
+          // Trigger prerequisite checking for non-signed-in users after loading courses
+          if (sessionCourses && sessionCourses.length > 0) {
+            console.log("Triggering prereq check for session courses:", sessionCourses.length);
+            setTimeout(() => {
+              recheckAllPrereqs(sessionCourses);
+            }, 100);
+          }
+        } else {
+          // If no session data, create default 1 box for new users
+          // This gives them 1 semester box + the add semester box
+          setBoxIds(["1"]);
+          setBoxSelections({});
+          setUsedSemesters([]);
+          setCourses([]);
+        }
+        return;
+      }
+
+      // Transfer session data to backend if user just signed in
+      if (!hasTransferredSessionData) {
+        const transferred = await sessionStorageUtils.transferSessionDataToBackend(
+          user.id,
+          import.meta.env.VITE_BACKEND_URL
+        );
+        if (transferred) {
+          setHasTransferredSessionData(true);
+        }
+      }
 
       try {
         const response = await fetch(
@@ -209,20 +445,26 @@ export default function Carousel({
           );
 
           for (const [semester, courseList] of sortedSemesters) {
+            // Using 4-digit years consistently
+            
             const boxId = `${boxCounter}`;
             newBoxIds.push(boxId);
             newBoxSelections[boxId] = semester;
             newUsedSemesters.push(semester);
 
             for (const course of courseList) {
+              // Check if this course is in our manual courses set
+              const isManualCourse = manualCourseCodes.has(course.courseCode);
+              
               newCourses.push({
                 id: `course-${Date.now()}-${Math.random()}`,
                 courseCode: course.courseCode,
                 title: course.title,
                 semesterId: semester,
                 isEditing: false,
-                prereqsMet: course.prereqsMet ?? false,
+                prereqsMet: isManualCourse ? undefined : (course.prereqsMet ?? undefined),
                 isCapstone: course.isCapstone ?? false,
+                isManual: isManualCourse,
               });
             }
             boxCounter++;
@@ -236,6 +478,11 @@ export default function Carousel({
           if (savedCapstone) {
             setCapstoneCourseId(savedCapstone.id);
           }
+          
+          // Recheck prerequisites after loading courses
+          setTimeout(() => {
+            recheckAllPrereqs(newCourses);
+          }, 100);
         } else {
           console.error("Backend error:", data.error);
         }
@@ -245,7 +492,7 @@ export default function Carousel({
     };
 
     fetchData();
-  }, [user?.id]);
+  }, [user?.id, hasTransferredSessionData]);
 
   // this gets all unused semesters
   const getAvailableSemesters = () =>
@@ -258,7 +505,16 @@ export default function Carousel({
     setSelectedSemester(semester);
 
     const [term, year] = semester.split(" ");
-    if (!user?.id || !term || !year) return;
+    
+    if (!user?.id) {
+      // Save to session storage if user is not signed in
+      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+      sessionData.semesters[boxId] = semester;
+      sessionStorageUtils.saveSessionData(sessionData);
+      return;
+    }
+    
+    if (!term || !year) return;
 
     try {
       await fetch(
@@ -273,6 +529,7 @@ export default function Carousel({
       console.error("Network error while adding semester:", err);
     }
   };
+
   useEffect(() => {
     const handleClickOutside = () => {
       setMenuPosition(null);
@@ -287,8 +544,7 @@ export default function Carousel({
     const fetchCourseAvailability = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}
-/get-all-course-availability`
+          `${import.meta.env.VITE_BACKEND_URL}/get-all-course-availability`
         );
         const data = await response.json();
 
@@ -302,6 +558,14 @@ export default function Carousel({
 
     fetchCourseAvailability();
   }, []);
+
+  // No longer need year conversion - using 4-digit years everywhere
+
+  // Helper to convert just the year part
+  // No longer needed - using 4-digit years everywhere
+  // const yearTo2Digit = (year: string): string => {
+  //   return year.length === 4 ? year.slice(-2) : year;
+  // };
 
   const checkCourseOfferedInSemester = async (
     courseCode: string,
@@ -363,7 +627,7 @@ export default function Carousel({
     semesterId: string
   ) => {
     e.preventDefault();
-    if (!user?.id || !draggedCourse) return;
+    if (!draggedCourse) return;
 
     // checks if course already exists in target semester
     const courseAlreadyExists = courses.some(
@@ -401,7 +665,6 @@ export default function Carousel({
 
   const handleSemesterDrop = async (e: React.DragEvent, semesterId: string) => {
     e.preventDefault();
-    if (!user?.id) return;
 
     const searchCourseRaw = e.dataTransfer.getData("searchCourse");
     const courseId = e.dataTransfer.getData("courseId");
@@ -447,12 +710,13 @@ export default function Carousel({
         return;
       }
 
-      // checks the prerequisites first
+      // checks the prerequisites first (works for signed-in and unsigned users)
       const met = await checkPrereqs(
-        user.id,
+        user?.id ?? "",
         searchCourse.courseCode,
         semesterId
       );
+      console.log(`Prereq check for ${searchCourse.courseCode}: ${met}`);
 
       const isEligible = capstoneCodes.has(searchCourse.courseCode);
 
@@ -462,7 +726,7 @@ export default function Carousel({
         title: searchCourse.courseName,
         semesterId,
         isEditing: false,
-        prereqsMet: met,
+        prereqsMet: met ?? undefined,
         isCapstone: false,
         showCapstoneCheckbox: isEligible,
       };
@@ -476,43 +740,68 @@ export default function Carousel({
         });
       });
 
-      // syncs with the backend for search results
-      const [term, year] = semesterId.split(" ");
-      try {
-        await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/add-course?uid=${
-            user.id
-          }&code=${encodeURIComponent(
-            searchCourse.courseCode
-          )}&title=${encodeURIComponent(
-            searchCourse.courseName
-          )}&term=${term}&year=${year}`,
-          { method: "POST" }
-        );
+      // Save to session storage if user is not signed in
+      if (!user?.id) {
+        const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+        sessionData.courses = updatedCourses;
+        sessionStorageUtils.saveSessionData(sessionData);
 
-        console.log("Added course from search to semester in backend");
-
-        // checks if the added course affects any other courses in the same semester (for concurrent prereqs)
+        // Re-check any courses in this same semester that might depend on the
+        // newly added concurrent prerequisite
         for (const course of updatedCourses) {
-          if (course.semesterId === semesterId && course.id !== newCourse.id) {
+          if (course.semesterId === semesterId && course.id !== newCourse.id && !course.isManual) {
             const prereqsMet = await checkPrereqs(
-              user.id,
+              user?.id ?? "",
               course.courseCode,
               course.semesterId
             );
             setPrereqStatus(course.id, prereqsMet);
-            console.log(
-              `Rechecked concurrent course ${course.courseCode} after adding ${newCourse.courseCode}: prereqsMet=${prereqsMet}`
-            );
           }
         }
 
-        // rechecks all prerequisites with the updated courses
+        // Global recheck to keep everything consistent
         setTimeout(() => {
           recheckAllPrereqs(updatedCourses);
         }, 100);
-      } catch (err) {
-        console.error("Failed to sync course to backend:", err);
+      } else {
+        // syncs with the backend for search results
+        const [term, year] = semesterId.split(" ");
+            try {
+          await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/add-course?uid=${
+              user.id
+            }&code=${encodeURIComponent(
+              searchCourse.courseCode
+            )}&title=${encodeURIComponent(
+              searchCourse.courseName
+            )}&term=${term}&year=${year}`,
+            { method: "POST" }
+          );
+
+          console.log("Added course from search to semester in backend");
+
+          // checks if the added course affects any other courses in the same semester (for concurrent prereqs)
+          for (const course of updatedCourses) {
+            if (course.semesterId === semesterId && course.id !== newCourse.id && !course.isManual) {
+              const prereqsMet = await checkPrereqs(
+                user.id,
+                course.courseCode,
+                course.semesterId
+              );
+              setPrereqStatus(course.id, prereqsMet);
+              console.log(
+                `Rechecked concurrent course ${course.courseCode} after adding ${newCourse.courseCode}: prereqsMet=${prereqsMet}`
+              );
+            }
+          }
+
+          // rechecks all prerequisites with the updated courses
+          setTimeout(() => {
+            recheckAllPrereqs(updatedCourses);
+          }, 100);
+        } catch (err) {
+          console.error("Failed to sync course to backend:", err);
+        }
       }
     } else if (courseId || (courseCode && sourceSemesterId)) {
       // moves existing courses between semesters
@@ -554,87 +843,133 @@ export default function Carousel({
       // gets the new semester info
       const [newTerm, newYear] = semesterId.split(" ");
 
-      try {
-        // deletes the course from the old semester
-        await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/remove-course?uid=${
-            user.id
-          }&code=${encodeURIComponent(
-            course.courseCode
-          )}&term=${oldTerm}&year=${oldYear}`,
-          { method: "POST" }
-        );
+      if (!user?.id) {
+        // Save to session storage if user is not signed in
+        const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+        sessionData.courses = updatedCourses;
+        sessionStorageUtils.saveSessionData(sessionData);
 
-        console.log("Removed course from old semester in backend");
-
-        // adds the course to the new semester
-        await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/add-course?uid=${
-            user.id
-          }&code=${encodeURIComponent(
-            course.courseCode
-          )}&title=${encodeURIComponent(
-            course.title
-          )}&term=${newTerm}&year=${newYear}`,
-          { method: "POST" }
-        );
-
-        console.log("Added course to new semester in backend");
-
-        // checks prerequisites for the moved course
-        const prereqsMet = await checkPrereqs(
-          user.id,
-          course.courseCode,
-          semesterId
-        );
-
-        // updates the moved course's prereq status
-        for (const c of updatedCourses) {
-          if (c.id === course.id) {
-            setPrereqStatus(c.id, prereqsMet);
-            console.log(
-              `Updated moved course ${c.courseCode} prereqsMet=${prereqsMet}`
-            );
-            break;
-          }
+        // Check prerequisites for the moved course (local CSV flow)
+        if (!course.isManual) {
+          const movedPrereqsMet = await checkPrereqs(
+            "",
+            course.courseCode,
+            semesterId
+          );
+          setPrereqStatus(course.id, movedPrereqsMet);
         }
 
-        // checks if this affects any other courses in the source semester (losing a concurrent prereq)
+        // Re-evaluate courses impacted in the source semester (lost concurrent prereq)
         for (const c of updatedCourses) {
-          if (c.semesterId === sourceSemesterId && c.id !== course.id) {
+          if (c.semesterId === sourceSemesterId && c.id !== course.id && !c.isManual) {
             const coursePrereqsMet = await checkPrereqs(
-              user.id,
+              "",
               c.courseCode,
               c.semesterId
             );
             setPrereqStatus(c.id, coursePrereqsMet);
-            console.log(
-              `🔄 Rechecked course in source semester ${c.courseCode} after removal: prereqsMet=${coursePrereqsMet}`
-            );
           }
         }
 
-        // checks if this affects any other courses in the target semester (gaining a concurrent prereq)
+        // Re-evaluate courses impacted in the target semester (gained concurrent prereq)
         for (const c of updatedCourses) {
-          if (c.semesterId === semesterId && c.id !== course.id) {
+          if (c.semesterId === semesterId && c.id !== course.id && !c.isManual) {
             const coursePrereqsMet = await checkPrereqs(
-              user.id,
+              "",
               c.courseCode,
               c.semesterId
             );
             setPrereqStatus(c.id, coursePrereqsMet);
-            console.log(
-              `Rechecked course in target semester ${c.courseCode} after addition: prereqsMet=${coursePrereqsMet}`
-            );
           }
         }
 
-        // checks again all prerequisites to ensure everything is consistent
+        // Final pass to keep everything consistent
         setTimeout(() => {
           recheckAllPrereqs(updatedCourses);
         }, 100);
-      } catch (err) {
-        console.error("Failed to sync course move to backend:", err);
+      } else {
+        try {
+          // deletes the course from the old semester
+          await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/remove-course?uid=${
+              user.id
+            }&code=${encodeURIComponent(
+              course.courseCode
+            )}&term=${oldTerm}&year=${oldYear}`,
+            { method: "POST" }
+          );
+
+          console.log("Removed course from old semester in backend");
+
+          // adds the course to the new semester
+          await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/add-course?uid=${
+              user.id
+            }&code=${encodeURIComponent(
+              course.courseCode
+            )}&title=${encodeURIComponent(
+              course.title
+            )}&term=${newTerm}&year=${newYear}`,
+            { method: "POST" }
+          );
+
+          console.log("Added course to new semester in backend");
+
+          // checks prerequisites for the moved course
+          const prereqsMet = await checkPrereqs(
+            user.id,
+            course.courseCode,
+            semesterId
+          );
+
+          // updates the moved course's prereq status
+          for (const c of updatedCourses) {
+            if (c.id === course.id) {
+              setPrereqStatus(c.id, prereqsMet);
+              console.log(
+                `Updated moved course ${c.courseCode} prereqsMet=${prereqsMet}`
+              );
+              break;
+            }
+          }
+
+          // checks if this affects any other courses in the source semester (losing a concurrent prereq)
+          for (const c of updatedCourses) {
+            if (c.semesterId === sourceSemesterId && c.id !== course.id && !c.isManual) {
+              const coursePrereqsMet = await checkPrereqs(
+                user.id,
+                c.courseCode,
+                c.semesterId
+              );
+              setPrereqStatus(c.id, coursePrereqsMet);
+              console.log(
+                `🔄 Rechecked course in source semester ${c.courseCode} after removal: prereqsMet=${coursePrereqsMet}`
+              );
+            }
+          }
+
+          // checks if this affects any other courses in the target semester (gaining a concurrent prereq)
+          for (const c of updatedCourses) {
+            if (c.semesterId === semesterId && c.id !== course.id && !c.isManual) {
+              const coursePrereqsMet = await checkPrereqs(
+                user.id,
+                c.courseCode,
+                c.semesterId
+              );
+              setPrereqStatus(c.id, coursePrereqsMet);
+              console.log(
+                `Rechecked course in target semester ${c.courseCode} after addition: prereqsMet=${coursePrereqsMet}`
+              );
+            }
+          }
+
+          // checks again all prerequisites to ensure everything is consistent
+          setTimeout(() => {
+            recheckAllPrereqs(updatedCourses);
+          }, 100);
+        } catch (err) {
+          console.error("Failed to sync course move to backend:", err);
+        }
       }
     }
     setRefreshSidebar((prev) => !prev);
@@ -651,11 +986,14 @@ export default function Carousel({
       return;
     }
 
+    // Track this as a manual course
+    setManualCourseCodes((prev) => new Set([...prev, courseCode]));
+
     // gets the updated state using a promise
     const updatedCourses = await new Promise<CourseItem[]>((resolve) => {
       setCourses((prev) => {
         const updated = prev.map((c) =>
-          c.id === id ? { ...c, courseCode, title, isEditing: false } : c
+          c.id === id ? { ...c, courseCode, title, isEditing: false, isManual: true } : c
         );
         resolve(updated);
         return updated;
@@ -663,7 +1001,16 @@ export default function Carousel({
     });
 
     const course = updatedCourses.find((c) => c.id === id);
-    if (!course || !user?.id) return;
+    if (!course) return;
+
+    if (!user?.id) {
+      // Save to session storage if user is not signed in
+      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: boxSelections };
+      sessionData.courses = updatedCourses;
+      sessionData.manualCourses = Array.from(manualCourseCodes);
+      sessionStorageUtils.saveSessionData(sessionData);
+      return;
+    }
 
     const [term, year] = course.semesterId.split(" ");
 
@@ -696,29 +1043,35 @@ export default function Carousel({
       const { courseCode, semesterId } = e.detail;
 
       console.log("removeCourse event received:", courseCode, semesterId);
-      if (!user?.id) return;
 
       setCourses((prev) => {
         const updated = prev.filter(
           (c) => !(c.courseCode === courseCode && c.semesterId === semesterId)
         );
 
-        // checks all prerequisites after course removal but uses the updated courses array
-        // that no longer includes the deleted course
-        setTimeout(() => {
-          if (recheckAllPrereqs) {
-            recheckAllPrereqs(updated);
-          } else {
-            updated.forEach(async (course) => {
-              const result = await checkPrereqs(
-                user!.id,
-                course.courseCode,
-                course.semesterId
-              );
-              setPrereqStatus(course.id, result);
-            });
-          }
-        }, 100);
+        // Save to session storage if user is not signed in
+        if (!user?.id) {
+          const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: boxSelections };
+          sessionData.courses = updated;
+          sessionStorageUtils.saveSessionData(sessionData);
+        } else {
+          // checks all prerequisites after course removal but uses the updated courses array
+          // that no longer includes the deleted course
+          setTimeout(() => {
+            if (recheckAllPrereqs) {
+              recheckAllPrereqs(updated);
+            } else {
+              updated.forEach(async (course) => {
+                const result = await checkPrereqs(
+                  user!.id,
+                  course.courseCode,
+                  course.semesterId
+                );
+                setPrereqStatus(course.id, result);
+              });
+            }
+          }, 100);
+        }
 
         return updated;
       });
@@ -726,7 +1079,7 @@ export default function Carousel({
 
     window.addEventListener("removeCourse", handleRemoveCourse);
     return () => window.removeEventListener("removeCourse", handleRemoveCourse);
-  }, [user?.id, setPrereqStatus, recheckAllPrereqs]);
+  }, [user?.id, setPrereqStatus, recheckAllPrereqs, boxSelections]);
 
   const handleAddRightSemester = (currSemNum: string) => {
     let newID = "";
@@ -761,7 +1114,28 @@ export default function Carousel({
 
   const handleDeleteSemester = async (boxIdToDelete: string) => {
     const semester = boxSelections[boxIdToDelete];
-    if (!semester || !user?.id) return;
+    if (!semester) return;
+
+    // Update state for both signed-in and non-signed-in users
+    setBoxIds((prev) => prev.filter((id) => id !== boxIdToDelete));
+    setUsedSemesters((prev) => prev.filter((s) => s !== semester));
+    
+    const newBoxSelections = { ...boxSelections };
+    delete newBoxSelections[boxIdToDelete];
+    setBoxSelections(newBoxSelections);
+    
+    // removes all courses from that semester
+    const updatedCourses = courses.filter((c) => c.semesterId !== semester);
+    setCourses(updatedCourses);
+    
+    if (!user?.id) {
+      // Save to session storage if user is not signed in
+      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+      sessionData.courses = updatedCourses;
+      sessionData.semesters = newBoxSelections;
+      sessionStorageUtils.saveSessionData(sessionData);
+      return;
+    }
 
     const [term, year] = semester.split(" ");
 
@@ -776,19 +1150,7 @@ export default function Carousel({
       );
       const data = await res.json();
 
-      if (data.response_type === "success") {
-        setBoxIds((prev) => prev.filter((id) => id !== boxIdToDelete));
-        setUsedSemesters((prev) => prev.filter((s) => s !== semester));
-
-        setBoxSelections((prev) => {
-          const newSelections = { ...prev };
-          delete newSelections[boxIdToDelete];
-          return newSelections;
-        });
-
-        // removes all courses from that semester
-        setCourses((prev) => prev.filter((c) => c.semesterId !== semester));
-      } else {
+      if (data.response_type !== "success") {
         console.error("Delete failed:", data.error);
       }
     } catch (err) {
@@ -809,6 +1171,7 @@ export default function Carousel({
       behavior: "smooth",
     });
   };
+
   const boxRef = useRef<HTMLDivElement>(null);
   const [boxWidth, setBoxWidth] = useState<number>(270);
 
@@ -831,6 +1194,7 @@ export default function Carousel({
       );
     };
   }, []);
+
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -851,9 +1215,18 @@ export default function Carousel({
       window.removeEventListener("resize", updateScrollButtons);
     };
   }, []);
+
   useEffect(() => {
     const getView = async () => {
-      if (!user?.id) return;
+      if (!user?.id) {
+        // Load from session storage for unsigned users
+        const sessionData = sessionStorageUtils.getSessionData();
+        if (sessionData?.viewCount) {
+          setViewCount(sessionData.viewCount);
+        }
+        return;
+      }
+      
       try {
         const res = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/get-view?uid=${user.id}`
@@ -934,8 +1307,11 @@ export default function Carousel({
                     }
                     onDragEnd={handleCourseDragEnd}
                     onSaveCourse={handleSaveCourse}
+                    onDeleteCourse={handleDeleteRequest}
+                    onDeleteManualCourse={handleDeleteManualCourse} // NEW: Pass the manual delete handler
+                    userId={user?.id}
                     isManual={course.isManual ?? false}
-                    prereqsMet={course.prereqsMet ?? false}
+                    prereqsMet={course.prereqsMet}
                     isCapstone={course.isCapstone ?? false}
                     showCapstoneCheckbox={capstoneCodes.has(course.courseCode)}
                     onToggleCapstone={handleToggleCapstone}
@@ -953,7 +1329,7 @@ export default function Carousel({
                   addCourse(boxSelections[boxId], undefined, "new", true);
                 }}
               >
-                + New course
+                + New Course
               </button>
             </SemesterBox>
           ))}
@@ -990,6 +1366,7 @@ export default function Carousel({
       >
         ›
       </button>
+
       {showManualAddDisclaimer && (
         <div
           className="disclaimer-overlay"
@@ -1012,9 +1389,47 @@ export default function Carousel({
             <p>
               You're manually adding a course. Enter course code and course name
               for Non-CS courses, and hit Enter to save this manually-added
-              course. Please not that these courses will not be tracked on your
+              course. Please note that these courses will not be tracked on your
               concentration progression meter.
             </p>
+          </div>
+        </div>
+      )}
+
+      {deleteConfirmation && (
+        <div
+          className="confirmation-overlay"
+          onClick={(e) => {
+            if (
+              (e.target as HTMLElement).classList.contains(
+                "confirmation-overlay"
+              )
+            ) {
+              handleCancelDelete();
+            }
+          }}
+        >
+          <div className="confirmation-box">
+            <h2>Delete Course</h2>
+            <p>
+              Are you sure you want to delete{" "}
+              <strong>{deleteConfirmation.courseTitle}</strong> (
+              {deleteConfirmation.courseCode})?
+            </p>
+            <div className="confirmation-buttons">
+              <button
+                className="confirm-delete-btn"
+                onClick={handleConfirmDelete}
+              >
+                Yes, Delete
+              </button>
+              <button
+                className="cancel-delete-btn"
+                onClick={handleCancelDelete}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

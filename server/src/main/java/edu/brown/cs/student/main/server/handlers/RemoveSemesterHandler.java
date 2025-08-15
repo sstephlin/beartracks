@@ -29,6 +29,7 @@ public class RemoveSemesterHandler implements Route {
         throw new IllegalArgumentException("Missing required query parameters");
       }
 
+      // Use 4-digit year format consistently
       String semesterKey = term + " " + year;
 
       Firestore db = FirestoreClient.getFirestore();

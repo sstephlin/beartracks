@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CourseItem } from "../types";
 import { checkPrereqs } from "../utils/prereqUtils";
+import { sessionStorageUtils } from "../utils/sessionStorageUtils";
 // import.meta.env.VITE_BACKEND_URL;
 
 type Course = CourseItem;
@@ -25,35 +26,44 @@ export function CourseDragManager(
   );
 
   const recheckAllPrereqs = async (coursesArg: Course[]) => {
-    if (!uid) return;
-
+    // Now works for both signed-in and non-signed-in users
     const courseToSemesterMap: Record<string, string> = {};
     coursesArg.forEach((course) => {
       courseToSemesterMap[course.courseCode.toUpperCase()] = course.semesterId;
     });
 
     for (const course of coursesArg) {
+      // Skip manual courses - they should not have prerequisite checking
+      if (course.isManual) {
+        console.log(`Skipping prereq check for manual course: ${course.courseCode}`);
+        continue;
+      }
+      
+      // checkPrereqs now handles both signed-in and non-signed-in users
       const result = await checkPrereqs(
-        uid,
+        uid || "",  // Pass empty string if no uid
         course.courseCode,
         course.semesterId
       );
 
       // only update prereq status without syncing to backend during bulk rechecks
-      await updatePrereqStatusLocal(course.id, result);
+      // If result is undefined, leave prereqsMet as undefined
+      if (result !== undefined) {
+        await updatePrereqStatusLocal(course.id, result);
+      }
       console.log(`Rechecking ${course.courseCode}: result=${result}`);
     }
   };
 
   // updates the prereq status locally only
-  const updatePrereqStatusLocal = async (id: string, met: boolean) => {
+  const updatePrereqStatusLocal = async (id: string, met: boolean | undefined) => {
     setCourses((prev) => {
       return prev.map((c) => (c.id === id ? { ...c, prereqsMet: met } : c));
     });
   };
 
   // this is used for syncing with the backend
-  const setPrereqStatus = async (id: string, met: boolean) => {
+  const setPrereqStatus = async (id: string, met: boolean | undefined) => {
     const updatedCourses = await new Promise<Course[]>((resolve) => {
       setCourses((prev) => {
         const updated = prev.map((c) =>
@@ -176,6 +186,8 @@ export function CourseDragManager(
       const [oldTerm, oldYear] = sourceSemesterId.split(" ");
 
       const userId = uid;
+      
+      // Handle backend sync for signed-in users
       if (userId) {
         try {
           // removes from old semester
@@ -199,55 +211,71 @@ export function CourseDragManager(
             )}&term=${newTerm}&year=${newYear}`,
             { method: "POST" }
           );
+        } catch (err) {
+          console.error("Error syncing course move:", err);
+        }
+      } else {
+        // For non-signed-in users, save to session storage
+        sessionStorageUtils.saveSessionData({
+          courses: updatedCourses,
+          semesters: {} // This should be managed at a higher level
+        });
+      }
 
-          // explicitly check prerequisites for the moved course first
-          const movedCourse = updatedCourses.find(
-            (course) =>
-              course.courseCode === courseCode &&
-              course.semesterId === targetSemesterId
+      // Check prerequisites for both signed-in and non-signed-in users
+      try {
+        // explicitly check prerequisites for the moved course first
+        const movedCourse = updatedCourses.find(
+          (course) =>
+            course.courseCode === courseCode &&
+            course.semesterId === targetSemesterId
+        );
+
+        if (movedCourse && !movedCourse.isManual) {
+          const prereqsMet = await checkPrereqs(
+            userId || "",  // Pass empty string if no uid
+            courseCode,
+            targetSemesterId
           );
 
-          if (movedCourse) {
-            const prereqsMet = await checkPrereqs(
-              userId,
-              courseCode,
-              targetSemesterId
-            );
-
-            // update the moved course's prereq status
+          // update the moved course's prereq status if we have data
+          if (prereqsMet !== undefined) {
             await updatePrereqStatusLocal(movedCourse.id, prereqsMet);
+          }
 
-            // find courses that might have the moved course as a prerequisite
-            // and check their prereq status too
-            for (const course of updatedCourses) {
-              if (
-                course.semesterId === targetSemesterId &&
-                course.id !== movedCourse.id
-              ) {
-                const coursePrereqsMet = await checkPrereqs(
-                  userId,
-                  course.courseCode,
-                  course.semesterId
-                );
+          // find courses that might have the moved course as a prerequisite
+          // and check their prereq status too
+          for (const course of updatedCourses) {
+            if (
+              course.semesterId === targetSemesterId &&
+              course.id !== movedCourse.id &&
+              !course.isManual
+            ) {
+              const coursePrereqsMet = await checkPrereqs(
+                userId || "",  // Pass empty string if no uid
+                course.courseCode,
+                course.semesterId
+              );
+              if (coursePrereqsMet !== undefined) {
                 await updatePrereqStatusLocal(course.id, coursePrereqsMet);
               }
             }
           }
-
-          // recheck all other prerequisites that might be affected
-          setTimeout(() => {
-            recheckAllPrereqs(updatedCourses);
-
-            // clears the recently moved courses tracking after prereq check is done
-            setTimeout(() => {
-              setRecentlyMovedCourses(new Set());
-            }, 500);
-          }, 100);
-        } catch (err) {
-          console.error("Error syncing course move:", err);
-          // clears tracking set in case of error
-          setRecentlyMovedCourses(new Set());
         }
+
+        // recheck all other prerequisites that might be affected
+        setTimeout(() => {
+          recheckAllPrereqs(updatedCourses);
+
+          // clears the recently moved courses tracking after prereq check is done
+          setTimeout(() => {
+            setRecentlyMovedCourses(new Set());
+          }, 500);
+        }, 100);
+      } catch (err) {
+        console.error("Error checking prerequisites:", err);
+        // clears tracking set in case of error
+        setRecentlyMovedCourses(new Set());
       }
     }
   };
@@ -262,17 +290,51 @@ export function CourseDragManager(
     source: "search" | "new" = "search",
     isManual: boolean = source === "new"
   ) => {
+    // Check prerequisites for non-manual courses immediately
+    let prereqsMet: boolean | undefined = undefined;
+    if (!isManual && course?.courseCode) {
+      const checkResult = await checkPrereqs(
+        uid || "",  // Pass empty string if no uid
+        course.courseCode,
+        semesterId
+      );
+      // Only set prereqsMet if we have actual data (not undefined)
+      prereqsMet = checkResult;
+    }
+
     const newCourse: CourseItem = {
       id: course?.id ?? crypto.randomUUID(),
       courseCode: course?.courseCode ?? (source === "new" ? "" : "Course Code"),
       title: course?.title ?? (source === "new" ? "" : "Course Title"),
       semesterId,
       isEditing: source === "new" ? true : course?.isEditing ?? false,
-      prereqsMet: true,
+      prereqsMet: isManual ? undefined : prereqsMet,
       isManual,
     };
 
-    setCourses((prev) => [...prev, newCourse]);
+    setCourses((prev) => {
+      const updated = [...prev, newCourse];
+      
+      // Save to session storage if user is not signed in
+      if (!uid) {
+        const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+        sessionData.courses = updated;
+        // Note: semesters should be passed from parent component
+        sessionStorageUtils.saveSessionData(sessionData);
+      }
+      
+      return updated;
+    });
+
+    // After adding the course, recheck all prerequisites if not manual
+    if (!isManual) {
+      setTimeout(() => {
+        setCourses((prev) => {
+          recheckAllPrereqs(prev);
+          return prev;
+        });
+      }, 100);
+    }
   };
 
   const buildSemesterMap = () => {

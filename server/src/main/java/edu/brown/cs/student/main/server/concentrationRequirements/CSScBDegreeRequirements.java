@@ -1,16 +1,18 @@
-//package edu.brown.cs.student.main.server.concentrationRequirements;
+// package edu.brown.cs.student.main.server.concentrationRequirements;
 //
-//import java.util.ArrayList;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
+// import java.util.ArrayList;
+// import java.util.HashMap;
+// import java.util.List;
+// import java.util.Map;
 //
-///**
-// * Static class that stores all the acceptable courses for each requirement. This is only run once,
+/// **
+// * Static class that stores all the acceptable courses for each requirement. This is only run
+// once,
 // * when the server starts.
 // */
-//public class CSScBDegreeRequirements {
-//  // maps name of requirement category to RequirementRule object (which has all the accepted courses
+// public class CSScBDegreeRequirements {
+//  // maps name of requirement category to RequirementRule object (which has all the accepted
+// courses
 //  // for that category)
 //  public static final Map<String, RequirementRule> requirements = new HashMap<>();
 //
@@ -25,9 +27,11 @@
 //    // Intro sequence - early intro course (CSCI 0111, 0150, 0170, 0190)
 //    requirements.put(
 //        "Intro Part 1",
-//        new RequirementRule(List.of("CSCI 0111", "CSCI 0150", "CSCI 0170", "CSCI 0190"), 1, null));
+//        new RequirementRule(List.of("CSCI 0111", "CSCI 0150", "CSCI 0170", "CSCI 0190"), 1,
+// null));
 //
-//    // Intro sequence - cs200. but for cs19, another course numbered 0200 or higher. MANUALLY CHECK
+//    // Intro sequence - cs200. but for cs19, another course numbered 0200 or higher. MANUALLY
+// CHECK
 //    // THIS
 //    requirements.put("Intro Part 2", new RequirementRule(List.of("CSCI 0200"), 1, null));
 //
@@ -65,7 +69,8 @@
 //    // Foundations: Theory
 //    requirements.put(
 //        "Foundations Theory",
-//        new RequirementRule(List.of("CSCI 0500", "CSCI 1010", "CSCI 1550", "CSCI 1570"), 1, null));
+//        new RequirementRule(List.of("CSCI 0500", "CSCI 1010", "CSCI 1550", "CSCI 1570"), 1,
+// null));
 //
 //    // 5 Technical CSCI 1000-level courses (except CSCI 1970, which goes under electives)
 //    requirements.put(
@@ -89,4 +94,4 @@
 //
 //    requirements.put("Capstone", new RequirementRule(allCapstones, 1, null));
 //  }
-//}
+// }

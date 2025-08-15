@@ -24,6 +24,7 @@ public class CheckPrereqsHandler implements Route {
     String courseCode = request.queryParams("code");
     String term = request.queryParams("term");
     String year = request.queryParams("year");
+    // Use 4-digit year format consistently
     String semesterKey = term + " " + year;
 
     Map<String, List<String>> semMap = storageHandler.getAllSemestersAndCourses(uid);
@@ -43,6 +44,7 @@ public class CheckPrereqsHandler implements Route {
     out.put("response_type", "success");
     out.put("prereqsMet", prereqsMet);
     response.type("application/json");
+    //    System.out.println("handle check prereqs"+out);
     return Utils.toMoshiJson(out);
   }
 }

@@ -4,7 +4,7 @@ export interface CourseItem {
   title: string;
   semesterId: string;
   isEditing?: boolean;
-  prereqsMet: boolean;
+  prereqsMet?: boolean;
   isCapstone?: boolean;
   showCapstoneCheckbox?: boolean;
   isManual?: boolean;

@@ -32,6 +32,7 @@ public class AddCourseHandler implements Route {
         throw new IllegalArgumentException("Missing required query parameters");
       }
 
+      // Use 4-digit year format consistently
       String semesterKey = term + " " + year;
 
       // Ensure the semester document exists

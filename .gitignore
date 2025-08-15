@@ -22,6 +22,6 @@ playwright/.cache/
 .DS_Store
 
 # firebase json
-server/src/main/resources/data/firebase_config.json
+server/src/main/resources/firebase_config.json
 etc/secrets/firebase_config.json
 frontend/cache_semesters/cookies.json

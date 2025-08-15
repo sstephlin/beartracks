@@ -1,8 +1,10 @@
 import { AlignJustify } from "lucide-react";
 import "../styles/Sidebar.css";
 import "../styles/App.css";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState, useCallback } from "react";
 import { useUser } from "@clerk/clerk-react";
+import { sessionStorageUtils } from "../utils/sessionStorageUtils";
+import { concentrationUtils } from "../utils/concentrationUtils";
 // import.meta.env.VITE_BACKEND_URL;
 
 /**
@@ -31,46 +33,38 @@ export default function Sidebar(props: SidebarProps) {
   const [expandedKeys, setExpandedKeys] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState<boolean>(false);
 
-  // fetch and Load stored degree, done at very beginning and changes when user id changes
-  useEffect(() => {
-    const fetchConcentration = async () => {
-      if (!user?.id) return;
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/get-concentration?uid=${user.id}`
-        );
-        const data = await response.json();
-        if (data.concentration) {
-          setSelectedDegree(data.concentration);
-          props.setDegree(data.concentration);
-          displayConcentrationRequirements(data.concentration);
-          console.log("user concentration from fetch", data.concentration);
-        }
-      } catch (err) {
-        console.error("Error fetching user concentration", err);
-      }
-    };
-    fetchConcentration();
-  }, [user?.id]); // Fetch and display requirements for a selected concentration
-
-  // this useEffect calls displayConcentrationRequiements when page is first rendered or when the  refresh sidebar prop changes
-  useEffect(() => {
-    console.log("effecting");
-    if (selectedDegree) {
-      displayConcentrationRequirements(selectedDegree);
-    }
-  }, [props.refreshSidebar]);
-
   // this function dislpays the concentration requirements of the user's stored concentration
-  const displayConcentrationRequirements = async (degree: string) => {
-    if (!user?.id || !degree || degree === "Select a Concentration" || degree.trim() === "") {
-      console.log("Skipping requirement display: Invalid user ID or concentration.", { userId: user?.id, concentrationValue: degree });
+  const displayConcentrationRequirements = useCallback(async (degree: string) => {
+    if (!degree || degree === "Select a Concentration" || degree.trim() === "") {
+      console.log("Skipping requirement display: Invalid concentration.", { concentrationValue: degree });
       setLoading(false); // Ensure loading state is reset
       setDegreeInfo({}); // Clear previous info
       setCourseInfo({}); // Clear previous info
       props.setNumCompleted(0);
       props.setNumRequired(0);
       return; // Exit the function early
+    }
+    
+    // Handle unsigned users locally
+    if (!user?.id) {
+      setLoading(true);
+      
+      // Get requirements from local data
+      const requirements = concentrationUtils.getRequirements(degree);
+      setDegreeInfo(requirements.requirements_options);
+      
+      // Get user's courses from session storage
+      const sessionData = sessionStorageUtils.getSessionData();
+      const userCourses = sessionData?.courses || [];
+      
+      // Check which requirements are satisfied
+      const requirementCheck = concentrationUtils.checkRequirements(userCourses, degree);
+      setCourseInfo(requirementCheck.user_requirements_breakdown);
+      props.setNumCompleted(requirementCheck.courses_completed);
+      props.setNumRequired(requirementCheck.total_required);
+      
+      setLoading(false);
+      return;
     }
 
     setLoading(true);
@@ -109,7 +103,50 @@ export default function Sidebar(props: SidebarProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id, props]);
+
+  // fetch and Load stored degree, done at very beginning and changes when user id changes
+  useEffect(() => {
+    const fetchConcentration = async () => {
+      if (!user?.id) {
+        // Load from session storage for unsigned users
+        const sessionData = sessionStorageUtils.getSessionData();
+        if (sessionData?.concentration) {
+          setSelectedDegree(sessionData.concentration);
+          props.setDegree(sessionData.concentration);
+          displayConcentrationRequirements(sessionData.concentration);
+        }
+        if (sessionData?.expandedSidebar !== undefined) {
+          props.setExpanded(sessionData.expandedSidebar);
+        }
+        return;
+      }
+      
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/get-concentration?uid=${user.id}`
+        );
+        const data = await response.json();
+        if (data.concentration) {
+          setSelectedDegree(data.concentration);
+          props.setDegree(data.concentration);
+          displayConcentrationRequirements(data.concentration);
+          console.log("user concentration from fetch", data.concentration);
+        }
+      } catch (err) {
+        console.error("Error fetching user concentration", err);
+      }
+    };
+    fetchConcentration();
+  }, [user?.id]); // Fetch and display requirements for a selected concentration
+
+  // this useEffect calls displayConcentrationRequiements when page is first rendered or when the  refresh sidebar prop changes
+  useEffect(() => {
+    console.log("effecting");
+    if (selectedDegree) {
+      displayConcentrationRequirements(selectedDegree);
+    }
+  }, [props.refreshSidebar, selectedDegree, displayConcentrationRequirements]);
 
   // Toggle expansion of sidebar
   const handleExpand = (key: string) => {
@@ -144,17 +181,26 @@ export default function Sidebar(props: SidebarProps) {
     getExpanded();
   }, [user?.id]);
 
-  // sets the expanded variable and stores in backend
+  // sets the expanded variable and stores in backend or session storage
   async function handleExpanded(stringValue: string) {
-    await fetch(
-      `${
-        import.meta.env.VITE_BACKEND_URL
-      }/store-expanded?uid=${uid}&expanded=${stringValue}`,
-      {
-        method: "POST",
-      }
-    );
-    props.setExpanded(!props.expanded);
+    const newExpandedState = !props.expanded;
+    props.setExpanded(newExpandedState);
+    
+    if (!uid) {
+      // Save to session storage for unsigned users
+      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+      sessionData.expandedSidebar = newExpandedState;
+      sessionStorageUtils.saveSessionData(sessionData);
+    } else {
+      await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/store-expanded?uid=${uid}&expanded=${stringValue}`,
+        {
+          method: "POST",
+        }
+      );
+    }
   }
 
   // function that handles changing degree from the dropdown menu
@@ -162,17 +208,26 @@ export default function Sidebar(props: SidebarProps) {
     const newDegree = e.target.value;
     setSelectedDegree(newDegree);
     props.setDegree(newDegree);
-    try {
-      await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/store-concentration?uid=${uid}&concentration=${newDegree}`,
-        { method: "POST" }
-      );
-      console.log(`"Stored concentration"${newDegree}`);
+    
+    if (!uid) {
+      // Save to session storage for unsigned users
+      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+      sessionData.concentration = newDegree;
+      sessionStorageUtils.saveSessionData(sessionData);
       displayConcentrationRequirements(newDegree);
-    } catch (err) {
-      console.error("Network error while storing concentration:", err);
+    } else {
+      try {
+        await fetch(
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/store-concentration?uid=${uid}&concentration=${newDegree}`,
+          { method: "POST" }
+        );
+        console.log(`"Stored concentration"${newDegree}`);
+        displayConcentrationRequirements(newDegree);
+      } catch (err) {
+        console.error("Network error while storing concentration:", err);
+      }
     }
   }
 

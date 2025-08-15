@@ -4,6 +4,7 @@ import Carousel from "./Carousel";
 import { Trash2 } from "lucide-react";
 import "../styles/BearTracks.css";
 import { useUser } from "@clerk/clerk-react";
+import { sessionStorageUtils } from "../utils/sessionStorageUtils";
 
 // this defines the props for the BearTracks component
 interface BearTracksProps {
@@ -107,13 +108,21 @@ export default function BearTracks(props: BearTracksProps) {
   };
 
   async function handleViewCount(value: string) {
-    await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/store-view?uid=${uid}&view=${value}`,
-      {
-        method: "POST",
-      }
-    );
     setViewCount(value);
+    
+    if (!uid) {
+      // Save to session storage for unsigned users
+      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+      sessionData.viewCount = value;
+      sessionStorageUtils.saveSessionData(sessionData);
+    } else {
+      await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/store-view?uid=${uid}&view=${value}`,
+        {
+          method: "POST",
+        }
+      );
+    }
   }
 
   return (
@@ -124,19 +133,6 @@ export default function BearTracks(props: BearTracksProps) {
     >
       <div className="searchbar-and-trash-container">
         <SearchBar onSearch={handleSearch} />
-        <div className="display-view">
-          {["2", "4"].map((value) => (
-            <button
-              key={value}
-              onClick={() => handleViewCount(value)}
-              className={`display-view-button ${
-                viewCount === value ? "selected" : "unselected"
-              }`}
-            >
-              {value}
-            </button>
-          ))}
-        </div>
       </div>
 
       {searchResults.length > 0 && (
@@ -170,15 +166,19 @@ export default function BearTracks(props: BearTracksProps) {
         expanded={props.expanded}
         setRefreshSidebar={props.setRefreshSidebar}
       />
-      <div
-        className="enlarged-trash-zone"
-        onDragOver={handleDragOverTrashZone}
-        onDragLeave={() => setIsTrashHovered(false)}
-        onDrop={handleDropToTrash}
-      >
-        <div className={`trash-area ${isTrashHovered ? "trash-hovered" : ""}`}>
-          <Trash2 size={48} strokeWidth={2} />
-        </div>
+
+      <div className="display-view">
+        {["2", "4"].map((value) => (
+          <button
+            key={value}
+            onClick={() => handleViewCount(value)}
+            className={`display-view-button ${
+              viewCount === value ? "selected" : "unselected"
+            }`}
+          >
+            {value}
+          </button>
+        ))}
       </div>
     </div>
   );

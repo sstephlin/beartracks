@@ -1,15 +1,15 @@
-//package edu.brown.cs.student.main.server.concentrationRequirements;
+// package edu.brown.cs.student.main.server.concentrationRequirements;
 //
-//import edu.brown.cs.student.main.server.storage.StorageInterface;
-//import java.util.ArrayList;
-//import java.util.HashSet;
-//import java.util.LinkedHashMap;
-//import java.util.List;
-//import java.util.Map;
-//import java.util.Set;
+// import edu.brown.cs.student.main.server.storage.StorageInterface;
+// import java.util.ArrayList;
+// import java.util.HashSet;
+// import java.util.LinkedHashMap;
+// import java.util.List;
+// import java.util.Map;
+// import java.util.Set;
 //
 //// checks a user's set of courses against each of the user's concentration's requirements
-//public class CSRequirementChecker {
+// public class CSRequirementChecker {
 //  private StorageInterface storageHandler;
 //  private String uid;
 //  private Set<String> userCourses;
@@ -26,7 +26,8 @@
 //   * @param concentration - user's selected concentration
 //   */
 //  public CSRequirementChecker(
-//      StorageInterface storageHandler, String uid, Set<String> userCourses, String concentration) {
+//      StorageInterface storageHandler, String uid, Set<String> userCourses, String concentration)
+// {
 //    this.storageHandler = storageHandler;
 //    this.uid = uid;
 //    this.userCourses = userCourses;
@@ -313,7 +314,8 @@
 //  }
 //
 //  /**
-//   * returns a set of a user's courses that haven't been counted already in concentration categories
+//   * returns a set of a user's courses that haven't been counted already in concentration
+// categories
 //   *
 //   * @return - a set of a user's courses that haven't been counted already in concentration
 //   *     categories
@@ -328,7 +330,8 @@
 //   * counts how many courses a user has completed, out of the total courses required for their
 //   * concentration
 //   *
-//   * @param requirementResults - maps name of requirement to a list of courses a user has taken that
+//   * @param requirementResults - maps name of requirement to a list of courses a user has taken
+// that
 //   *     satisfies that requirement
 //   * @return an integer value for the number of completed courses
 //   */
@@ -473,4 +476,4 @@
 //
 //    return ALLOWED_NON_CS_COURSES.contains(courseCode);
 //  }
-//}
+// }

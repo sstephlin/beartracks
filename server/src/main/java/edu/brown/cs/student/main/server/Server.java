@@ -13,6 +13,7 @@ import edu.brown.cs.student.main.server.handlers.GetAllCourseAvailabilityHandler
 import edu.brown.cs.student.main.server.handlers.GetConcentrationHandler;
 import edu.brown.cs.student.main.server.handlers.GetConcentrationRequirementsHandler;
 import edu.brown.cs.student.main.server.handlers.GetExpandedHandler;
+import edu.brown.cs.student.main.server.handlers.GetPrereqHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserCoursesHandler;
 import edu.brown.cs.student.main.server.handlers.GetUserCoursesWithTitleHandler;
 import edu.brown.cs.student.main.server.handlers.GetViewHandler;
@@ -107,6 +108,7 @@ public class Server {
           new GetConcentrationRequirementsHandler(
               firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid));
       Spark.get("check-prereqs", new CheckPrereqsHandler(firebaseUtils, catalog));
+      Spark.get("get-prereqs", new GetPrereqHandler(firebaseUtils, catalog));
       Spark.post("update-capstone", new UpdateCapstoneHandler(firebaseUtils));
       Spark.get("check-capstones", new CheckCapstoneHandler(firebaseUtils));
       //      Spark.get("get-concen-reqs", new GetConcentrationRequirementsHandler(firebaseUtils));

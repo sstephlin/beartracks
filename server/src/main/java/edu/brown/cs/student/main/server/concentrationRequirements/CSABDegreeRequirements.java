@@ -1,22 +1,24 @@
-//package edu.brown.cs.student.main.server.concentrationRequirements;
+// package edu.brown.cs.student.main.server.concentrationRequirements;
 //
-//import java.util.ArrayList;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
+// import java.util.ArrayList;
+// import java.util.HashMap;
+// import java.util.List;
+// import java.util.Map;
 //
-///**
-// * Static class that stores all the acceptable courses for each requirement for the CS A.B. degree.
+/// **
+// * Static class that stores all the acceptable courses for each requirement for the CS A.B.
+// degree.
 // * This is only run once, when the server starts.
 // */
-//public class CSABDegreeRequirements {
+// public class CSABDegreeRequirements {
 //  public static final Map<String, RequirementRule> requirements = new HashMap<>();
 //
 //  static {
 //    // Intro sequence - early intro course
 //    requirements.put(
 //        "Intro Part 1",
-//        new RequirementRule(List.of("CSCI 0111", "CSCI 0150", "CSCI 0170", "CSCI 0190"), 1, null));
+//        new RequirementRule(List.of("CSCI 0111", "CSCI 0150", "CSCI 0170", "CSCI 0190"), 1,
+// null));
 //
 //    // Intro sequence - cs200. For cs19 students, another course numbered 0200 or higher (MANUAL
 //    // CHECK)
@@ -57,7 +59,8 @@
 //    // Foundations: Theory
 //    requirements.put(
 //        "Foundations Theory",
-//        new RequirementRule(List.of("CSCI 0500", "CSCI 1010", "CSCI 1550", "CSCI 1570"), 1, null));
+//        new RequirementRule(List.of("CSCI 0500", "CSCI 1010", "CSCI 1550", "CSCI 1570"), 1,
+// null));
 //
 //    // 2 Technical CSCI 1000-level courses (except CSCI 1970, which goes under electives)
 //    requirements.put(
@@ -81,4 +84,4 @@
 //
 //    requirements.put("Capstone", new RequirementRule(allCapstones, 1, null));
 //  }
-//}
+// }
