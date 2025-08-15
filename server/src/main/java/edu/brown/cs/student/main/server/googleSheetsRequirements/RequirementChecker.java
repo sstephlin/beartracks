@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class RequirementChecker {
   private final Map<String, RequirementRow> requirements;
@@ -45,7 +44,7 @@ public class RequirementChecker {
    * Checks all defined concentration requirements against the user's courses.
    *
    * @return A map where keys are requirement category names and values are lists of courses that
-   * satisfy that requirement.
+   *     satisfy that requirement.
    */
   public Map<String, List<String>> checkAllRequirements() {
 
@@ -148,7 +147,7 @@ public class RequirementChecker {
           case "pattern_match":
             matchedAlt = matchPattern(altRow);
             break;
-          // Add other rule types if your alternative categories can be of those types
+            // Add other rule types if your alternative categories can be of those types
           default:
             System.err.println(
                 "Warning: Unhandled rule type for alternative category: "
@@ -220,9 +219,7 @@ public class RequirementChecker {
    * @param row The RequirementRow containing the course list and min courses required.
    * @return A list of courses that matched.
    */
-  /**
-   * Debug version of matchCourseList with detailed logging
-   */
+  /** Debug version of matchCourseList with detailed logging */
   private List<String> matchCourseList(RequirementRow row) {
     List<String> matches = new ArrayList<>();
     String categoryName = row.getCategoryName();
@@ -269,7 +266,7 @@ public class RequirementChecker {
     for (String course : userCourses) {
       if ((isCapstone || !usedCourses.contains(course))
           && row.getAcceptedCourses().stream()
-          .anyMatch(pattern -> course.matches(convertPatternToRegex(pattern)))) {
+              .anyMatch(pattern -> course.matches(convertPatternToRegex(pattern)))) {
         matches.add(course);
         if (!isCapstone) {
           usedCourses.add(course);
@@ -382,10 +379,16 @@ public class RequirementChecker {
       String ruleType = row.getRuleType();
       int minRequired = row.getMinCoursesRequired();
 
-      System.out.println("- Category: " + categoryName +
-          ", RuleType: " + ruleType +
-          ", MinRequired: " + minRequired +
-          ", DisplayName: '" + row.getDisplayName() + "'");
+      System.out.println(
+          "- Category: "
+              + categoryName
+              + ", RuleType: "
+              + ruleType
+              + ", MinRequired: "
+              + minRequired
+              + ", DisplayName: '"
+              + row.getDisplayName()
+              + "'");
 
       // Skip rules that don't directly contribute to the total
       // Only skip conditional_path, but include elective_total as it represents required courses
@@ -425,7 +428,13 @@ public class RequirementChecker {
       if (!categoriesConsideredForTotal.contains(categoryName)) {
         total += minRequired;
         categoriesConsideredForTotal.add(categoryName);
-        System.out.println("  → ADDED: " + categoryName + " (" + minRequired + " courses) - Running total: " + total);
+        System.out.println(
+            "  → ADDED: "
+                + categoryName
+                + " ("
+                + minRequired
+                + " courses) - Running total: "
+                + total);
       } else {
         System.out.println("  → SKIPPED (already considered)");
       }
@@ -440,7 +449,13 @@ public class RequirementChecker {
         if (altMinRequired > 0) {
           total += altMinRequired;
           categoriesConsideredForTotal.add(altCategoryName);
-          System.out.println("  → ADDED ALTERNATIVE: " + altCategoryName + " (" + altMinRequired + " courses) - Running total: " + total);
+          System.out.println(
+              "  → ADDED ALTERNATIVE: "
+                  + altCategoryName
+                  + " ("
+                  + altMinRequired
+                  + " courses) - Running total: "
+                  + total);
         }
       }
     }
