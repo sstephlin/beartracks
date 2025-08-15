@@ -9,7 +9,6 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -43,15 +42,15 @@ public class FirebaseUtilities implements StorageInterface {
 
     } catch (IOException e) {
       System.err.println("Error: Could not initialize Firebase. " + e.getMessage());
-      System.err.println("Make sure the file exists and is readable at: /etc/secrets/firebase_config.json");
+      System.err.println(
+          "Make sure the file exists and is readable at: /etc/secrets/firebase_config.json");
       e.printStackTrace();
       throw e;
     } catch (Exception e) {
       System.err.println(
           "An unexpected error occurred during Firebase initialization: " + e.getMessage());
       e.printStackTrace();
-      throw new IOException(
-          "Unexpected error during Firebase initialization", e);
+      throw new IOException("Unexpected error during Firebase initialization", e);
     }
   }
 
