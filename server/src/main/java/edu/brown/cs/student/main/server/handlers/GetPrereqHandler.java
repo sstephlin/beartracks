@@ -42,9 +42,9 @@ public class GetPrereqHandler implements Route {
 
     if (prereqTree == null || prereqTree.isEmpty()) {
       out.put("hasPrereqs", false);
-      out.put("displayText", "✅ No prerequisites required for " + courseCode);
+      out.put("displayText", "No prerequisites required for " + courseCode + "!");
       out.put("message", "No prerequisites required");
-      out.put("overallStatus", "✅ No prerequisites required");
+      out.put("overallStatus", "No prerequisites required");
     } else {
       out.put("hasPrereqs", true);
 
@@ -98,7 +98,7 @@ public class GetPrereqHandler implements Route {
       }
 
       // Format the course line
-      String status = satisfied ? "✅" : "❌";
+      String status = satisfied ? "True" : "False";
       String concurrentText = isConcurrent ? " (can be taken concurrently)" : "";
       String completionText =
           prereqSemester != null ? " - Completed in " + prereqSemester : " - Not completed";
@@ -147,10 +147,10 @@ public class GetPrereqHandler implements Route {
 
     StringBuilder summary = new StringBuilder();
     if (!completed.isEmpty()) {
-      summary.append("✅ Completed: ").append(String.join(", ", completed)).append("\n");
+      summary.append("Completed: ").append(String.join(", ", completed)).append("\n");
     }
     if (!missing.isEmpty()) {
-      summary.append("❌ Missing: ").append(String.join(", ", missing));
+      summary.append("Missing: ").append(String.join(", ", missing));
     }
 
     return new PrereqStatus(satisfied, summary.toString());

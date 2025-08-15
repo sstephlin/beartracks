@@ -75,7 +75,8 @@ export default function Carousel({
   }>({});
   const [capstoneCourseId, setCapstoneCourseId] = useState<string | null>(null);
   const [manualDisclaimerShown, setManualDisclaimerShown] = useState(false);
-  const [hasTransferredSessionData, setHasTransferredSessionData] = useState(false);
+  const [hasTransferredSessionData, setHasTransferredSessionData] =
+    useState(false);
 
   const {
     handleDragStart,
@@ -115,7 +116,7 @@ export default function Carousel({
 
     const { courseCode, semesterId } = course;
     const [term, year] = semesterId.split(" ");
-    
+
     // Update state regardless of sign-in status
     setCourses((prev) =>
       prev.map((c) => ({
@@ -127,10 +128,13 @@ export default function Carousel({
     // update which course is being capstoned
     const newCapstoneId = checked ? courseId : null;
     setCapstoneCourseId(newCapstoneId);
-    
+
     if (!user?.id) {
       // Save to session storage if user is not signed in
-      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: boxSelections };
+      const sessionData = sessionStorageUtils.getSessionData() || {
+        courses: [],
+        semesters: boxSelections,
+      };
       sessionData.courses = courses.map((c) => ({
         ...c,
         isCapstone: checked && c.id === courseId,
@@ -263,9 +267,11 @@ export default function Carousel({
       if (!user?.id) {
         // For non-signed-in users, use local capstone data
         const sessionData = sessionStorageUtils.getSessionData();
-        const concentration = sessionData?.concentration || "Computer Science Sc.B.";
+        const concentration =
+          sessionData?.concentration || "Computer Science Sc.B.";
         const requirements = concentrationUtils.getRequirements(concentration);
-        const capstoneCourses = requirements.requirements_options["Capstone"] || [];
+        const capstoneCourses =
+          requirements.requirements_options["Capstone"] || [];
         setCapstoneCodes(new Set(capstoneCourses));
         return;
       }
@@ -289,22 +295,24 @@ export default function Carousel({
     if (!user?.id) {
       const handleStorageChange = () => {
         const sessionData = sessionStorageUtils.getSessionData();
-        const concentration = sessionData?.concentration || "Computer Science Sc.B.";
+        const concentration =
+          sessionData?.concentration || "Computer Science Sc.B.";
         const requirements = concentrationUtils.getRequirements(concentration);
-        const capstoneCourses = requirements.requirements_options["Capstone"] || [];
+        const capstoneCourses =
+          requirements.requirements_options["Capstone"] || [];
         setCapstoneCodes(new Set(capstoneCourses));
       };
 
       // Listen for storage events (changes from other tabs/windows)
-      window.addEventListener('storage', handleStorageChange);
-      
+      window.addEventListener("storage", handleStorageChange);
+
       // Also check periodically for changes in the same tab
       const interval = setInterval(() => {
         handleStorageChange();
       }, 1000);
 
       return () => {
-        window.removeEventListener('storage', handleStorageChange);
+        window.removeEventListener("storage", handleStorageChange);
         clearInterval(interval);
       };
     }
@@ -315,16 +323,24 @@ export default function Carousel({
       if (!user?.id) {
         // Load from session storage if user is not signed in
         const sessionData = sessionStorageUtils.getSessionData();
-        if (sessionData && sessionData.semesters && Object.keys(sessionData.semesters).length > 0) {
-          const { courses: sessionCourses, semesters, capstoneId } = sessionData;
-          
+        if (
+          sessionData &&
+          sessionData.semesters &&
+          Object.keys(sessionData.semesters).length > 0
+        ) {
+          const {
+            courses: sessionCourses,
+            semesters,
+            capstoneId,
+          } = sessionData;
+
           // Restore box selections and IDs
           const newBoxIds = Object.keys(semesters);
           setBoxIds(newBoxIds);
           setBoxSelections(semesters);
           setUsedSemesters(Object.values(semesters));
           setCourses(sessionCourses || []);
-          
+
           if (capstoneId) {
             setCapstoneCourseId(capstoneId);
           }
@@ -341,10 +357,11 @@ export default function Carousel({
 
       // Transfer session data to backend if user just signed in
       if (!hasTransferredSessionData) {
-        const transferred = await sessionStorageUtils.transferSessionDataToBackend(
-          user.id,
-          import.meta.env.VITE_BACKEND_URL
-        );
+        const transferred =
+          await sessionStorageUtils.transferSessionDataToBackend(
+            user.id,
+            import.meta.env.VITE_BACKEND_URL
+          );
         if (transferred) {
           setHasTransferredSessionData(true);
         }
@@ -437,15 +454,18 @@ export default function Carousel({
     setSelectedSemester(semester);
 
     const [term, year] = semester.split(" ");
-    
+
     if (!user?.id) {
       // Save to session storage if user is not signed in
-      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+      const sessionData = sessionStorageUtils.getSessionData() || {
+        courses: [],
+        semesters: {},
+      };
       sessionData.semesters[boxId] = semester;
       sessionStorageUtils.saveSessionData(sessionData);
       return;
     }
-    
+
     if (!term || !year) return;
 
     try {
@@ -663,7 +683,10 @@ export default function Carousel({
 
       // Save to session storage if user is not signed in
       if (!user?.id) {
-        const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+        const sessionData = sessionStorageUtils.getSessionData() || {
+          courses: [],
+          semesters: {},
+        };
         sessionData.courses = updatedCourses;
         sessionStorageUtils.saveSessionData(sessionData);
       } else {
@@ -685,7 +708,10 @@ export default function Carousel({
 
           // checks if the added course affects any other courses in the same semester (for concurrent prereqs)
           for (const course of updatedCourses) {
-            if (course.semesterId === semesterId && course.id !== newCourse.id) {
+            if (
+              course.semesterId === semesterId &&
+              course.id !== newCourse.id
+            ) {
               const prereqsMet = await checkPrereqs(
                 user.id,
                 course.courseCode,
@@ -748,7 +774,10 @@ export default function Carousel({
 
       if (!user?.id) {
         // Save to session storage if user is not signed in
-        const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+        const sessionData = sessionStorageUtils.getSessionData() || {
+          courses: [],
+          semesters: {},
+        };
         sessionData.courses = updatedCourses;
         sessionStorageUtils.saveSessionData(sessionData);
       } else {
@@ -807,7 +836,7 @@ export default function Carousel({
               );
               setPrereqStatus(c.id, coursePrereqsMet);
               console.log(
-                `🔄 Rechecked course in source semester ${c.courseCode} after removal: prereqsMet=${coursePrereqsMet}`
+                `Rechecked course in source semester ${c.courseCode} after removal: prereqsMet=${coursePrereqsMet}`
               );
             }
           }
@@ -866,7 +895,10 @@ export default function Carousel({
 
     if (!user?.id) {
       // Save to session storage if user is not signed in
-      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: boxSelections };
+      const sessionData = sessionStorageUtils.getSessionData() || {
+        courses: [],
+        semesters: boxSelections,
+      };
       sessionData.courses = updatedCourses;
       sessionStorageUtils.saveSessionData(sessionData);
       return;
@@ -911,7 +943,10 @@ export default function Carousel({
 
         // Save to session storage if user is not signed in
         if (!user?.id) {
-          const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: boxSelections };
+          const sessionData = sessionStorageUtils.getSessionData() || {
+            courses: [],
+            semesters: boxSelections,
+          };
           sessionData.courses = updated;
           sessionStorageUtils.saveSessionData(sessionData);
         } else {
@@ -979,18 +1014,21 @@ export default function Carousel({
     // Update state for both signed-in and non-signed-in users
     setBoxIds((prev) => prev.filter((id) => id !== boxIdToDelete));
     setUsedSemesters((prev) => prev.filter((s) => s !== semester));
-    
+
     const newBoxSelections = { ...boxSelections };
     delete newBoxSelections[boxIdToDelete];
     setBoxSelections(newBoxSelections);
-    
+
     // removes all courses from that semester
     const updatedCourses = courses.filter((c) => c.semesterId !== semester);
     setCourses(updatedCourses);
-    
+
     if (!user?.id) {
       // Save to session storage if user is not signed in
-      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+      const sessionData = sessionStorageUtils.getSessionData() || {
+        courses: [],
+        semesters: {},
+      };
       sessionData.courses = updatedCourses;
       sessionData.semesters = newBoxSelections;
       sessionStorageUtils.saveSessionData(sessionData);
@@ -1086,7 +1124,7 @@ export default function Carousel({
         }
         return;
       }
-      
+
       try {
         const res = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/get-view?uid=${user.id}`

@@ -106,7 +106,7 @@ export default function CourseDrag({
     e.dataTransfer.setData("semesterId", semesterId);
   };
 
-  // Updated handlePrereqClick function with positioning logic
+  // Replace your handlePrereqClick function with this version:
   const handlePrereqClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -121,41 +121,52 @@ export default function CourseDrag({
       return;
     }
 
-    // Calculate popup position - bottom of popup aligns with top of link
+    // Get both button position and mouse position for debugging
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
 
-    // Default popup dimensions (adjust these based on your typical popup size)
-    const popupWidth = 500; // Increased width for box layout
-    const popupHeight = 400;
+    // Debug logging
+    console.log("Button rect:", rect);
+    console.log("Mouse position:", { x: mouseX, y: mouseY });
+    console.log("Viewport:", {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
 
+    // Popup dimensions
+    const popupWidth = 450;
+    const popupHeight = 300;
+
+    // Simple approach: position popup relative to the button, not mouse
+    // This is more predictable than mouse position
     let left = rect.left;
-    let top = rect.top - popupHeight; // Position popup so its bottom aligns with top of link
+    let top = rect.bottom + 5; // 5px below button
 
-    // Adjust if popup would go off the right edge
-    if (left + popupWidth > viewportWidth) {
-      left = viewportWidth - popupWidth - 10;
+    // Adjust if popup goes off right edge
+    if (left + popupWidth > window.innerWidth) {
+      left = rect.right - popupWidth; // Align right edge of popup with right edge of button
     }
 
-    // Adjust if popup would go off the left edge
+    // Adjust if popup goes off left edge
     if (left < 10) {
       left = 10;
     }
 
-    // If popup would go off the top edge, position it below the link instead
-    if (top < 10) {
-      top = rect.bottom + 5; // 5px below the button
+    // Adjust if popup goes off bottom edge
+    if (top + popupHeight > window.innerHeight) {
+      // Try positioning above the button
+      const topAbove = rect.top - popupHeight - 5;
+      if (topAbove >= 10) {
+        top = topAbove;
+      } else {
+        // If neither works, position it in the middle of the viewport
+        top = (window.innerHeight - popupHeight) / 2;
+        left = (window.innerWidth - popupWidth) / 2;
+      }
     }
 
-    // Final check: if it still goes off bottom when positioned below, center it vertically
-    if (
-      top + popupHeight > viewportHeight &&
-      rect.bottom + 5 + popupHeight > viewportHeight
-    ) {
-      top = Math.max(10, (viewportHeight - popupHeight) / 2);
-    }
-
+    console.log("Final popup position:", { top, left });
     setPopupPosition({ top, left });
 
     setLoading(true);
@@ -166,11 +177,8 @@ export default function CourseDrag({
       courseCode
     )}&term=${term}&year=${year}`;
 
-    console.log("Fetching prerequisites from URL:", url);
-
     try {
       const response = await fetch(url);
-      console.log("Response status:", response.status);
 
       if (!response.ok) {
         console.error("HTTP error:", response.status, response.statusText);
@@ -179,14 +187,6 @@ export default function CourseDrag({
       }
 
       const responseText = await response.text();
-      console.log(
-        "Raw response (first 100 chars):",
-        responseText.substring(0, 100)
-      );
-      console.log(
-        "Response starts with:",
-        JSON.stringify(responseText.substring(0, 10))
-      );
 
       if (!responseText.trim()) {
         console.error("Empty response received");
@@ -199,16 +199,6 @@ export default function CourseDrag({
         data = JSON.parse(responseText.trim());
       } catch (parseError) {
         console.error("Failed to parse JSON:", parseError);
-        console.error("Full response text:", responseText);
-        console.error("Response length:", responseText.length);
-        // Show character codes for debugging
-        for (let i = 0; i < Math.min(20, responseText.length); i++) {
-          console.log(
-            `Char ${i}: '${responseText[i]}' (code: ${responseText.charCodeAt(
-              i
-            )})`
-          );
-        }
         setLoading(false);
         return;
       }
@@ -225,6 +215,18 @@ export default function CourseDrag({
       setLoading(false);
     }
   };
+  useEffect(() => {
+    const handleScroll = () => {
+      if (showPrereqPopup) {
+        setShowPrereqPopup(false);
+      }
+    };
+
+    if (showPrereqPopup) {
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [showPrereqPopup]);
 
   // Close popup when clicking outside
   useEffect(() => {
@@ -420,7 +422,7 @@ export default function CourseDrag({
         ${isCapstone ? "capstone" : ""}
         ${isManual ? "manual-course" : "search-course"}
       `}
-      draggable={!isEmpty && !isEditing}
+      draggable={!isEmpty}
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}
@@ -429,7 +431,7 @@ export default function CourseDrag({
       tabIndex={0}
     >
       {/* Delete button - different logic for manual vs regular courses */}
-      {!isEmpty && !isEditing && (
+      {!isEmpty && (
         <>
           {isManual && onDeleteManualCourse ? (
             // X button for manual courses (immediate deletion)
@@ -442,13 +444,11 @@ export default function CourseDrag({
                 position: "absolute",
                 top: "4px",
                 right: "4px",
-                background: "#ff4444",
-                color: "white",
-                border: "none",
-                borderRadius: "50%",
+                background: "None",
+                color: "black",
                 width: "18px",
                 height: "18px",
-                fontSize: "12px",
+                fontSize: "16px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -514,7 +514,7 @@ export default function CourseDrag({
           {title && <div className="course-title">{title}</div>}
 
           {/* Prerequisites link - only show for non-manual courses */}
-          {!isManual && !isEditing && (
+          {!isManual && (
             <div className="prereq-section">
               <button
                 className="prereq-link"
@@ -537,17 +537,21 @@ export default function CourseDrag({
                     border: "2px solid #ccc",
                     borderRadius: "8px",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                    zIndex: 1000,
-                    maxWidth: "450px", // Slightly smaller
-                    maxHeight: "300px", // Reduced height
+                    zIndex: 10000,
+                    width: "450px", // Fixed width instead of maxWidth
+                    maxHeight: "300px",
                     overflow: "auto",
-                    fontSize: "12px", // Smaller base font
+                    fontSize: "16px",
+                    // Add these to ensure proper rendering
+                    pointerEvents: "auto",
+                    visibility: "visible",
+                    opacity: 1,
                   }}
                 >
                   <div
                     className="prereq-popup-header"
                     style={{
-                      padding: "6px 9px", // Reduced padding
+                      padding: "6px 9px",
                       borderBottom: "1px solid #ddd",
                       display: "flex",
                       justifyContent: "space-between",
@@ -575,7 +579,7 @@ export default function CourseDrag({
                   <div
                     className="prereq-popup-content"
                     style={{
-                      padding: "6px 9px", // Changed from 0px to 6px 9px to match header
+                      padding: "6px 9px",
                       margin: "0px",
                       lineHeight: "1",
                     }}
@@ -592,12 +596,12 @@ export default function CourseDrag({
                         className="no-prereqs"
                         style={{
                           textAlign: "center",
-                          padding: "16px", // Reduced padding
+                          padding: "8px",
                           backgroundColor: "#d4edda",
                           border: "1px solid #28a745",
                           borderRadius: "6px",
                           color: "#155724",
-                          fontSize: "12px",
+                          fontSize: "14px",
                         }}
                       >
                         {prerequisiteData.displayText ||

@@ -257,7 +257,8 @@
   position: relative; /* Make sure the course slot is positioned relative */
 }
 
-.delete-course-btn {
+.delete-course-btn,
+.delete-manual-course-btn {
   position: absolute;
   top: 4px;
   right: 4px;
