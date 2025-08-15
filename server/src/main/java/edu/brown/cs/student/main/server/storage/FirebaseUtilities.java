@@ -3,27 +3,14 @@ package edu.brown.cs.student.main.server.storage;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutures;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.firestore.CollectionReference;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.google.cloud.firestore.QuerySnapshot;
-import com.google.cloud.firestore.SetOptions;
-import com.google.cloud.firestore.WriteResult;
+import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.InputStream;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 public class FirebaseUtilities implements StorageInterface {
@@ -31,38 +18,41 @@ public class FirebaseUtilities implements StorageInterface {
   private final Firestore db;
 
   public FirebaseUtilities() throws IOException {
-    //    String workingDirectory = System.getProperty("user.dir");
-    //    Path firebaseConfigPath =
-    //        Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
+    try {
+      System.out.println("Initializing Firebase from direct file path...");
 
-    //    System.out.println("Checking for Firebase config file...");
-    //    FileInputStream serviceAccount = new FileInputStream("/resources/firebase_config.json");
-    //    File file = new File("/etc/secrets/firebase_config.json");
-    //    System.out.println("Exists: " + file.exists());
-    //    System.out.println("Readable: " + file.canRead());
-    //
-    //    FirebaseOptions options =
-    //        new FirebaseOptions.Builder()
-    //            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-    //            .build();
-    //
-    //    FirebaseApp.initializeApp(options);
-    //    System.out.println("Apps initialized: " + FirebaseApp.getApps().size());
-    //    this.db = FirestoreClient.getFirestore();
+      // The new path for your Firebase config file on the deployment server
+      String configFilePath = "../etc/secrets/firebase_config.json";
 
-    String workingDirectory = System.getProperty("user.dir");
-    Path firebaseConfigPath =
-        Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
+      // Use FileInputStream to read the file directly from the specified path
+      FileInputStream serviceAccount = new FileInputStream(configFilePath);
 
-    FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
+      FirebaseOptions options =
+          FirebaseOptions.builder()
+              .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+              .build();
 
-    FirebaseOptions options =
-        new FirebaseOptions.Builder()
-            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-            .build();
+      if (FirebaseApp.getApps().isEmpty()) {
+        FirebaseApp.initializeApp(options);
+        System.out.println("Firebase initialized successfully from: " + configFilePath);
+      } else {
+        System.out.println("Firebase already initialized.");
+      }
 
-    FirebaseApp.initializeApp(options);
-    this.db = FirestoreClient.getFirestore();
+      this.db = FirestoreClient.getFirestore(); // Initialize the db field here
+
+    } catch (IOException e) {
+      System.err.println("Error: Could not initialize Firebase. " + e.getMessage());
+      System.err.println("Make sure the file exists and is readable at: /etc/secrets/firebase_config.json");
+      e.printStackTrace();
+      throw e;
+    } catch (Exception e) {
+      System.err.println(
+          "An unexpected error occurred during Firebase initialization: " + e.getMessage());
+      e.printStackTrace();
+      throw new IOException(
+          "Unexpected error during Firebase initialization", e);
+    }
   }
 
   @Override
@@ -353,6 +343,13 @@ public class FirebaseUtilities implements StorageInterface {
         }
       }
     }
+
     return null;
   }
 }
+  //  @Override
+  //  public void updatePrereqsMet(String uid, String semester, String courseCode, boolean
+  // prereqsMet) {
+  //
+  //    if (uid == null || semester == null || courseCode == null) {
+  //      throw new IllegalArgumen
