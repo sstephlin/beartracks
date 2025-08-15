@@ -5,10 +5,10 @@ body {
   display: flex;
   position: relative;
   width: 78vw;
-  /* overflow: hidden; */
   align-items: center;
   justify-content: center;
   margin: 0 auto;
+  padding-top: 20px;
 }
 .carousel-outer-wrapper.collapsed {
   width: 94vw;

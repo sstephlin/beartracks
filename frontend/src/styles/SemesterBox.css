@@ -83,14 +83,32 @@
 
 .course-slot.filled {
   min-height: 13vh;
+  max-height: 13vh;
   border: 1.5px solid #c4c7c5;
   display: block;
   flex-direction: column;
   padding: 0px;
   word-break: break-word;
   overflow-wrap: break-word;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.course-slot.filled::-webkit-scrollbar {
+  width: 4px;
+}
+
+.course-slot.filled::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.course-slot.filled::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+.course-slot.filled::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .course-filled {
