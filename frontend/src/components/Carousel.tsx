@@ -1114,18 +1114,23 @@ export default function Carousel({
 
   const handleDeleteSemester = async (boxIdToDelete: string) => {
     const semester = boxSelections[boxIdToDelete];
-    if (!semester) return;
-
+    
     // Update state for both signed-in and non-signed-in users
     setBoxIds((prev) => prev.filter((id) => id !== boxIdToDelete));
-    setUsedSemesters((prev) => prev.filter((s) => s !== semester));
+    
+    // Only update usedSemesters if a semester was selected
+    if (semester) {
+      setUsedSemesters((prev) => prev.filter((s) => s !== semester));
+    }
     
     const newBoxSelections = { ...boxSelections };
     delete newBoxSelections[boxIdToDelete];
     setBoxSelections(newBoxSelections);
     
-    // removes all courses from that semester
-    const updatedCourses = courses.filter((c) => c.semesterId !== semester);
+    // removes all courses from that semester (if semester was selected)
+    const updatedCourses = semester 
+      ? courses.filter((c) => c.semesterId !== semester)
+      : courses;
     setCourses(updatedCourses);
     
     if (!user?.id) {
@@ -1137,24 +1142,27 @@ export default function Carousel({
       return;
     }
 
-    const [term, year] = semester.split(" ");
+    // Only make backend call if a semester was selected
+    if (semester) {
+      const [term, year] = semester.split(" ");
 
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/remove-semester?uid=${
-          user.id
-        }&term=${term}&year=${year}`,
-        {
-          method: "POST",
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/remove-semester?uid=${
+            user.id
+          }&term=${term}&year=${year}`,
+          {
+            method: "POST",
+          }
+        );
+        const data = await res.json();
+
+        if (data.response_type !== "success") {
+          console.error("Delete failed:", data.error);
         }
-      );
-      const data = await res.json();
-
-      if (data.response_type !== "success") {
-        console.error("Delete failed:", data.error);
+      } catch (err) {
+        console.error("Network error during delete:", err);
       }
-    } catch (err) {
-      console.error("Network error during delete:", err);
     }
   };
 

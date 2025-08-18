@@ -1,24 +1,26 @@
 .bear-tracks-container {
   display: flex;
   flex-direction: column;
-  width: 80vw;
+  width: 100%;
   padding-top: 2vh;
   align-items: center;
   gap: 0px;
-  /* justify-content: center; */
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 .bear-tracks-container.collapsed {
-  width: 94vw;
+  width: 100%;
 }
 
 .searchbar-and-trash-container {
   position: relative;
-  width: 100%;
+  width: calc(100% - 40px);
   margin: 16px auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 40px;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .enlarged-trash-zone {
@@ -86,18 +88,14 @@
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 16px;
-  height: 18vh;
+  height: 20vh;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 12px 20px;
-  margin: 0;
+  margin: 0 auto;
   border-bottom: 1px solid #e2e2e2;
-}
-.search-results-container.collapsed {
-  width: 90vw;
-}
-.search-results-container.expanded {
-  width: 76vw;
+  width: calc(100% - 40px);
+  box-sizing: border-box;
 }
 
 .search-course-block {

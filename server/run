@@ -4,7 +4,7 @@
 # We use $(ls target/*.jar) instead of target/stars-1.0.jar so that
 # this script can be reused in other projects more easily.
 
-TARGET=$(ls target/*.jar 2>/dev/null)
+TARGET=$(ls target/s0-*.jar 2>/dev/null | grep -v original)
 if [ -z "$TARGET" ]; then
     echo "No jar file in target/, try 'mvn package'".
     exit 1
@@ -31,7 +31,7 @@ CP=$(cat .mvn-classpath)
 # recommended package structure.
 
 # Find Server.java. It should be in a package below your username package.
-MAIN=$(ls src/main/java/edu/brown/cs/*/*/server/Server.java)
+MAIN=$(ls src/main/java/edu/brown/cs/student/main/server/Server.java)
 [ -z "$MAIN" ] && echo "You need a Server.java" && exit 1
 [ ! -e "$MAIN" ] && echo "You can only have one Server.java" && exit 1
 

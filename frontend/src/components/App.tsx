@@ -85,7 +85,7 @@ function App() {
           setNumCompleted={setNumCompleted}
           setNumRequired={setNumRequired}
         />
-        <div className="header-and-content">
+        <div className={`header-and-content ${!expanded ? "collapsed" : ""}`}>
           <header
             className={`App-header ${
               expanded ? "header-sidebar-expanded" : "header-sidebar-collapsed"
