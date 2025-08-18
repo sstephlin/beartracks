@@ -1,4 +1,5 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState } from "react";
+import { MoreVertical } from "lucide-react";
 import "../styles/SemesterBox.css";
 
 // this is the props interface for SemesterBox
@@ -12,8 +13,8 @@ interface SemesterBoxProps {
   onDragOver?: (e: React.DragEvent) => void;
   onDragLeave?: () => void;
   onDrop?: (e: React.DragEvent) => void;
-  onRightClick?: (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  onMenuClick?: (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     boxId: string
   ) => void;
   errorMessage?: string | null;
@@ -31,7 +32,7 @@ const SemesterBox = forwardRef<HTMLDivElement, SemesterBoxProps>(
       onDragOver,
       onDragLeave,
       onDrop,
-      onRightClick,
+      onMenuClick,
       errorMessage,
     },
     ref
@@ -54,11 +55,12 @@ const SemesterBox = forwardRef<HTMLDivElement, SemesterBoxProps>(
       }
     };
 
-    // this is the right-click logic for opening a menu
-    const handleRightClickEvent = (
-      e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    // this handles the three dots menu button click
+    const handleMenuClick = (
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
-      onRightClick?.(e, boxId);
+      e.stopPropagation();
+      onMenuClick?.(e, boxId);
     };
 
     return (
@@ -70,25 +72,42 @@ const SemesterBox = forwardRef<HTMLDivElement, SemesterBoxProps>(
         onDragOver={handleDragOver}
         onDragLeave={onDragLeave}
         onDrop={handleDrop}
-        onContextMenu={handleRightClickEvent}
       >
         {selectedSemester ? (
-          <div className="semester-header">{selectedSemester}</div>
+          <div className="semester-header">
+            <span>{selectedSemester}</span>
+            <button 
+              className="semester-menu-button"
+              onClick={handleMenuClick}
+              aria-label="Semester options"
+            >
+              <MoreVertical size={20} />
+            </button>
+          </div>
         ) : (
-          <select
-            className="semester-select-full"
-            defaultValue=""
-            onChange={handleSelectChange}
-          >
-            <option value="" disabled>
-              Select a semester
-            </option>
-            {availableSemesters.map((sem) => (
-              <option key={sem} value={sem}>
-                {sem}
+          <div className="semester-header-with-select">
+            <select
+              className="semester-select-full"
+              defaultValue=""
+              onChange={handleSelectChange}
+            >
+              <option value="" disabled>
+                Select a semester
               </option>
-            ))}
-          </select>
+              {availableSemesters.map((sem) => (
+                <option key={sem} value={sem}>
+                  {sem}
+                </option>
+              ))}
+            </select>
+            <button 
+              className="semester-menu-button"
+              onClick={handleMenuClick}
+              aria-label="Semester options"
+            >
+              <MoreVertical size={20} />
+            </button>
+          </div>
         )}
         {errorMessage && (
           <div className="semester-error-message">{errorMessage}</div>

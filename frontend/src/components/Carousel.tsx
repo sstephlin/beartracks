@@ -98,15 +98,19 @@ export default function Carousel({
     y: number;
   } | null>(null);
 
-  const handleRightClick = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  const handleMenuClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     boxId: string
   ) => {
     event.preventDefault();
+    event.stopPropagation();
     setSelectedBoxId(boxId);
+    
+    // Position the menu near the button
+    const rect = event.currentTarget.getBoundingClientRect();
     setMenuPosition({
-      x: event.pageX,
-      y: event.pageY,
+      x: rect.left,
+      y: rect.bottom + 5,
     });
     console.log("boxid", boxId);
   };
@@ -1097,6 +1101,10 @@ export default function Carousel({
     newBoxIds.splice(index + 1, 0, newID);
     setBoxIds(newBoxIds);
     console.log("right");
+    
+    // Close the menu after action
+    setMenuPosition(null);
+    setSelectedBoxId(null);
   };
 
   const handleAddLeftSemester = (currSemNum: string) => {
@@ -1110,6 +1118,10 @@ export default function Carousel({
     setBoxIds(newBoxIds);
     console.log("newId", Math.max(...boxIds.map(Number)) + 1);
     console.log("newIds", newBoxIds);
+    
+    // Close the menu after action
+    setMenuPosition(null);
+    setSelectedBoxId(null);
   };
 
   const handleDeleteSemester = async (boxIdToDelete: string) => {
@@ -1132,6 +1144,10 @@ export default function Carousel({
       ? courses.filter((c) => c.semesterId !== semester)
       : courses;
     setCourses(updatedCourses);
+    
+    // Close the menu after action
+    setMenuPosition(null);
+    setSelectedBoxId(null);
     
     if (!user?.id) {
       // Save to session storage if user is not signed in
@@ -1292,7 +1308,7 @@ export default function Carousel({
                 handleSemesterDrop(e, boxSelections[boxId])
               }
               expanded={expanded}
-              onRightClick={(e) => handleRightClick(e, boxId)}
+              onMenuClick={(e) => handleMenuClick(e, boxId)}
               errorMessage={
                 dropError && dropError.semesterId === boxSelections[boxId]
                   ? dropError.message
