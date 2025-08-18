@@ -102,9 +102,11 @@ export default function CourseDrag({
       });
     }
 
+    e.dataTransfer.setData("courseId", id);
     e.dataTransfer.setData("courseCode", courseCode);
     e.dataTransfer.setData("title", title || "");
     e.dataTransfer.setData("semesterId", semesterId);
+    e.dataTransfer.setData("isManual", isManual.toString());
   };
 
   // Updated handlePrereqClick function with positioning logic
@@ -443,28 +445,10 @@ export default function CourseDrag({
           {isManual && onDeleteManualCourse ? (
             // X button for manual courses (immediate deletion)
             <button
-              className="delete-manual-course-btn"
+              className="delete-course-btn"
               onClick={handleManualDeleteClick}
               aria-label={`Delete manual course ${courseCode}`}
               title={`Delete ${courseCode} (manual course)`}
-              style={{
-                position: "absolute",
-                top: "4px",
-                right: "4px",
-                background: "#ff4444",
-                color: "white",
-                border: "none",
-                borderRadius: "50%",
-                width: "18px",
-                height: "18px",
-                fontSize: "12px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 10,
-                lineHeight: 1,
-              }}
             >
               ×
             </button>
@@ -485,23 +469,36 @@ export default function CourseDrag({
       )}
 
       {!isEmpty && isEditing ? (
-        <div className="course-edit-fields">
-          <input
-            type="text"
-            placeholder="Course Code"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            onKeyDown={handleKeyDown}
-            autoFocus
-          />
-          <input
-            type="text"
-            placeholder="Course Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-        </div>
+        <>
+          {/* Delete button for editing state */}
+          {isManual && onDeleteManualCourse && (
+            <button
+              className="delete-course-btn"
+              onClick={handleManualDeleteClick}
+              aria-label={`Delete manual course`}
+              title={`Delete course`}
+            >
+              ×
+            </button>
+          )}
+          <div className="course-edit-fields">
+            <input
+              type="text"
+              placeholder="Course Code"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoFocus
+            />
+            <input
+              type="text"
+              placeholder="Course Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+          </div>
+        </>
       ) : (
         // this is the standard display mode
         <div className="course-filled">

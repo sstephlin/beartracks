@@ -137,7 +137,9 @@ export default function Carousel({
     if (!user?.id) {
       // Save to session storage if user is not signed in
       const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: boxSelections };
-      sessionData.courses = courses.map((c) => ({
+      sessionData.courses = courses
+        .filter(c => !c.isEditing)
+        .map((c) => ({
         ...c,
         isCapstone: checked && c.id === courseId,
       }));
@@ -174,8 +176,26 @@ export default function Carousel({
 
   // NEW: Handle deletion of manual courses (frontend only)
   const handleDeleteManualCourse = (courseId: string) => {
+    // Find the course to get its code before deletion
+    const courseToDelete = courses.find(c => c.id === courseId);
+    
     setCourses((prev) => {
       const updated = prev.filter((c) => c.id !== courseId);
+
+      // Update sessionStorage for non-signed-in users
+      if (!user?.id) {
+        const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: boxSelections };
+        sessionData.courses = updated.filter(c => !c.isEditing);
+        
+        // Remove from manual courses list in session
+        if (courseToDelete && sessionData.manualCourses) {
+          sessionData.manualCourses = sessionData.manualCourses.filter(
+            (code: string) => code !== courseToDelete.courseCode
+          );
+        }
+        
+        sessionStorageUtils.saveSessionData(sessionData);
+      }
 
       // Recheck prerequisites after removal for remaining courses
       setTimeout(() => {
@@ -184,6 +204,24 @@ export default function Carousel({
 
       return updated;
     });
+
+    // Remove from manualCourseCodes Set and update localStorage
+    if (courseToDelete?.courseCode) {
+      setManualCourseCodes((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(courseToDelete.courseCode);
+        
+        // Update localStorage
+        if (newSet.size > 0) {
+          localStorage.setItem('manualCourseCodes', JSON.stringify(Array.from(newSet)));
+        } else {
+          // Remove from localStorage if no manual courses left
+          localStorage.removeItem('manualCourseCodes');
+        }
+        
+        return newSet;
+      });
+    }
 
     console.log("Deleted manual course (frontend only):", courseId);
     setRefreshSidebar((prev) => !prev);
@@ -205,7 +243,7 @@ export default function Carousel({
         // Persist to session storage
         const sessionData =
           sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
-        sessionData.courses = updated;
+        sessionData.courses = updated.filter(c => !c.isEditing);
         sessionStorageUtils.saveSessionData(sessionData);
 
         // Recheck prerequisites locally
@@ -353,6 +391,9 @@ export default function Carousel({
   useEffect(() => {
     if (manualCourseCodes.size > 0) {
       localStorage.setItem('manualCourseCodes', JSON.stringify(Array.from(manualCourseCodes)));
+    } else {
+      // Clear from localStorage if no manual courses
+      localStorage.removeItem('manualCourseCodes');
     }
   }, [manualCourseCodes]);
 
@@ -372,7 +413,9 @@ export default function Carousel({
           setBoxIds(newBoxIds);
           setBoxSelections(semesters);
           setUsedSemesters(Object.values(semesters));
-          setCourses(sessionCourses || []);
+          // Filter out courses that were in editing mode
+          const filteredCourses = (sessionCourses || []).filter((c: any) => !c.isEditing);
+          setCourses(filteredCourses);
           
           if (capstoneId) {
             setCapstoneCourseId(capstoneId);
@@ -383,10 +426,10 @@ export default function Carousel({
           }
           
           // Trigger prerequisite checking for non-signed-in users after loading courses
-          if (sessionCourses && sessionCourses.length > 0) {
-            console.log("Triggering prereq check for session courses:", sessionCourses.length);
+          if (filteredCourses && filteredCourses.length > 0) {
+            console.log("Triggering prereq check for session courses:", filteredCourses.length);
             setTimeout(() => {
-              recheckAllPrereqs(sessionCourses);
+              recheckAllPrereqs(filteredCourses);
             }, 100);
           }
         } else {
@@ -648,16 +691,25 @@ export default function Carousel({
       return;
     }
 
-    // checks if the course is offered
-    const isOffered = await checkCourseOfferedInSemester(
-      draggedCourse.courseCode,
-      semesterId
-    );
-    if (!isOffered) {
-      setDropError({
-        message: "Course not offered in this semester",
-        semesterId,
-      });
+    // Find if this is a manual course being dragged
+    const draggedCourseData = courses.find(c => c.courseCode === draggedCourse.courseCode);
+    const isManualCourse = draggedCourseData?.isManual || false;
+
+    // Skip availability check for manual courses
+    if (!isManualCourse) {
+      // checks if the course is offered
+      const isOffered = await checkCourseOfferedInSemester(
+        draggedCourse.courseCode,
+        semesterId
+      );
+      if (!isOffered) {
+        setDropError({
+          message: "Course not offered in this semester",
+          semesterId,
+        });
+      } else {
+        setDropError(null);
+      }
     } else {
       setDropError(null);
     }
@@ -747,7 +799,7 @@ export default function Carousel({
       // Save to session storage if user is not signed in
       if (!user?.id) {
         const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
-        sessionData.courses = updatedCourses;
+        sessionData.courses = updatedCourses.filter(c => !c.isEditing);
         sessionStorageUtils.saveSessionData(sessionData);
 
         // Re-check any courses in this same semester that might depend on the
@@ -816,18 +868,21 @@ export default function Carousel({
       );
       if (!course) return;
 
-      // checks if course is offered in the target semester
-      const isOffered = await checkCourseOfferedInSemester(
-        course.courseCode,
-        semesterId
-      );
-      if (!isOffered) {
-        setDropError({
-          message: "Course not offered in this semester",
-          semesterId,
-        });
-        setTimeout(() => setDropError(null), 3000);
-        return;
+      // Skip semester availability check for manual courses
+      if (!course.isManual) {
+        // checks if course is offered in the target semester
+        const isOffered = await checkCourseOfferedInSemester(
+          course.courseCode,
+          semesterId
+        );
+        if (!isOffered) {
+          setDropError({
+            message: "Course not offered in this semester",
+            semesterId,
+          });
+          setTimeout(() => setDropError(null), 3000);
+          return;
+        }
       }
 
       // gets the old semester info for deletion
@@ -850,7 +905,7 @@ export default function Carousel({
       if (!user?.id) {
         // Save to session storage if user is not signed in
         const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
-        sessionData.courses = updatedCourses;
+        sessionData.courses = updatedCourses.filter(c => !c.isEditing);
         sessionStorageUtils.saveSessionData(sessionData);
 
         // Check prerequisites for the moved course (local CSV flow)
@@ -892,34 +947,41 @@ export default function Carousel({
           recheckAllPrereqs(updatedCourses);
         }, 100);
       } else {
-        try {
-          // deletes the course from the old semester
-          await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/remove-course?uid=${
-              user.id
-            }&code=${encodeURIComponent(
-              course.courseCode
-            )}&term=${oldTerm}&year=${oldYear}`,
-            { method: "POST" }
-          );
+        // Skip backend sync for manual courses
+        if (!course.isManual) {
+          try {
+            // deletes the course from the old semester
+            await fetch(
+              `${import.meta.env.VITE_BACKEND_URL}/remove-course?uid=${
+                user.id
+              }&code=${encodeURIComponent(
+                course.courseCode
+              )}&term=${oldTerm}&year=${oldYear}`,
+              { method: "POST" }
+            );
 
-          console.log("Removed course from old semester in backend");
+            console.log("Removed course from old semester in backend");
 
-          // adds the course to the new semester
-          await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/add-course?uid=${
-              user.id
-            }&code=${encodeURIComponent(
-              course.courseCode
-            )}&title=${encodeURIComponent(
-              course.title
-            )}&term=${newTerm}&year=${newYear}`,
-            { method: "POST" }
-          );
+            // adds the course to the new semester
+            await fetch(
+              `${import.meta.env.VITE_BACKEND_URL}/add-course?uid=${
+                user.id
+              }&code=${encodeURIComponent(
+                course.courseCode
+              )}&title=${encodeURIComponent(
+                course.title
+              )}&term=${newTerm}&year=${newYear}`,
+              { method: "POST" }
+            );
 
-          console.log("Added course to new semester in backend");
+            console.log("Added course to new semester in backend");
+          } catch (err) {
+            console.error("Failed to sync course move to backend:", err);
+          }
+        }
 
-          // checks prerequisites for the moved course
+        // checks prerequisites for the moved course (skip for manual courses)
+        if (!course.isManual) {
           const prereqsMet = await checkPrereqs(
             user.id,
             course.courseCode,
@@ -936,44 +998,42 @@ export default function Carousel({
               break;
             }
           }
-
-          // checks if this affects any other courses in the source semester (losing a concurrent prereq)
-          for (const c of updatedCourses) {
-            if (c.semesterId === sourceSemesterId && c.id !== course.id && !c.isManual) {
-              const coursePrereqsMet = await checkPrereqs(
-                user.id,
-                c.courseCode,
-                c.semesterId
-              );
-              setPrereqStatus(c.id, coursePrereqsMet);
-              console.log(
-                `🔄 Rechecked course in source semester ${c.courseCode} after removal: prereqsMet=${coursePrereqsMet}`
-              );
-            }
-          }
-
-          // checks if this affects any other courses in the target semester (gaining a concurrent prereq)
-          for (const c of updatedCourses) {
-            if (c.semesterId === semesterId && c.id !== course.id && !c.isManual) {
-              const coursePrereqsMet = await checkPrereqs(
-                user.id,
-                c.courseCode,
-                c.semesterId
-              );
-              setPrereqStatus(c.id, coursePrereqsMet);
-              console.log(
-                `Rechecked course in target semester ${c.courseCode} after addition: prereqsMet=${coursePrereqsMet}`
-              );
-            }
-          }
-
-          // checks again all prerequisites to ensure everything is consistent
-          setTimeout(() => {
-            recheckAllPrereqs(updatedCourses);
-          }, 100);
-        } catch (err) {
-          console.error("Failed to sync course move to backend:", err);
         }
+
+        // checks if this affects any other courses in the source semester (losing a concurrent prereq)
+        for (const c of updatedCourses) {
+          if (c.semesterId === sourceSemesterId && c.id !== course.id && !c.isManual) {
+            const coursePrereqsMet = await checkPrereqs(
+              user.id,
+              c.courseCode,
+              c.semesterId
+            );
+            setPrereqStatus(c.id, coursePrereqsMet);
+            console.log(
+              `🔄 Rechecked course in source semester ${c.courseCode} after removal: prereqsMet=${coursePrereqsMet}`
+            );
+          }
+        }
+
+        // checks if this affects any other courses in the target semester (gaining a concurrent prereq)
+        for (const c of updatedCourses) {
+          if (c.semesterId === semesterId && c.id !== course.id && !c.isManual) {
+            const coursePrereqsMet = await checkPrereqs(
+              user.id,
+              c.courseCode,
+              c.semesterId
+            );
+            setPrereqStatus(c.id, coursePrereqsMet);
+            console.log(
+              `Rechecked course in target semester ${c.courseCode} after addition: prereqsMet=${coursePrereqsMet}`
+            );
+          }
+        }
+
+        // checks again all prerequisites to ensure everything is consistent
+        setTimeout(() => {
+          recheckAllPrereqs(updatedCourses);
+        }, 100);
       }
     }
     setRefreshSidebar((prev) => !prev);
@@ -990,8 +1050,10 @@ export default function Carousel({
       return;
     }
 
-    // Track this as a manual course
-    setManualCourseCodes((prev) => new Set([...prev, courseCode]));
+    // Track this as a manual course (only if courseCode is not empty)
+    if (courseCode.trim()) {
+      setManualCourseCodes((prev) => new Set([...prev, courseCode]));
+    }
 
     // gets the updated state using a promise
     const updatedCourses = await new Promise<CourseItem[]>((resolve) => {
@@ -1010,7 +1072,7 @@ export default function Carousel({
     if (!user?.id) {
       // Save to session storage if user is not signed in
       const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: boxSelections };
-      sessionData.courses = updatedCourses;
+      sessionData.courses = updatedCourses.filter(c => !c.isEditing);
       sessionData.manualCourses = Array.from(manualCourseCodes);
       sessionStorageUtils.saveSessionData(sessionData);
       return;
@@ -1056,7 +1118,7 @@ export default function Carousel({
         // Save to session storage if user is not signed in
         if (!user?.id) {
           const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: boxSelections };
-          sessionData.courses = updated;
+          sessionData.courses = updated.filter(c => !c.isEditing);
           sessionStorageUtils.saveSessionData(sessionData);
         } else {
           // checks all prerequisites after course removal but uses the updated courses array
