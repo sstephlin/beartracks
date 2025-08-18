@@ -77,9 +77,9 @@
   padding: 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   margin: 5px 0;
-  text-align: center;
+  text-align: left;
   position: relative;
   overflow: visible;
 }
@@ -117,7 +117,7 @@
 .course-filled {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   position: relative;
   padding: 10px;
 }
@@ -130,19 +130,47 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  text-align: left;
+  width: 100%;
 }
 
 .course-title {
   font-weight: normal;
   font-size: 14px;
+  text-align: left;
+  width: 100%;
+}
+
+/* Course footer for prereqs and capstone */
+.course-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  width: 100%;
+}
+
+/* Capstone section styling */
+.capstone-section {
+  margin-left: auto;
+}
+
+.capstone-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #333;
+}
+
+.capstone-label span {
+  font-weight: 500;
 }
 
 .capstone-checkbox {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  transform: scale(1.2);
   cursor: pointer;
+  transform: scale(1.1);
 }
 
 .add-course-button {
@@ -469,7 +497,6 @@
 
 /* Prerequisites section */
 .prereq-section {
-  margin-top: 8px;
   position: relative;
 }
 

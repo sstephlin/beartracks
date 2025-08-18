@@ -507,31 +507,21 @@ export default function CourseDrag({
         <div className="course-filled">
           <div className="course-header">
             <div className="course-code">{courseCode}</div>
-            {showCapstoneCheckbox && (
-              <input
-                type="checkbox"
-                className="capstone-checkbox"
-                title="Capstone Course"
-                checked={isChecked}
-                onChange={(e) => {
-                  setIsChecked(e.target.checked);
-                  onToggleCapstone?.(id, e.target.checked);
-                }}
-              />
-            )}
           </div>
           {title && <div className="course-title">{title}</div>}
 
-          {/* Prerequisites link - show for non-manual courses (works for both signed-in and non-signed-in users) */}
-          {!isManual && !isEditing && (
-            <div className="prereq-section">
-              <button
-                className="prereq-link"
-                onClick={handlePrereqClick}
-                disabled={loading}
-              >
-                {loading ? "Loading..." : "Prerequisites"}
-              </button>
+          {/* Prerequisites and Capstone section */}
+          <div className="course-footer">
+            {/* Prerequisites link - show for non-manual courses (works for both signed-in and non-signed-in users) */}
+            {!isManual && !isEditing && (
+              <div className="prereq-section">
+                <button
+                  className="prereq-link"
+                  onClick={handlePrereqClick}
+                  disabled={loading}
+                >
+                  {loading ? "Loading..." : "Prerequisites"}
+                </button>
 
               {/* Prerequisites popup - Updated with box layout */}
               {showPrereqPopup && prerequisiteData && (
@@ -616,8 +606,27 @@ export default function CourseDrag({
                   </div>
                 </div>
               )}
-            </div>
-          )}
+              </div>
+            )}
+            
+            {/* Capstone checkbox - aligned to the right */}
+            {showCapstoneCheckbox && (
+              <div className="capstone-section">
+                <label className="capstone-label">
+                  <span>Mark as Capstone</span>
+                  <input
+                    type="checkbox"
+                    className="capstone-checkbox"
+                    checked={isChecked}
+                    onChange={(e) => {
+                      setIsChecked(e.target.checked);
+                      onToggleCapstone?.(id, e.target.checked);
+                    }}
+                  />
+                </label>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
