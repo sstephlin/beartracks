@@ -1,6 +1,7 @@
 import "../styles/App.css";
 import Sidebar from "./Sidebar";
 import BearTracks from "./BearTracks";
+import SearchBar from "./SearchBar";
 import { HelpCircle } from "lucide-react";
 import { useState } from "react";
 
@@ -19,10 +20,54 @@ function App() {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [numCompleted, setNumCompleted] = useState(0);
   const [numRequired, setNumRequired] = useState(0);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [draggedSearchCourse, setDraggedSearchCourse] = useState<any | null>(null);
   const handleClickOutside = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).classList.contains("disclaimer-overlay")) {
       setShowDisclaimer(false);
     }
+  };
+
+  // Handle search functionality
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/search-course?query=${encodeURIComponent(query)}`
+      );
+      const data = await response.json();
+
+      if (data.result === "success") {
+        setSearchResults(data.courses);
+      } else {
+        console.error(data.message);
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error("Error during search:", error);
+      setSearchResults([]);
+    }
+  };
+
+  // Handle dragging course from search results
+  const handleDragStartSearchCourse = (e: React.DragEvent, course: any) => {
+    e.dataTransfer.setData("searchCourse", JSON.stringify(course));
+    setDraggedSearchCourse(course);
+    window.dispatchEvent(
+      new CustomEvent("searchCourseDragStart", {
+        detail: { course },
+      })
+    );
+  };
+
+  const handleDragEndSearchCourse = (e: React.DragEvent) => {
+    setDraggedSearchCourse(null);
   };
 
   // returns the provided constant variables
@@ -40,7 +85,7 @@ function App() {
           setNumCompleted={setNumCompleted}
           setNumRequired={setNumRequired}
         />
-        <div className="header-and-content">
+        <div className={`header-and-content ${!expanded ? "collapsed" : ""}`}>
           <header
             className={`App-header ${
               expanded ? "header-sidebar-expanded" : "header-sidebar-collapsed"
@@ -78,6 +123,12 @@ function App() {
                 </p>
               </div>
             </div>
+            
+            {/* Search bar in header */}
+            <div className="header-search-container">
+              <SearchBar onSearch={handleSearch} />
+            </div>
+            
             {/* handles the sign in button */}
             <div className="Sign-in-out-container">
               <SignedOut>
@@ -91,10 +142,35 @@ function App() {
               </SignedIn>
             </div>
           </header>
+          
+          {/* Search results section */}
+          {searchResults.length > 0 && (
+            <div className={`search-results-container ${
+              expanded ? "expanded" : "collapsed"
+            }`}>
+              {searchResults.map((course, index) => (
+                <div
+                  key={index}
+                  className="search-course-block"
+                  draggable
+                  onDragStart={(e) => handleDragStartSearchCourse(e, course)}
+                  onDragEnd={handleDragEndSearchCourse}
+                  aria-label={`Course ${course.courseCode}: ${course.courseName}`}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <div className="course-code">{course.courseCode}</div>
+                  <div className="course-title">{course.courseName}</div>
+                </div>
+              ))}
+            </div>
+          )}
+          
           <main className="main-content">
             <BearTracks
               expanded={expanded}
               setRefreshSidebar={setRefreshSidebar}
+              draggedSearchCourse={draggedSearchCourse}
             />
 
             <div>

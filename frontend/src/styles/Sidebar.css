@@ -1,12 +1,16 @@
 .sidebar {
-  min-height: 100vh;
-  height: 140vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
   background-color: #213333;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   border-right: 5px solid rgba(0, 0, 0, 0.1);
   align-items: center;
   transition: width 0.3s ease;
+  overflow-y: auto;
   overflow-x: hidden;
+  z-index: 10;
 }
 
 .sidebar-expanded {
@@ -76,6 +80,7 @@
 
 .concentration-req-container {
   margin-top: 1rem;
+  padding-bottom: 2rem;
 }
 
 .concentration-category {

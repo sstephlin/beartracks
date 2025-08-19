@@ -18,13 +18,30 @@ public class FirebaseUtilities implements StorageInterface {
 
   public FirebaseUtilities() throws IOException {
     try {
-      System.out.println("Initializing Firebase from direct file path...");
+      System.out.println("Initializing Firebase...");
 
-      // The new path for your Firebase config file on the deployment server
-      String configFilePath = "../etc/secrets/firebase_config.json";
+      java.io.InputStream serviceAccount = null;
+      String configSource = "";
 
-      // Use FileInputStream to read the file directly from the specified path
-      FileInputStream serviceAccount = new FileInputStream(configFilePath);
+      // First try to load from classpath resources
+      serviceAccount = getClass().getClassLoader().getResourceAsStream("firebase_config.json");
+      if (serviceAccount != null) {
+        configSource = "classpath:firebase_config.json";
+        System.out.println("Loading Firebase config from classpath resources");
+      } else {
+        // Fall back to file system path for production deployment
+        String configFilePath = "../etc/secrets/firebase_config.json";
+        try {
+          serviceAccount = new FileInputStream(configFilePath);
+          configSource = configFilePath;
+          System.out.println("Loading Firebase config from file system: " + configFilePath);
+        } catch (IOException e) {
+          // If both fail, throw an error
+          System.err.println(
+              "Could not find firebase_config.json in classpath or at " + configFilePath);
+          throw new IOException("Firebase configuration file not found", e);
+        }
+      }
 
       FirebaseOptions options =
           FirebaseOptions.builder()
@@ -33,7 +50,7 @@ public class FirebaseUtilities implements StorageInterface {
 
       if (FirebaseApp.getApps().isEmpty()) {
         FirebaseApp.initializeApp(options);
-        System.out.println("Firebase initialized successfully from: " + configFilePath);
+        System.out.println("Firebase initialized successfully from: " + configSource);
       } else {
         System.out.println("Firebase already initialized.");
       }
@@ -42,8 +59,6 @@ public class FirebaseUtilities implements StorageInterface {
 
     } catch (IOException e) {
       System.err.println("Error: Could not initialize Firebase. " + e.getMessage());
-      System.err.println(
-          "Make sure the file exists and is readable at: /etc/secrets/firebase_config.json");
       e.printStackTrace();
       throw e;
     } catch (Exception e) {

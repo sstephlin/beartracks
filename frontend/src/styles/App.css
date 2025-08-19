@@ -34,13 +34,28 @@ body {
   justify-content: space-between;
   align-items: center;
   background-color: #ffffff;
-  border-bottom: 3px solid #e2e2e2;
   margin: 0;
   width: 100%;
+  padding: 10px 20px;
+  position: relative;
+  box-sizing: border-box;
 }
 
 .header-and-content {
   gap: 6px;
+  margin-left: 20vw;
+  width: 80vw;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100vh;
+  position: fixed;
+  right: 0;
+}
+
+.header-and-content.collapsed {
+  margin-left: 4.5vw;
+  width: 95.5vw;
 }
 .layout-container {
   display: flex;
@@ -49,11 +64,11 @@ body {
 }
 
 .header-sidebar-expanded {
-  width: 79vw;
+  width: 100%;
 }
 
 .header-sidebar-collapsed {
-  width: 93vw;
+  width: 100%;
 }
 
 /* Logo styling */
@@ -100,6 +115,17 @@ body {
   border-radius: 8px;
   margin-top: 17px; 
   margin-left: -8px; 
+}
+
+.header-search-container {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 350px;
+  max-width: 35%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .logo-progress {
@@ -210,4 +236,21 @@ body {
   color: #555;
   line-height: 1.5;
   margin-bottom: 0;
+}
+
+/* Sign in button styling */
+.Sign-in-out-container {
+  margin-right: 10px;
+}
+
+.Sign-in-out-container button {
+  border: 1.5px solid #2c4444 !important;
+  border-radius: 8px;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+}
+
+.Sign-in-out-container button:hover {
+  background-color: #213333 !important;
+  color: white !important;
 }

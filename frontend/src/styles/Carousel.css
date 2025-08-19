@@ -4,35 +4,92 @@ body {
 .carousel-outer-wrapper {
   display: flex;
   position: relative;
-  width: 78vw;
+  width: calc(100% - 60px);
   align-items: center;
   justify-content: center;
   margin: 0 auto;
   padding-top: 20px;
+  box-sizing: border-box;
 }
-.carousel-outer-wrapper.collapsed {
-  width: 94vw;
-}
-.carousel-outer-wrapper.two.collapsed {
-  width: 51vw;
-}
+
+/* Adjust wrapper width based on view mode */
 .carousel-outer-wrapper.two {
-  width: 42vw;
+  max-width: 850px;
 }
+
+.carousel-outer-wrapper.four {
+  max-width: 1600px;
+}
+
+/* Responsive outer wrapper adjustments */
+@media (max-width: 768px) {
+  .carousel-outer-wrapper {
+    width: calc(100% - 40px);
+    padding-top: 15px;
+  }
+  
+  .carousel-inner-wrapper.two {
+    width: calc(100% - 30px);
+    max-width: 550px;
+  }
+  
+  .carousel-inner-wrapper.four {
+    width: calc(100% - 30px);
+    max-width: 1100px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .carousel-inner-wrapper.two {
+    width: calc(100% - 50px);
+    max-width: 650px;
+  }
+  
+  .carousel-inner-wrapper.four {
+    width: calc(100% - 50px);
+    max-width: 1300px;
+  }
+}
+
+@media (min-width: 1441px) {
+  .carousel-outer-wrapper {
+    width: calc(100% - 100px);
+    padding-top: 25px;
+  }
+  
+  .carousel-inner-wrapper.two {
+    width: calc(100% - 80px);
+    max-width: 800px;
+  }
+  
+  .carousel-inner-wrapper.four {
+    width: calc(100% - 80px);
+    max-width: 1600px;
+  }
+}
+/* 2-view: Show 2+ boxes visible */
 .carousel-inner-wrapper.two {
-  width: 40vw;
+  width: calc(100% - 60px);
+  max-width: 700px;
 }
+
+/* 4-view: Show 4+ boxes visible */
 .carousel-inner-wrapper.four {
-  width: 73vw;
+  width: calc(100% - 60px);
+  max-width: 1400px;
 }
+
 .carousel-inner-wrapper.two.collapsed {
-  width: 43vw;
+  width: calc(100% - 40px);
+  max-width: 750px;
 }
+
 .carousel-inner-wrapper.four.collapsed {
-  width: 86vw;
+  width: calc(100% - 40px);
+  max-width: 1500px;
 }
 .carousel-inner-wrapper {
-  width: 70vw;
+  width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   display: flex;
@@ -42,68 +99,183 @@ body {
   padding: 0;
 }
 
-.add-box.expanded {
+.add-box {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 250px;
-  min-height: 400px;
-  background-color: #e4e4e4;
-  /* border: 3px #e4e4e4 solid; */
+  height: 70vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1.5px solid #c4c7c5;
   border-radius: 8px;
   margin: 0 8px;
-  font: 300px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
-.add-box.collapsed {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 300px;
-  min-height: 400px;
-  background-color: #e4e4e4;
-  border: 1.5px #c4c7c5 solid;
-  border-radius: 8px;
-  margin: 0 8px;
+.add-box.expanded:hover {
+  border-color: #c4c7c5;
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
 }
+
+.add-box:hover {
+  border-color: #c4c7c5;
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+}
+
+/* Both views: add-box matches semester box sizing */
+.carousel-inner-wrapper .add-box {
+  flex: 0 0 280px;
+  width: 280px;
+}
+
+/* Responsive add box sizing for different screen sizes - fixed sizes */
+
+/* Small screens (mobile) */
+@media (max-width: 768px) {
+  .carousel-inner-wrapper .add-box {
+    flex: 0 0 240px;
+    width: 240px;
+    margin: 0 4px;
+  }
+}
+
+/* Medium screens (tablets) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .carousel-inner-wrapper .add-box {
+    flex: 0 0 260px;
+    width: 260px;
+    margin: 0 5px;
+  }
+}
+
+/* Large screens (desktops) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .carousel-inner-wrapper .add-box {
+    flex: 0 0 280px;
+    width: 280px;
+    margin: 0 6px;
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1441px) {
+  .carousel-inner-wrapper .add-box {
+    flex: 0 0 300px;
+    width: 300px;
+    margin: 0 8px;
+  }
+}
+
 .add-button {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 25px;
-  width: 100px;
-  height: 100px;
-  background-color: #e4e4e4;
-  color: #213333;
+  font-size: 18px;
+  font-weight: 500;
+  color: black;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  line-height: 1.4;
 }
+
+.add-button:hover {
+  color: #343a40;
+  transform: scale(1.02);
+}
+
 .add-button:active {
   border: none;
+  transform: scale(0.98);
 }
+
 .add-button-plus {
-  font-size: 50px;
+  font-size: 48px;
+  font-weight: 300;
+  margin-bottom: 8px;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.add-button:hover .add-button-plus {
+  opacity: 1;
+  transform: rotate(90deg);
 }
 .carousel-track {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: stretch;
-  gap: 16px;
+  gap: 0;
+  width: max-content;
+}
+
+/* Responsive sizing for semester boxes */
+
+/* Both views: semester boxes have fixed size */
+.carousel-inner-wrapper .semester-box {
+  flex: 0 0 280px;
+  width: 280px;
+  margin: 0 6px;
+}
+
+/* Media queries for responsive semester box sizing - fixed sizes */
+
+/* Small screens (mobile) */
+@media (max-width: 768px) {
+  .carousel-inner-wrapper .semester-box {
+    flex: 0 0 240px;
+    width: 240px;
+    margin: 0 4px;
+  }
+}
+
+/* Medium screens (tablets) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .carousel-inner-wrapper .semester-box {
+    flex: 0 0 260px;
+    width: 260px;
+    margin: 0 5px;
+  }
+}
+
+/* Large screens (desktops) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .carousel-inner-wrapper .semester-box {
+    flex: 0 0 280px;
+    width: 280px;
+    margin: 0 6px;
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1441px) {
+  .carousel-inner-wrapper .semester-box {
+    flex: 0 0 300px;
+    width: 300px;
+    margin: 0 8px;
+  }
 }
 
 .carousel-button {
   position: absolute;
   top: 50%;
-  transform: translateY();
+  transform: translateY(-50%);
   z-index: 1000;
   background: white;
   border: 2px solid #1B1B1B;
   border-radius: 100px;
-  width: 1vw;
-  height: 6vh;
-  font-size: 24px;
+  width: clamp(30px, 3vw, 50px);
+  height: clamp(40px, 6vh, 60px);
+  font-size: clamp(16px, 1.5vw, 24px);
   font-weight: bold;
   cursor: pointer;
   opacity: 0.8;
@@ -114,11 +286,44 @@ body {
 }
 
 .carousel-button.left {
-  left: -3vw;
+  left: clamp(-50px, -3vw, -30px);
 }
 
 .carousel-button.right {
-  right: -3vw;
+  right: clamp(-50px, -3vw, -30px);
+}
+
+/* Responsive carousel button adjustments */
+@media (max-width: 768px) {
+  .carousel-button {
+    width: 35px;
+    height: 45px;
+    font-size: 18px;
+  }
+  
+  .carousel-button.left {
+    left: -40px;
+  }
+  
+  .carousel-button.right {
+    right: -40px;
+  }
+}
+
+@media (min-width: 1441px) {
+  .carousel-button {
+    width: 45px;
+    height: 55px;
+    font-size: 22px;
+  }
+  
+  .carousel-button.left {
+    left: -50px;
+  }
+  
+  .carousel-button.right {
+    right: -50px;
+  }
 }
 
 .carousel-button:disabled {

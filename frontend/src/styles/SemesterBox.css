@@ -3,7 +3,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  width: 17vw;
   height: 70vh;
   /* background-color: #e4e4e4; */
   border-radius: 8px;
@@ -19,7 +18,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  width: 20vw;
   min-height: 400px;
   /* background-color: #c4c7c5; */
   border: 1.5px #c4c7c5 solid;
@@ -32,17 +30,22 @@
   height: 60px;
   background-color: #213333;
   color: white;
-  padding: 0 20px;
+  padding: 0 15px;
   font-family: "Gaegu", cursive;
   font-weight: normal;
-  text-align: center;
   font-size: 27px;
   border-radius: 6px 6px 0 0;
   border-bottom: 1.5px solid #c4c7c5;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   box-sizing: border-box;
+  position: relative;
+}
+
+.semester-header span {
+  flex: 1;
+  text-align: center;
 }
 
 .semester-content {
@@ -74,9 +77,9 @@
   padding: 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   margin: 5px 0;
-  text-align: center;
+  text-align: left;
   position: relative;
   overflow: visible;
 }
@@ -114,7 +117,7 @@
 .course-filled {
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
+  align-items: flex-start;
   position: relative;
   padding: 10px;
 }
@@ -127,20 +130,47 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  text-align: left;
+  width: 100%;
 }
 
 .course-title {
   font-weight: normal;
   font-size: 14px;
-  align-items: left;
+  text-align: left;
+  width: 100%;
+}
+
+/* Course footer for prereqs and capstone */
+.course-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  width: 100%;
+}
+
+/* Capstone section styling */
+.capstone-section {
+  margin-left: auto;
+}
+
+.capstone-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #333;
+}
+
+.capstone-label span {
+  font-weight: 500;
 }
 
 .capstone-checkbox {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  transform: scale(1.2);
   cursor: pointer;
+  transform: scale(1.1);
 }
 
 .add-course-button {
@@ -165,7 +195,10 @@
   overflow-x: auto;
   padding: 20px;
   gap: 15px;
-  justify-content: center;
+  justify-content: flex-start;
+  width: calc(100% - 40px);
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* Dragging Hover Effect */
@@ -190,17 +223,28 @@
   animation: fadeIn 0.3s ease-out;
 }
 
-.semester-select-full {
+.semester-header-with-select {
   width: 100%;
   height: 60px;
   background-color: #213333;
+  border-radius: 6px 6px 0 0;
+  border-bottom: 1.5px solid #c4c7c5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+.semester-select-full {
+  flex: 1;
+  height: 100%;
+  background-color: transparent;
   color: white;
   font-family: "Roboto", cursive;
   font-weight: normal;
   font-size: 19px;
   border: none;
-  border-bottom: 1.5px solid #c4c7c5;
-  border-radius: 6px 6px 0 0;
   padding: 0 20px;
   appearance: none;
   cursor: pointer;
@@ -209,7 +253,27 @@
 
 .semester-select-full:focus {
   outline: none;
-  border: 2px solid #7b5944;
+}
+
+.semester-menu-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.semester-menu-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.semester-menu-button:active {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Default background for filled courses without prereq status */
@@ -306,7 +370,7 @@
   background: none;
   color: black;
   border-radius: 0;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
   cursor: pointer;
   display: flex;
@@ -434,7 +498,6 @@
 
 /* Prerequisites section */
 .prereq-section {
-  margin-top: 8px;
   position: relative;
   margin-right: 0px;
 }
@@ -938,39 +1001,53 @@
   background: #a1a1a1;
 }
 
-.semester-box {
+/* Manual Course Entry Styling */
+.course-edit-fields {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  padding: 10px;
+  padding-right: 30px; /* Make room for delete button */
+  height: 100%;
+  box-sizing: border-box;
 }
 
-.semester-box > .course-filled {
-  flex: 1; /* stretch each child */
+.course-edit-fields input[type="text"] {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  font-size: 14px;
+  text-align: center;
+  transition: all 0.2s ease;
+  color: #374151;
+  box-sizing: border-box;
 }
 
-.course-filled {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  flex-direction: column;
-  justify-content: space-between;
-  flex: 1;
+.course-edit-fields input[type="text"]:focus {
+  outline: none;
+  border-color: #60a5fa;
+  background: #f0f9ff;
+}
+
+.course-edit-fields input[type="text"]::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.course-edit-fields input[type="text"]:first-child {
+  font-weight: 600;
+}
+
+/* Ensure delete button stays in place during editing */
+.course-slot.filled:has(.course-edit-fields) {
   position: relative;
-  /* background-color: #213333; */
 }
-.course-left {
-  /* display: flex;
-  flex-direction: column; */
-  /* justify-content: space-between; */
-  flex: 1;
-  background-color: #28a745;
-}
-.course-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex: 1;
-  /* position: aboslute; */
-  /* top: 50px; */
-  /* margin-right: 5%; */
-  background-color: #721c24;
+
+.course-slot.filled:has(.course-edit-fields) .delete-course-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 10;
 }

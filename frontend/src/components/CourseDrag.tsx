@@ -102,9 +102,11 @@ export default function CourseDrag({
       });
     }
 
+    e.dataTransfer.setData("courseId", id);
     e.dataTransfer.setData("courseCode", courseCode);
     e.dataTransfer.setData("title", title || "");
     e.dataTransfer.setData("semesterId", semesterId);
+    e.dataTransfer.setData("isManual", isManual.toString());
   };
   // Replace your handlePrereqClick function with this version:
   const handlePrereqClick = async (e: React.MouseEvent) => {
@@ -452,26 +454,10 @@ export default function CourseDrag({
           {isManual && onDeleteManualCourse ? (
             // X button for manual courses (immediate deletion)
             <button
-              className="delete-manual-course-btn"
+              className="delete-course-btn"
               onClick={handleManualDeleteClick}
               aria-label={`Delete manual course ${courseCode}`}
               title={`Delete ${courseCode} (manual course)`}
-              style={{
-                position: "absolute",
-                top: "4px",
-                right: "4px",
-                background: "None",
-                color: "black",
-                width: "18px",
-                height: "18px",
-                fontSize: "16px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 10,
-                lineHeight: 1,
-              }}
             >
               ×
             </button>
@@ -492,97 +478,53 @@ export default function CourseDrag({
       )}
 
       {!isEmpty && isEditing ? (
-        <div className="course-edit-fields">
-          <input
-            type="text"
-            placeholder="Course Code"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            onKeyDown={handleKeyDown}
-            autoFocus
-          />
-          <input
-            type="text"
-            placeholder="Course Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-        </div>
+        <>
+          {/* Delete button for editing state */}
+          {isManual && onDeleteManualCourse && (
+            <button
+              className="delete-course-btn"
+              onClick={handleManualDeleteClick}
+              aria-label={`Delete manual course`}
+              title={`Delete course`}
+            >
+              ×
+            </button>
+          )}
+          <div className="course-edit-fields">
+            <input
+              type="text"
+              placeholder="Course Code"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoFocus
+            />
+            <input
+              type="text"
+              placeholder="Course Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+          </div>
+        </>
       ) : (
         // this is the standard display mode
         <div className="course-filled">
-          {/* Course code and title section - aligned left */}
-          <div className="course-left" style={{ textAlign: "left" }}>
-            <div
-              className="course-code"
-              style={{ textAlign: "left", width: "60%" }}
-            >
-              {courseCode}
-            </div>
-            {title && (
-              <div
-                className="course-title"
-                style={{ textAlign: "left", width: "90%" }}
-              >
-                {title}
-              </div>
-            )}
+          <div className="course-header">
+            <div className="course-code">{courseCode}</div>
           </div>
+          {title && <div className="course-title">{title}</div>}
 
-          {/* Capstone and prerequisites section */}
-          <div
-            className="course-right"
-            style={
-              {
-                // display: "flex",
-                // justifyContent: "space-between",
-                // alignItems: "flex-end",
-                // gap: "8px",
-              }
-            }
-          >
-            {showCapstoneCheckbox && (
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "2px", // space between text and checkbox
-                  cursor: "pointer",
-                  fontSize: "12px",
-                  top: "5vh",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  className="capstone-checkbox"
-                  title="Capstone Course"
-                  checked={isChecked}
-                  onChange={(e) => {
-                    setIsChecked(e.target.checked);
-                    onToggleCapstone?.(id, e.target.checked);
-                  }}
-                  style={{ margin: 0, top: "5vh" }} // remove any spacing/margin
-                />
-                <span>Capstone?</span>
-              </label>
-            )}
-
-            {/* Prerequisites link - only show for non-manual courses */}
-            {!isManual && (
-              <div
-                className="prereq-section"
-                style={{ flexShrink: 0, top: "5vh", right: "0" }}
-              >
+          {/* Prerequisites and Capstone section */}
+          <div className="course-footer">
+            {/* Prerequisites link - show for non-manual courses (works for both signed-in and non-signed-in users) */}
+            {!isManual && !isEditing && (
+              <div className="prereq-section">
                 <button
                   className="prereq-link"
                   onClick={handlePrereqClick}
                   disabled={loading}
-                  style={{
-                    fontSize: "12px",
-                    padding: "2px 6px",
-                    whiteSpace: "nowrap",
-                  }}
                 >
                   {loading ? "Loading..." : "Prerequisites"}
                 </button>
@@ -600,21 +542,17 @@ export default function CourseDrag({
                       border: "2px solid #ccc",
                       borderRadius: "8px",
                       boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                      zIndex: 10000,
-                      width: "320px", // Reduced from 450px to 320px
-                      maxHeight: "300px",
+                      zIndex: 1000,
+                      maxWidth: "450px", // Slightly smaller
+                      maxHeight: "300px", // Reduced height
                       overflow: "auto",
-                      fontSize: "16px",
-                      // Add these to ensure proper rendering
-                      pointerEvents: "auto",
-                      visibility: "visible",
-                      opacity: 1,
+                      fontSize: "12px", // Smaller base font
                     }}
                   >
                     <div
                       className="prereq-popup-header"
                       style={{
-                        padding: "6px 9px",
+                        padding: "6px 9px", // Reduced padding
                         borderBottom: "1px solid #ddd",
                         display: "flex",
                         justifyContent: "space-between",
@@ -642,7 +580,7 @@ export default function CourseDrag({
                     <div
                       className="prereq-popup-content"
                       style={{
-                        padding: "6px 9px",
+                        padding: "6px 9px", // Changed from 0px to 6px 9px to match header
                         margin: "0px",
                         lineHeight: "1",
                       }}
@@ -659,12 +597,12 @@ export default function CourseDrag({
                           className="no-prereqs"
                           style={{
                             textAlign: "center",
-                            padding: "8px",
+                            padding: "16px", // Reduced padding
                             backgroundColor: "#d4edda",
                             border: "1px solid #28a745",
                             borderRadius: "6px",
                             color: "#155724",
-                            fontSize: "14px",
+                            fontSize: "12px",
                           }}
                         >
                           {prerequisiteData.displayText ||
@@ -674,6 +612,24 @@ export default function CourseDrag({
                     </div>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Capstone checkbox - aligned to the right */}
+            {showCapstoneCheckbox && (
+              <div className="capstone-section">
+                <label className="capstone-label">
+                  <span>Mark as Capstone</span>
+                  <input
+                    type="checkbox"
+                    className="capstone-checkbox"
+                    checked={isChecked}
+                    onChange={(e) => {
+                      setIsChecked(e.target.checked);
+                      onToggleCapstone?.(id, e.target.checked);
+                    }}
+                  />
+                </label>
               </div>
             )}
           </div>
