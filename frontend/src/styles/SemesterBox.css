@@ -114,7 +114,7 @@
 .course-filled {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   position: relative;
   padding: 10px;
 }
@@ -132,6 +132,7 @@
 .course-title {
   font-weight: normal;
   font-size: 14px;
+  align-items: left;
 }
 
 .capstone-checkbox {
@@ -229,7 +230,7 @@
 
 /* Manual course background - highest priority */
 .course-slot.filled.manual-course {
-  background-color: #F0F0F0 !important;
+  background-color: #f0f0f0 !important;
   border: 1.5px solid #c4c7c5;
 }
 
@@ -435,6 +436,7 @@
 .prereq-section {
   margin-top: 8px;
   position: relative;
+  margin-right: 0px;
 }
 
 .prereq-link {
@@ -934,4 +936,41 @@
 
 .prereq-popup::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
+}
+
+.semester-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.semester-box > .course-filled {
+  flex: 1; /* stretch each child */
+}
+
+.course-filled {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  position: relative;
+  /* background-color: #213333; */
+}
+.course-left {
+  /* display: flex;
+  flex-direction: column; */
+  /* justify-content: space-between; */
+  flex: 1;
+  background-color: #28a745;
+}
+.course-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  /* position: aboslute; */
+  /* top: 50px; */
+  /* margin-right: 5%; */
+  background-color: #721c24;
 }

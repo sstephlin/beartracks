@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/SemesterBox.css";
-import { getPrerequisiteDataFromCSV } from "../utils/prerequisiteLoader";
+import { AlignCenterHorizontal } from "lucide-react";
 
 // these are all the props for the CourseDrag component
 interface CourseDragProps {
@@ -10,7 +10,7 @@ interface CourseDragProps {
   semesterId: string;
   isEmpty: boolean;
   isEditing?: boolean;
-  prereqsMet?: boolean;
+  prereqsMet: boolean;
   isCapstone: boolean;
   showCapstoneCheckbox?: boolean;
   onDeleteCourse?: (
@@ -106,7 +106,6 @@ export default function CourseDrag({
     e.dataTransfer.setData("title", title || "");
     e.dataTransfer.setData("semesterId", semesterId);
   };
-
   // Replace your handlePrereqClick function with this version:
   const handlePrereqClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -117,145 +116,121 @@ export default function CourseDrag({
       return;
     }
 
-    console.log(
-      "Prerequisites button clicked for:",
-      courseCode,
-      "userId:",
-      userId,
-      "isManual:",
-      isManual
-    );
+    if (!userId) {
+      console.error("User ID is required to fetch prerequisites");
+      return;
+    }
 
-    // Get both button position and mouse position for debugging
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
 
-    // Debug logging
-    console.log("Button rect:", rect);
-    console.log("Mouse position:", { x: mouseX, y: mouseY });
-    console.log("Viewport:", {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
+    // Initial positioning - start with a basic position
+    let initialLeft = rect.left;
+    let initialTop = rect.bottom + 5;
 
-    // Popup dimensions
-    const popupWidth = 450;
-    const popupHeight = 300;
+    // Set initial position (will be adjusted after popup renders)
+    setPopupPosition({ top: initialTop, left: initialLeft });
 
-    // Simple approach: position popup relative to the button, not mouse
-    // This is more predictable than mouse position
-    let left = rect.left;
-    let top = rect.bottom + 5; // 5px below button
-
-    // Adjust if popup goes off right edge
-    if (left + popupWidth > window.innerWidth) {
-      left = rect.right - popupWidth; // Align right edge of popup with right edge of button
-    }
-
-    // Adjust if popup goes off left edge
-    if (left < 10) {
-      left = 10;
-    }
-
-    // Adjust if popup goes off bottom edge
-    if (top + popupHeight > window.innerHeight) {
-      // Try positioning above the button
-      const topAbove = rect.top - popupHeight - 5;
-      if (topAbove >= 10) {
-        top = topAbove;
-      } else {
-        // If neither works, position it in the middle of the viewport
-        top = (window.innerHeight - popupHeight) / 2;
-        left = (window.innerWidth - popupWidth) / 2;
-      }
-    }
-
-    console.log("Final popup position:", { top, left });
-    setPopupPosition({ top, left });
     setLoading(true);
+    const [term, year] = semesterId.split(" ");
+    const url = `${
+      import.meta.env.VITE_BACKEND_URL
+    }/get-prereqs?uid=${userId}&code=${encodeURIComponent(
+      courseCode
+    )}&term=${term}&year=${year}`;
 
     try {
-      let data: PrerequisiteResponse;
+      const response = await fetch(url);
 
-      if (!userId) {
-        // Use CSV-based prerequisite checking for non-signed-in users
-        data = await getPrerequisiteDataFromCSV(courseCode, semesterId);
-        console.log("CSV prerequisite data:", data);
-      } else {
-        // Use backend for signed-in users
-        const [term, year] = semesterId.split(" ");
-        const url = `${
-          import.meta.env.VITE_BACKEND_URL
-        }/get-prereqs?uid=${userId}&code=${encodeURIComponent(
-          courseCode
-        )}&term=${term}&year=${year}`;
-
-        console.log("Fetching prerequisites from URL:", url);
-
-        const response = await fetch(url);
-        console.log("Response status:", response.status);
-
-        if (!response.ok) {
-          console.error("HTTP error:", response.status, response.statusText);
-          setLoading(false);
-          return;
-        }
-
-        const responseText = await response.text();
-        console.log(
-          "Raw response (first 100 chars):",
-          responseText.substring(0, 100)
-        );
-        console.log(
-          "Response starts with:",
-          JSON.stringify(responseText.substring(0, 10))
-        );
-
-        if (!responseText.trim()) {
-          console.error("Empty response received");
-          setLoading(false);
-          return;
-        }
-
-        try {
-          data = JSON.parse(responseText.trim());
-        } catch (parseError) {
-          console.error("Failed to parse JSON:", parseError);
-          console.error("Full response text:", responseText);
-          console.error("Response length:", responseText.length);
-          // Show character codes for debugging
-          for (let i = 0; i < Math.min(20, responseText.length); i++) {
-            console.log(
-              `Char ${i}: '${responseText[i]}' (code: ${responseText.charCodeAt(
-                i
-              )})`
-            );
-          }
-          setLoading(false);
-          return;
-        }
-
-        // Only check response_type for backend responses
-        if (
-          userId &&
-          (data as any).response_type &&
-          (data as any).response_type !== "success"
-        ) {
-          console.error("Failed to fetch prerequisites:", (data as any).error);
-          setLoading(false);
-          return;
-        }
+      if (!response.ok) {
+        console.error("HTTP error:", response.status, response.statusText);
+        setLoading(false);
+        return;
       }
 
-      setPrerequisiteData(data);
-      setShowPrereqPopup(true);
+      const responseText = await response.text();
+
+      if (!responseText.trim()) {
+        console.error("Empty response received");
+        setLoading(false);
+        return;
+      }
+
+      let data;
+      try {
+        data = JSON.parse(responseText.trim());
+      } catch (parseError) {
+        console.error("Failed to parse JSON:", parseError);
+        setLoading(false);
+        return;
+      }
+
+      if (data.response_type === "success") {
+        setPrerequisiteData(data);
+        setShowPrereqPopup(true);
+
+        // After popup is shown, adjust position based on actual dimensions
+        // Use setTimeout to ensure the popup has rendered
+        setTimeout(() => {
+          if (popupRef.current) {
+            const popupRect = popupRef.current.getBoundingClientRect();
+            const actualWidth = popupRect.width;
+            const actualHeight = popupRect.height;
+
+            console.log("Actual popup dimensions:", {
+              width: actualWidth,
+              height: actualHeight,
+            });
+
+            // Recalculate position with actual dimensions
+            let left = rect.left;
+            let top = rect.bottom + 5;
+
+            // Adjust if popup goes off right edge
+            if (left + actualWidth > window.innerWidth) {
+              left = rect.right - actualWidth;
+            }
+
+            // Adjust if popup goes off left edge
+            if (left < 10) {
+              left = 10;
+            }
+
+            // Adjust if popup goes off bottom edge
+            if (top + actualHeight > window.innerHeight) {
+              const topAbove = rect.top - actualHeight - 5;
+              if (topAbove >= 10) {
+                top = topAbove;
+              } else {
+                // Center in viewport as fallback
+                top = Math.max(10, (window.innerHeight - actualHeight) / 2);
+                left = Math.max(10, (window.innerWidth - actualWidth) / 2);
+              }
+            }
+
+            console.log("Final adjusted popup position:", { top, left });
+
+            // Only update position if it's different from current
+            setPopupPosition((currentPos) => {
+              if (
+                Math.abs(currentPos.top - top) > 5 ||
+                Math.abs(currentPos.left - left) > 5
+              ) {
+                return { top, left };
+              }
+              return currentPos;
+            });
+          }
+        }, 10); // Small delay to ensure DOM has updated
+      } else {
+        console.error("Failed to fetch prerequisites:", data.error);
+      }
     } catch (err) {
       console.error("Error fetching prerequisites:", err);
     } finally {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     const handleScroll = () => {
       if (showPrereqPopup) {
@@ -459,13 +434,7 @@ export default function CourseDrag({
       className={`
         course-slot 
         ${isEmpty ? "empty" : "filled"} 
-        ${
-          !isEmpty && prereqsMet !== undefined
-            ? prereqsMet
-              ? "pr-met"
-              : "pr-not-met"
-            : ""
-        }
+        ${!isEmpty ? (prereqsMet ? "pr-met" : "pr-not-met") : ""}
         ${isCapstone ? "capstone" : ""}
         ${isManual ? "manual-course" : "search-course"}
       `}
@@ -543,123 +512,171 @@ export default function CourseDrag({
       ) : (
         // this is the standard display mode
         <div className="course-filled">
-          <div className="course-header">
-            <div className="course-code">{courseCode}</div>
-            {showCapstoneCheckbox && (
-              <input
-                type="checkbox"
-                className="capstone-checkbox"
-                title="Capstone Course"
-                checked={isChecked}
-                onChange={(e) => {
-                  setIsChecked(e.target.checked);
-                  onToggleCapstone?.(id, e.target.checked);
-                }}
-              />
+          {/* Course code and title section - aligned left */}
+          <div className="course-left" style={{ textAlign: "left" }}>
+            <div
+              className="course-code"
+              style={{ textAlign: "left", width: "60%" }}
+            >
+              {courseCode}
+            </div>
+            {title && (
+              <div
+                className="course-title"
+                style={{ textAlign: "left", width: "90%" }}
+              >
+                {title}
+              </div>
             )}
           </div>
-          {title && <div className="course-title">{title}</div>}
 
-          {/* Prerequisites link - only show for non-manual courses */}
-          {!isManual && (
-            <div className="prereq-section">
-              <button
-                className="prereq-link"
-                onClick={handlePrereqClick}
-                disabled={loading}
+          {/* Capstone and prerequisites section */}
+          <div
+            className="course-right"
+            style={
+              {
+                // display: "flex",
+                // justifyContent: "space-between",
+                // alignItems: "flex-end",
+                // gap: "8px",
+              }
+            }
+          >
+            {showCapstoneCheckbox && (
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "2px", // space between text and checkbox
+                  cursor: "pointer",
+                  fontSize: "12px",
+                  top: "5vh",
+                }}
               >
-                {loading ? "Loading..." : "Prerequisites"}
-              </button>
+                <input
+                  type="checkbox"
+                  className="capstone-checkbox"
+                  title="Capstone Course"
+                  checked={isChecked}
+                  onChange={(e) => {
+                    setIsChecked(e.target.checked);
+                    onToggleCapstone?.(id, e.target.checked);
+                  }}
+                  style={{ margin: 0, top: "5vh" }} // remove any spacing/margin
+                />
+                <span>Capstone?</span>
+              </label>
+            )}
 
-              {/* Prerequisites popup - Updated with box layout */}
-              {showPrereqPopup && prerequisiteData && (
-                <div
-                  className="prereq-popup"
-                  ref={popupRef}
+            {/* Prerequisites link - only show for non-manual courses */}
+            {!isManual && (
+              <div
+                className="prereq-section"
+                style={{ flexShrink: 0, top: "5vh", right: "0" }}
+              >
+                <button
+                  className="prereq-link"
+                  onClick={handlePrereqClick}
+                  disabled={loading}
                   style={{
-                    position: "fixed",
-                    top: `${popupPosition.top}px`,
-                    left: `${popupPosition.left}px`,
-                    backgroundColor: "white",
-                    border: "2px solid #ccc",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                    zIndex: 10000,
-                    width: "450px", // Fixed width instead of maxWidth
-                    maxHeight: "300px",
-                    overflow: "auto",
-                    fontSize: "16px",
-                    // Add these to ensure proper rendering
-                    pointerEvents: "auto",
-                    visibility: "visible",
-                    opacity: 1,
+                    fontSize: "12px",
+                    padding: "2px 6px",
+                    whiteSpace: "nowrap",
                   }}
                 >
+                  {loading ? "Loading..." : "Prerequisites"}
+                </button>
+
+                {/* Prerequisites popup - Updated with box layout */}
+                {showPrereqPopup && prerequisiteData && (
                   <div
-                    className="prereq-popup-header"
+                    className="prereq-popup"
+                    ref={popupRef}
                     style={{
-                      padding: "6px 9px",
-                      borderBottom: "1px solid #ddd",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      backgroundColor: "#f8f9fa",
+                      position: "fixed",
+                      top: `${popupPosition.top}px`,
+                      left: `${popupPosition.left}px`,
+                      backgroundColor: "white",
+                      border: "2px solid #ccc",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                      zIndex: 10000,
+                      width: "320px", // Reduced from 450px to 320px
+                      maxHeight: "300px",
+                      overflow: "auto",
+                      fontSize: "16px",
+                      // Add these to ensure proper rendering
+                      pointerEvents: "auto",
+                      visibility: "visible",
+                      opacity: 1,
                     }}
                   >
-                    <h4 style={{ margin: 0, fontSize: "14px" }}>
-                      Prerequisites for {courseCode}
-                    </h4>
-                    <button
-                      className="close-popup-btn"
-                      onClick={() => setShowPrereqPopup(false)}
+                    <div
+                      className="prereq-popup-header"
                       style={{
-                        background: "none",
-                        border: "none",
-                        fontSize: "16px",
-                        cursor: "pointer",
-                        padding: "0 4px",
+                        padding: "6px 9px",
+                        borderBottom: "1px solid #ddd",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        backgroundColor: "#f8f9fa",
                       }}
                     >
-                      ×
-                    </button>
-                  </div>
-                  <div
-                    className="prereq-popup-content"
-                    style={{
-                      padding: "6px 9px",
-                      margin: "0px",
-                      lineHeight: "1",
-                    }}
-                  >
-                    {prerequisiteData.hasPrereqs ? (
-                      <div className="prereq-tree">
-                        {prerequisiteData.prerequisiteTree &&
-                          renderPrereqTreeBoxes(
-                            prerequisiteData.prerequisiteTree
-                          )}
-                      </div>
-                    ) : (
-                      <div
-                        className="no-prereqs"
+                      <h4 style={{ margin: 0, fontSize: "14px" }}>
+                        Prerequisites for {courseCode}
+                      </h4>
+                      <button
+                        className="close-popup-btn"
+                        onClick={() => setShowPrereqPopup(false)}
                         style={{
-                          textAlign: "center",
-                          padding: "8px",
-                          backgroundColor: "#d4edda",
-                          border: "1px solid #28a745",
-                          borderRadius: "6px",
-                          color: "#155724",
-                          fontSize: "14px",
+                          background: "none",
+                          border: "none",
+                          fontSize: "16px",
+                          cursor: "pointer",
+                          padding: "0 4px",
                         }}
                       >
-                        {prerequisiteData.displayText ||
-                          prerequisiteData.message}
-                      </div>
-                    )}
+                        ×
+                      </button>
+                    </div>
+                    <div
+                      className="prereq-popup-content"
+                      style={{
+                        padding: "6px 9px",
+                        margin: "0px",
+                        lineHeight: "1",
+                      }}
+                    >
+                      {prerequisiteData.hasPrereqs ? (
+                        <div className="prereq-tree">
+                          {prerequisiteData.prerequisiteTree &&
+                            renderPrereqTreeBoxes(
+                              prerequisiteData.prerequisiteTree
+                            )}
+                        </div>
+                      ) : (
+                        <div
+                          className="no-prereqs"
+                          style={{
+                            textAlign: "center",
+                            padding: "8px",
+                            backgroundColor: "#d4edda",
+                            border: "1px solid #28a745",
+                            borderRadius: "6px",
+                            color: "#155724",
+                            fontSize: "14px",
+                          }}
+                        >
+                          {prerequisiteData.displayText ||
+                            prerequisiteData.message}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

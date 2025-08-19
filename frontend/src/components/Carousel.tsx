@@ -384,6 +384,7 @@ export default function Carousel({
             courses: sessionCourses,
             semesters,
             capstoneId,
+            manualCourses,
           } = sessionData;
 
           // Restore box selections and IDs
