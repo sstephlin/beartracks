@@ -43,21 +43,22 @@ public class RequirementLoader {
       headerMap.put(headerRow.get(i).toString().trim(), i);
     }
 
-    // Ensure all expected headers exist
+    // Ensure all expected headers exist, now including "Parent Category"
     String[] expectedHeaders = {
-      "Category Name",
-      "Display Name",
-      "Rule Type",
-      "Accepted Courses",
-      "Min Courses Required",
-      "Max Uses",
-      "Substitutions",
-      "Alternative Category",
-      "Overrides Category"
+        "Category Name",
+        "Display Name",
+        "Rule Type",
+        "Accepted Courses",
+        "Min Courses Required",
+        "Max Uses",
+        "Substitutions",
+        "Alternative Category",
+        "Overrides Category",
+        "Parent Category" // Added the new header
     };
     for (String header : expectedHeaders) {
       if (!headerMap.containsKey(header)) {
-        throw new IOException("Missing expected header in Google Sheet: " + header);
+        System.err.println("Warning: Missing expected header in Google Sheet: " + header + ". Proceeding with a null value.");
       }
     }
 
@@ -83,6 +84,9 @@ public class RequirementLoader {
       String alternativeCategory = getValue(row, headerMap, "Alternative Category");
       String overridesCategory = getValue(row, headerMap, "Overrides Category");
 
+      // Get the value for the new "Parent Category" column
+      String parentCategory = getValue(row, headerMap, "Parent Category");
+
       // Basic validation
       if (categoryName.isEmpty() || ruleType.isEmpty()) {
         System.err.println("Skipping malformed row (missing category name or rule type): " + row);
@@ -99,7 +103,8 @@ public class RequirementLoader {
               maxUses,
               substitutions,
               alternativeCategory,
-              overridesCategory);
+              overridesCategory,
+              parentCategory); // Added the new field to the constructor
       requirements.put(categoryName, requirementRow);
     }
     return requirements;

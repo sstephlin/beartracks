@@ -19,6 +19,7 @@ interface CarouselProps {
   draggedSearchCourse: any | null;
   expanded: boolean;
   setRefreshSidebar: React.Dispatch<React.SetStateAction<boolean>>;
+  onCapstoneChange?: (courseCode: string | null) => void;
 }
 
 // defines all the possible semesters the user can select
@@ -50,6 +51,7 @@ export default function Carousel({
   setViewCount,
   expanded,
   setRefreshSidebar,
+  onCapstoneChange,
 }: CarouselProps) {
   const [boxIds, setBoxIds] = useState<string[]>(["1"]);
   const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
@@ -114,7 +116,7 @@ export default function Carousel({
   const handleToggleCapstone = async (courseId: string, checked: boolean) => {
     const course = courses.find((c) => c.id === courseId);
     if (!course) return;
-
+  
     const { courseCode, semesterId } = course;
     const [term, year] = semesterId.split(" ");
     
@@ -125,10 +127,17 @@ export default function Carousel({
         isCapstone: checked && c.id === courseId,
       }))
     );
-
+  
     // update which course is being capstoned
     const newCapstoneId = checked ? courseId : null;
+    const newCapstoneCourse = checked ? courseCode : null;
     setCapstoneCourseId(newCapstoneId);
+    
+    // NEW: Notify parent component about capstone change
+    if (onCapstoneChange) {
+      onCapstoneChange(newCapstoneCourse);
+      console.log('Notifying parent of capstone change:', newCapstoneCourse);
+    }
     
     if (!user?.id) {
       // Save to session storage if user is not signed in
@@ -138,10 +147,11 @@ export default function Carousel({
         isCapstone: checked && c.id === courseId,
       }));
       sessionData.capstoneId = newCapstoneId || undefined;
+      sessionData.currentCapstoneCourse = newCapstoneCourse || undefined; // NEW: Store capstone course code
       sessionStorageUtils.saveSessionData(sessionData);
       return;
     }
-
+  
     try {
       const query = new URLSearchParams({
         uid: user.id,
@@ -152,7 +162,7 @@ export default function Carousel({
       if (checked) {
         query.append("courseCode", courseCode);
       }
-
+  
       await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
@@ -161,12 +171,30 @@ export default function Carousel({
           method: "POST",
         }
       );
-
+  
+      setRefreshSidebar(prev => !prev);
+  
       // State already updated above
     } catch (err) {
       console.error("Failed to update capstone:", err);
     }
   };
+
+  useEffect(() => {
+    const capstoneCourse = courses.find(c => c.isCapstone);
+    if (onCapstoneChange) {
+      onCapstoneChange(capstoneCourse ? capstoneCourse.courseCode : null);
+    }
+  }, [courses, onCapstoneChange]);
+
+  useEffect(() => {
+    if (!user?.id) {
+      const sessionData = sessionStorageUtils.getSessionData();
+      if (sessionData?.currentCapstoneCourse && onCapstoneChange) {
+        onCapstoneChange(sessionData.currentCapstoneCourse);
+      }
+    }
+  }, [user?.id, onCapstoneChange]);
 
   // NEW: Handle deletion of manual courses (frontend only)
   const handleDeleteManualCourse = (courseId: string) => {

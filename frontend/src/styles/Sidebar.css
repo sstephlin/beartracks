@@ -133,3 +133,28 @@
 .cannot-list {
   color: #ac5a5ad2;
 }
+
+
+/* Capstone-specific styles */
+.capstone-active {
+  background-color: #d4edda !important; /* Light green background */
+  border-left: 3px solid #28a745 !important; /* Green left border */
+  font-weight: 600 !important;
+  color: #155724 !important; /* Dark green text */
+}
+
+.capstone-indicator {
+  color: #28a745;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+/* Optional: Add a subtle animation when capstone status changes */
+.capstone-active {
+  transition: all 0.3s ease;
+}
+
+/* Ensure capstone section appears at the bottom */
+.concentration-req-container .concentration-category:last-child {
+  margin-bottom: 0;
+}

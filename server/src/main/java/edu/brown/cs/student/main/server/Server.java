@@ -45,6 +45,10 @@ public class Server {
     String masterSheetId = dotenv.get("MASTER_GOOGLE_SHEET_ID");
     String csAbTabGid = dotenv.get("CS_AB_TAB_GID");
     String csScbTabGid = dotenv.get("CS_SCB_TAB_GID");
+    String apmaCSTabGid = dotenv.get("APMA_CS_TAB_GID");
+    String mathCSTabGid = dotenv.get("MATH_CS_TAB_GID");
+    String csEconScBTabGid = dotenv.get("CS_ECON_ScB_TAB_GID");
+    String csEconABTabGid = dotenv.get("CS_ECON_AB_TAB_GID");
 
     // Enable CORS
     options(
@@ -79,9 +83,6 @@ public class Server {
       // 2. Parse CourseCatalog once at startup
       CourseCatalog catalog = CourseCSVParser.parse("data/clean_prereqs.csv");
 
-      // read in google sheet id, for NEW concentration checker implementation
-      String csABSheetId = System.getenv("CS_AB_SHEET_ID");
-
       Spark.post("add-course", new AddCourseHandler(firebaseUtils, catalog));
       Spark.post("add-semester", new AddSemesterHandler(firebaseUtils));
       Spark.post("remove-course", new RemoveCourseHandler(firebaseUtils, catalog));
@@ -97,21 +98,23 @@ public class Server {
       Spark.get("get-expanded", new GetExpandedHandler(firebaseUtils));
       Spark.get("get-user-courses", new GetUserCoursesHandler(firebaseUtils));
       Spark.get("get-user-courses-detailed", new GetUserCoursesWithTitleHandler(firebaseUtils));
-      //      Spark.get(
-      //          "check-concentration-requirements", new
-      // CheckUserRequirementsHandler(firebaseUtils));
       Spark.get(
           "check-concentration-requirements",
           new CheckUserRequirementsHandler(firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid));
-      Spark.get(
-          "get-concen-reqs",
-          new GetConcentrationRequirementsHandler(
-              firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid));
+      Spark.get("get-concen-reqs", new GetConcentrationRequirementsHandler(firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid));
       Spark.get("check-prereqs", new CheckPrereqsHandler(firebaseUtils, catalog));
       Spark.get("get-prereqs", new GetPrereqHandler(firebaseUtils, catalog));
       Spark.post("update-capstone", new UpdateCapstoneHandler(firebaseUtils));
-      Spark.get("check-capstones", new CheckCapstoneHandler(firebaseUtils));
-      //      Spark.get("get-concen-reqs", new GetConcentrationRequirementsHandler(firebaseUtils));
+      Spark.get("check-capstones", new CheckCapstoneHandler(
+          firebaseUtils,
+          masterSheetId,
+          csAbTabGid,
+          csScbTabGid,
+          apmaCSTabGid,
+          mathCSTabGid,
+          csEconScBTabGid,
+          csEconABTabGid
+      ));
 
       Spark.notFound(
           (request, response) -> {

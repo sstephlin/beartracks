@@ -19,10 +19,17 @@ function App() {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [numCompleted, setNumCompleted] = useState(0);
   const [numRequired, setNumRequired] = useState(0);
+  const [currentCapstoneCourse, setCurrentCapstoneCourse] = useState<string | null>(null);
+
   const handleClickOutside = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).classList.contains("disclaimer-overlay")) {
       setShowDisclaimer(false);
     }
+  };
+
+  const handleCapstoneChange = (courseCode: string | null) => {
+    console.log('Capstone changed to:', courseCode);
+    setCurrentCapstoneCourse(courseCode);
   };
 
   // returns the provided constant variables
@@ -39,6 +46,7 @@ function App() {
           numRequired={numRequired}
           setNumCompleted={setNumCompleted}
           setNumRequired={setNumRequired}
+          currentCapstoneCourse={currentCapstoneCourse}
         />
         <div className="header-and-content">
           <header
@@ -94,6 +102,7 @@ function App() {
             <BearTracks
               expanded={expanded}
               setRefreshSidebar={setRefreshSidebar}
+              onCapstoneChange={handleCapstoneChange}
             />
 
             <div>
