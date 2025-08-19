@@ -2,6 +2,7 @@ import "../styles/App.css";
 import Sidebar from "./Sidebar";
 import BearTracks from "./BearTracks";
 import SearchBar from "./SearchBar";
+import GuidedTour from "./GuidedTour";
 import { HelpCircle } from "lucide-react";
 import { useState } from "react";
 
@@ -17,16 +18,11 @@ function App() {
   const [expanded, setExpanded] = useState<boolean>(true);
   const [degree, setDegree] = useState<string>("");
   const [refreshSidebar, setRefreshSidebar] = useState(false);
-  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [showGuidedTour, setShowGuidedTour] = useState(false);
   const [numCompleted, setNumCompleted] = useState(0);
   const [numRequired, setNumRequired] = useState(0);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [draggedSearchCourse, setDraggedSearchCourse] = useState<any | null>(null);
-  const handleClickOutside = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).classList.contains("disclaimer-overlay")) {
-      setShowDisclaimer(false);
-    }
-  };
 
   // Handle search functionality
   const handleSearch = async (query: string) => {
@@ -136,7 +132,6 @@ function App() {
               </SignedOut>
               <SignedIn>
                 <div className="signed-in-buttons">
-                  <h3>Welcome</h3>
                   <UserButton />
                 </div>
               </SignedIn>
@@ -176,30 +171,16 @@ function App() {
             <div>
               <button
                 className="floating-icon help-icon"
-                onClick={() => setShowDisclaimer(true)}
+                onClick={() => setShowGuidedTour(true)}
+                title="Start Guided Tour"
               >
                 <HelpCircle />
               </button>
             </div>
-            {/* handles the disclaimer functionality */}
-            {showDisclaimer && (
-              <div className="disclaimer-overlay" onClick={handleClickOutside}>
-                <div className="disclaimer-box">
-                  <button
-                    className="close-disclaimer"
-                    onClick={() => setShowDisclaimer(false)}
-                  >
-                    ×
-                  </button>
-                  {/* handles the disclaimer for the user */}
-                  <h2>How to Use BearTracks</h2>
-                  <p>
-                    Search for courses and drag and drop them into semesters.
-                    Use the trash icon to remove courses. Click "+ New Course"
-                    to add a new course.
-                  </p>
-                </div>
-              </div>
+            
+            {/* Guided Tour */}
+            {showGuidedTour && (
+              <GuidedTour onClose={() => setShowGuidedTour(false)} />
             )}
           </main>
         </div>

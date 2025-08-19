@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, forwardRef, useImperativeHandle } from "react";
 import SemesterBox from "./SemesterBox";
 import CourseDrag from "./CourseDrag";
 import { CourseDragManager } from "../hooks/CourseDragManager";
@@ -45,12 +45,12 @@ const allSemesters = [
 ];
 
 // defines all of the constant variables
-export default function Carousel({
+const Carousel = forwardRef(({
   viewCount,
   setViewCount,
   expanded,
   setRefreshSidebar,
-}: CarouselProps) {
+}: CarouselProps, ref) => {
   const [boxIds, setBoxIds] = useState<string[]>(["1"]);
   const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
@@ -576,6 +576,90 @@ export default function Carousel({
       console.error("Network error while adding semester:", err);
     }
   };
+
+  // Sort semesters function
+  const sortSemesters = () => {
+    const termOrder = ["Spring", "Summer", "Fall", "Winter"];
+    
+    // Create an array of [boxId, semester] pairs
+    const semesterEntries = Object.entries(boxSelections);
+    
+    // Check if already sorted
+    const isSorted = semesterEntries.every((entry, index) => {
+      if (index === 0) return true;
+      const prevEntry = semesterEntries[index - 1];
+      const currEntry = entry;
+      
+      const [prevTerm, prevYear] = prevEntry[1].split(" ");
+      const [currTerm, currYear] = currEntry[1].split(" ");
+      
+      const yearDiff = parseInt(currYear) - parseInt(prevYear);
+      if (yearDiff < 0) return false;
+      if (yearDiff > 0) return true;
+      
+      return termOrder.indexOf(currTerm) >= termOrder.indexOf(prevTerm);
+    });
+    
+    if (isSorted) {
+      return 'already_sorted';
+    }
+    
+    // Sort the semesters
+    const sortedSemesters = semesterEntries.sort(([, a], [, b]) => {
+      const [termA, yearA] = a.split(" ");
+      const [termB, yearB] = b.split(" ");
+      const yearDiff = parseInt(yearA) - parseInt(yearB);
+      if (yearDiff !== 0) return yearDiff;
+      return termOrder.indexOf(termA) - termOrder.indexOf(termB);
+    });
+    
+    // Create new box IDs and selections
+    const newBoxIds: string[] = [];
+    const newBoxSelections: { [boxId: string]: string } = {};
+    const coursesBySemester: { [semester: string]: CourseItem[] } = {};
+    
+    // Group courses by semester
+    courses.forEach(course => {
+      if (!coursesBySemester[course.semesterId]) {
+        coursesBySemester[course.semesterId] = [];
+      }
+      coursesBySemester[course.semesterId].push(course);
+    });
+    
+    // Rebuild with sorted order
+    sortedSemesters.forEach(([ , semester], index) => {
+      const newBoxId = String(index + 1);
+      newBoxIds.push(newBoxId);
+      newBoxSelections[newBoxId] = semester;
+      
+      // Update courses with new semester ID
+      if (coursesBySemester[semester]) {
+        coursesBySemester[semester].forEach(course => {
+          course.semesterId = semester;
+        });
+      }
+    });
+    
+    // Update state
+    setBoxIds(newBoxIds);
+    setBoxSelections(newBoxSelections);
+    
+    // Save to storage
+    if (!user?.id) {
+      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: {} };
+      sessionData.semesters = newBoxSelections;
+      sessionStorageUtils.saveSessionData(sessionData);
+    } else {
+      // Backend is already updated, just local state change
+    }
+    
+    return 'sorted';
+  };
+
+  // Expose sortSemesters via ref
+  useImperativeHandle(ref, () => ({
+    sortSemesters
+  }));
 
   useEffect(() => {
     const handleClickOutside = () => {
@@ -1521,4 +1605,7 @@ export default function Carousel({
       )}
     </div>
   );
-}
+});
+
+Carousel.displayName = 'Carousel';
+export default Carousel;
