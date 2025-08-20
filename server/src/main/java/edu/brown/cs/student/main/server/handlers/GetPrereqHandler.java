@@ -26,6 +26,9 @@ public class GetPrereqHandler implements Route {
     // Use 4-digit year format consistently
     String semesterKey = term + " " + year;
 
+
+
+
     // Get user's course schedule
     Map<String, List<String>> semMap = storageHandler.getAllSemestersAndCourses(uid);
     Map<String, String> courseToSemester = new HashMap<>();
@@ -37,11 +40,17 @@ public class GetPrereqHandler implements Route {
 
     // Get prerequisite tree
     PrereqTreeNode prereqTree = catalog.getPrereqTree(courseCode, semesterKey);
-
     Map<String, Object> out = new HashMap<>();
     out.put("response_type", "success");
 
-    if (prereqTree == null || prereqTree.isEmpty()) {
+    // Course is not a CSCI course
+    if (courseCode.startsWith("CSCI") == false){
+      out.put("hasPrereqs", false);
+      out.put("displayText", "Sorry! Please check CAB to view the prerequisites for " + courseCode);
+      out.put("message", "No prerequisites required");
+      out.put("overallStatus", "No prerequisites required");
+    }
+    else if (prereqTree == null || prereqTree.isEmpty()) {
       out.put("hasPrereqs", false);
       out.put("displayText", "No prerequisites required for " + courseCode + "!");
       out.put("message", "No prerequisites required");

@@ -2,7 +2,7 @@ import "../styles/App.css";
 import Sidebar from "./Sidebar";
 import BearTracks from "./BearTracks";
 import SearchBar from "./SearchBar";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, FileText } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -18,13 +18,20 @@ function App() {
   const [degree, setDegree] = useState<string>("");
   const [refreshSidebar, setRefreshSidebar] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [showFormPopup, setShowFormPopup] = useState(false);
   const [numCompleted, setNumCompleted] = useState(0);
   const [numRequired, setNumRequired] = useState(0);
   const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [draggedSearchCourse, setDraggedSearchCourse] = useState<any | null>(null);
+  const [draggedSearchCourse, setDraggedSearchCourse] = useState<any | null>(
+    null
+  );
+
   const handleClickOutside = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).classList.contains("disclaimer-overlay")) {
       setShowDisclaimer(false);
+    }
+    if ((e.target as HTMLElement).classList.contains("form-popup-overlay")) {
+      setShowFormPopup(false);
     }
   };
 
@@ -123,12 +130,12 @@ function App() {
                 </p>
               </div>
             </div>
-            
+
             {/* Search bar in header */}
             <div className="header-search-container">
               <SearchBar onSearch={handleSearch} />
             </div>
-            
+
             {/* handles the sign in button */}
             <div className="Sign-in-out-container">
               <SignedOut>
@@ -142,12 +149,14 @@ function App() {
               </SignedIn>
             </div>
           </header>
-          
+
           {/* Search results section */}
           {searchResults.length > 0 && (
-            <div className={`search-results-container ${
-              expanded ? "expanded" : "collapsed"
-            }`}>
+            <div
+              className={`search-results-container ${
+                expanded ? "expanded" : "collapsed"
+              }`}
+            >
               {searchResults.map((course, index) => (
                 <div
                   key={index}
@@ -165,7 +174,7 @@ function App() {
               ))}
             </div>
           )}
-          
+
           <main className="main-content">
             <BearTracks
               expanded={expanded}
@@ -173,7 +182,13 @@ function App() {
               draggedSearchCourse={draggedSearchCourse}
             />
 
-            <div>
+            <div className="floating-buttons-container">
+              <button
+                className="floating-icon form-icon"
+                onClick={() => setShowFormPopup(true)}
+              >
+                <FileText />
+              </button>
               <button
                 className="floating-icon help-icon"
                 onClick={() => setShowDisclaimer(true)}
@@ -181,6 +196,7 @@ function App() {
                 <HelpCircle />
               </button>
             </div>
+
             {/* handles the disclaimer functionality */}
             {showDisclaimer && (
               <div className="disclaimer-overlay" onClick={handleClickOutside}>
@@ -198,6 +214,33 @@ function App() {
                     Use the trash icon to remove courses. Click "+ New Course"
                     to add a new course.
                   </p>
+                </div>
+              </div>
+            )}
+
+            {/* handles the form popup functionality */}
+            {showFormPopup && (
+              <div className="form-popup-overlay" onClick={handleClickOutside}>
+                <div className="form-popup-box">
+                  <button
+                    className="close-form-popup"
+                    onClick={() => setShowFormPopup(false)}
+                  >
+                    ×
+                  </button>
+                  <h2>Feedback Form</h2>
+                  <p>
+                    We'd love to hear your thoughts! Please fill out our
+                    feedback form to help us improve BearTracks.
+                  </p>
+                  <a
+                    href="https://forms.google.com/your-form-id"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="form-link-button"
+                  >
+                    Open Feedback Form
+                  </a>
                 </div>
               </div>
             )}

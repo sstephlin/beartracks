@@ -11,7 +11,6 @@ import { loadPrerequisites } from "../utils/prerequisiteLoader";
 import "../styles/Carousel.css";
 import "../styles/SemesterBox.css";
 import RightClickComponent from "./RightClick.tsx";
-// import.meta.env.VITE_BACKEND_URL;
 
 interface CarouselProps {
   viewCount: string;
@@ -143,14 +142,12 @@ export default function Carousel({
         courses: [],
         semesters: boxSelections,
       };
-      sessionData.courses = courses.map((c) => ({
-      const sessionData = sessionStorageUtils.getSessionData() || { courses: [], semesters: boxSelections };
       sessionData.courses = courses
-        .filter(c => !c.isEditing)
+        .filter((c) => !c.isEditing)
         .map((c) => ({
-        ...c,
-        isCapstone: checked && c.id === courseId,
-      }));
+          ...c,
+          isCapstone: checked && c.id === courseId,
+        }));
       sessionData.capstoneId = newCapstoneId || undefined;
       sessionStorageUtils.saveSessionData(sessionData);
       return;
@@ -182,7 +179,7 @@ export default function Carousel({
     }
   };
 
-  // NEW: Handle deletion of manual courses (frontend only)
+  // Handle deletion of manual courses (frontend only)
   const handleDeleteManualCourse = (courseId: string) => {
     // Find the course to get its code before deletion
     const courseToDelete = courses.find((c) => c.id === courseId);
@@ -259,7 +256,7 @@ export default function Carousel({
           courses: [],
           semesters: {},
         };
-        sessionData.courses = updated;
+        sessionData.courses = updated.filter((c) => !c.isEditing);
         sessionStorageUtils.saveSessionData(sessionData);
 
         // Recheck prerequisites locally
@@ -414,6 +411,9 @@ export default function Carousel({
         "manualCourseCodes",
         JSON.stringify(Array.from(manualCourseCodes))
       );
+    } else {
+      // Clear from localStorage if no manual courses
+      localStorage.removeItem("manualCourseCodes");
     }
   }, [manualCourseCodes]);
 
@@ -442,7 +442,11 @@ export default function Carousel({
           setBoxIds(newBoxIds);
           setBoxSelections(semesters);
           setUsedSemesters(Object.values(semesters));
-          setCourses(sessionCourses || []);
+          // Filter out courses that were in editing mode
+          const filteredCourses = (sessionCourses || []).filter(
+            (c: any) => !c.isEditing
+          );
+          setCourses(filteredCourses);
 
           if (capstoneId) {
             setCapstoneCourseId(capstoneId);
@@ -453,10 +457,10 @@ export default function Carousel({
           }
 
           // Trigger prerequisite checking for non-signed-in users after loading courses
-          if (sessionCourses && sessionCourses.length > 0) {
+          if (filteredCourses && filteredCourses.length > 0) {
             console.log(
               "Triggering prereq check for session courses:",
-              sessionCourses.length
+              filteredCourses.length
             );
             setTimeout(() => {
               recheckAllPrereqs(filteredCourses);
@@ -641,14 +645,6 @@ export default function Carousel({
 
     fetchCourseAvailability();
   }, []);
-
-  // No longer need year conversion - using 4-digit years everywhere
-
-  // Helper to convert just the year part
-  // No longer needed - using 4-digit years everywhere
-  // const yearTo2Digit = (year: string): string => {
-  //   return year.length === 4 ? year.slice(-2) : year;
-  // };
 
   const checkCourseOfferedInSemester = async (
     courseCode: string,
@@ -840,7 +836,7 @@ export default function Carousel({
           courses: [],
           semesters: {},
         };
-        sessionData.courses = updatedCourses;
+        sessionData.courses = updatedCourses.filter((c) => !c.isEditing);
         sessionStorageUtils.saveSessionData(sessionData);
 
         // Re-check any courses in this same semester that might depend on the
@@ -885,7 +881,8 @@ export default function Carousel({
           for (const course of updatedCourses) {
             if (
               course.semesterId === semesterId &&
-              course.id !== newCourse.id
+              course.id !== newCourse.id &&
+              !course.isManual
             ) {
               const prereqsMet = await checkPrereqs(
                 user.id,
@@ -956,7 +953,7 @@ export default function Carousel({
           courses: [],
           semesters: {},
         };
-        sessionData.courses = updatedCourses;
+        sessionData.courses = updatedCourses.filter((c) => !c.isEditing);
         sessionStorageUtils.saveSessionData(sessionData);
 
         // Check prerequisites for the moved course (local CSV flow)
@@ -1144,7 +1141,7 @@ export default function Carousel({
         courses: [],
         semesters: boxSelections,
       };
-      sessionData.courses = updatedCourses;
+      sessionData.courses = updatedCourses.filter((c) => !c.isEditing);
       sessionData.manualCourses = Array.from(manualCourseCodes);
       sessionStorageUtils.saveSessionData(sessionData);
       return;
@@ -1193,7 +1190,7 @@ export default function Carousel({
             courses: [],
             semesters: boxSelections,
           };
-          sessionData.courses = updated;
+          sessionData.courses = updated.filter((c) => !c.isEditing);
           sessionStorageUtils.saveSessionData(sessionData);
         } else {
           // checks all prerequisites after course removal but uses the updated courses array
@@ -1266,15 +1263,25 @@ export default function Carousel({
 
     // Update state for both signed-in and non-signed-in users
     setBoxIds((prev) => prev.filter((id) => id !== boxIdToDelete));
-    setUsedSemesters((prev) => prev.filter((s) => s !== semester));
+
+    // Only update usedSemesters if a semester was selected
+    if (semester) {
+      setUsedSemesters((prev) => prev.filter((s) => s !== semester));
+    }
 
     const newBoxSelections = { ...boxSelections };
     delete newBoxSelections[boxIdToDelete];
     setBoxSelections(newBoxSelections);
 
-    // removes all courses from that semester
-    const updatedCourses = courses.filter((c) => c.semesterId !== semester);
+    // removes all courses from that semester (if semester was selected)
+    const updatedCourses = semester
+      ? courses.filter((c) => c.semesterId !== semester)
+      : courses;
     setCourses(updatedCourses);
+
+    // Close the menu after action
+    setMenuPosition(null);
+    setSelectedBoxId(null);
 
     if (!user?.id) {
       // Save to session storage if user is not signed in

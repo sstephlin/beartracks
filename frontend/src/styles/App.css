@@ -1,5 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Roboto:wght@300;400;500;700&display=swap");
 
+/* ==========================================================================
+   BASE STYLES
+   ========================================================================== */
+
 html,
 body,
 #root {
@@ -14,9 +18,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  scrollbar-color: rgb(154, 154, 154) transparent;
 }
 
-/* Main App Layout */
+/* ==========================================================================
+   MAIN APP LAYOUT
+   ========================================================================== */
+
 .App {
   flex-grow: 1;
   overflow-y: auto;
@@ -29,16 +37,10 @@ body {
   width: 100%;
 }
 
-.App-header {
+.layout-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #ffffff;
-  margin: 0;
-  width: 100%;
-  padding: 10px 20px;
-  position: relative;
-  box-sizing: border-box;
+  flex-direction: row;
+  height: 100vh;
 }
 
 .header-and-content {
@@ -57,21 +59,43 @@ body {
   margin-left: 4.5vw;
   width: 95.5vw;
 }
-.layout-container {
+
+/* ==========================================================================
+   HEADER STYLES
+   ========================================================================== */
+
+.App-header {
   display: flex;
-  flex-direction: row;
-  height: 100vh;
-}
-
-.header-sidebar-expanded {
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  margin: 0;
   width: 100%;
+  padding: 10px 20px;
+  position: relative;
+  box-sizing: border-box;
 }
 
+.header-sidebar-expanded,
 .header-sidebar-collapsed {
   width: 100%;
 }
 
-/* Logo styling */
+.header-search-container {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 350px;
+  max-width: 35%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ==========================================================================
+   LOGO STYLES
+   ========================================================================== */
+
 .logo {
   display: flex;
   flex-direction: column;
@@ -93,9 +117,8 @@ body {
   font-weight: 600;
   gap: 8px;
 }
-.logo-link:hover {
-  color: #213333;
-}
+
+.logo-link:hover,
 .logo-link:hover .logo-text {
   color: #213333;
 }
@@ -104,8 +127,8 @@ body {
   font-size: 1.8rem;
   font-weight: 700;
   color: #333;
-  margin: 12px 0px -10px 15px; 
-  font-family: 'Gaegu', cursive;
+  margin: 12px 0px -10px 15px;
+  font-family: "Gaegu", cursive;
 }
 
 .logo-icon {
@@ -113,19 +136,17 @@ body {
   height: 40px;
   object-fit: contain;
   border-radius: 8px;
-  margin-top: 17px; 
-  margin-left: -8px; 
+  margin-top: 17px;
+  margin-left: -8px;
 }
 
-.header-search-container {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 350px;
-  max-width: 35%;
+/* Progress Bar */
+.progress-row {
+  margin-top: 0px;
   display: flex;
-  justify-content: center;
   align-items: center;
+  gap: 1vh;
+  justify-content: center;
 }
 
 .logo-progress {
@@ -146,29 +167,69 @@ body {
   background-color: #5cb85c;
   border-radius: 10px;
 }
-.progress-row {
-  margin-top: 0px;
-  display: flex;
-  align-items: center;
-  gap: 1vh;
-  justify-content: center;
+
+/* ==========================================================================
+   SIGN IN/OUT STYLES
+   ========================================================================== */
+
+.Sign-in-out-container {
+  margin-right: 10px;
 }
 
-/* Floating Help Icon */
-.floating-icon.help-icon {
+.Sign-in-out-container button {
+  border: 1.5px solid #2c4444 !important;
+  border-radius: 8px;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+  background-color: white;
+  color: black;
+}
+
+.Sign-in-out-container button:hover {
+  background-color: #213333 !important;
+  color: white !important;
+}
+
+/* ==========================================================================
+   FLOATING BUTTONS
+   ========================================================================== */
+
+.floating-buttons-container {
   position: fixed;
+  bottom: 20px;
   right: 20px;
-  bottom: 30px;
-  cursor: pointer;
+  display: flex;
+  gap: 10px;
   z-index: 999;
+}
+
+/* Base floating icon styles */
+.floating-icon {
+  border: none;
+  border-radius: 50%;
   width: 40px;
   height: 40px;
-  background-color: #f2f2f2;
-  border: none;
-  padding: 8px;
-  border-radius: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  padding: 8px;
+}
+
+.floating-icon:hover {
+  transform: scale(1.05);
+}
+
+.floating-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Help button specific styles */
+.floating-icon.help-icon {
+  background-color: #f2f2f2;
   color: #444444;
 }
 
@@ -176,19 +237,22 @@ body {
   background-color: #e2e2e2;
 }
 
-@media (max-width: 600px) {
-  .App-header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px 3%;
-  }
-
-  .logo {
-    font-size: 18px;
-  }
+/* Form/Feedback button specific styles */
+.floating-icon.form-icon {
+  background-color: #f2f2f2;
+  color: #444444;
 }
 
-.disclaimer-overlay {
+.floating-icon.form-icon:hover {
+  background-color: #e2e2e2;
+}
+
+/* ==========================================================================
+   POPUP OVERLAYS
+   ========================================================================== */
+
+.disclaimer-overlay,
+.form-popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -201,7 +265,9 @@ body {
   z-index: 1000;
 }
 
-.disclaimer-box {
+/* Base popup box styles */
+.disclaimer-box,
+.form-popup-box {
   background-color: white;
   width: 500px;
   max-width: 90%;
@@ -209,9 +275,28 @@ body {
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   position: relative;
+  text-align: center;
 }
 
-.close-disclaimer {
+.disclaimer-box h2,
+.form-popup-box h2 {
+  margin-top: 0;
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.disclaimer-box p,
+.form-popup-box p {
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* Close buttons */
+.close-disclaimer,
+.close-form-popup {
   position: absolute;
   top: 10px;
   right: 15px;
@@ -222,35 +307,61 @@ body {
   color: #777;
   padding: 0;
   line-height: 1;
+  transition: color 0.3s ease;
 }
 
-.disclaimer-box h2 {
-  margin-top: 0;
+.close-disclaimer:hover,
+.close-form-popup:hover {
   color: #333;
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
 }
 
-.disclaimer-box p {
-  color: #555;
-  line-height: 1.5;
-  margin-bottom: 0;
-}
-
-/* Sign in button styling */
-.Sign-in-out-container {
-  margin-right: 10px;
-}
-
-.Sign-in-out-container button {
-  border: 1.5px solid #2c4444 !important;
-  border-radius: 8px;
-  padding: 8px 16px;
+/* Form link button */
+.form-link-button {
+  display: inline-block;
+  background-color: #213333;
+  color: white;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 5px;
+  font-weight: 600;
   transition: all 0.3s ease;
 }
 
-.Sign-in-out-container button:hover {
-  background-color: #213333 !important;
-  color: white !important;
+.form-link-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  text-decoration: none;
+  color: white;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 600px) {
+  .App-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 3%;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+
+  .floating-buttons-container {
+    bottom: 15px;
+    right: 15px;
+    gap: 8px;
+  }
+
+  .floating-icon {
+    width: 35px;
+    height: 35px;
+  }
+
+  .floating-icon svg {
+    width: 20px;
+    height: 20px;
+  }
 }

@@ -11,6 +11,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 10;
+  scrollbar-color: rgb(154, 154, 154) transparent;
 }
 
 .sidebar-expanded {

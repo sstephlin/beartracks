@@ -86,6 +86,17 @@ export default function CourseDrag({
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const popupRef = useRef<HTMLDivElement>(null);
 
+  // Helper function to check if displayText indicates prerequisites cannot be displayed
+  const shouldShowExternalLink = (displayText?: string): boolean => {
+    if (!displayText) return false;
+    return (
+      displayText.toLowerCase().includes("sorry") &&
+      displayText
+        .toLowerCase()
+        .includes("please check cab to view the prerequisites")
+    );
+  };
+
   // this handles enter key press to save course
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && onSaveCourse) {
@@ -529,7 +540,7 @@ export default function CourseDrag({
                   {loading ? "Loading..." : "Prerequisites"}
                 </button>
 
-                {/* Prerequisites popup - Updated with box layout */}
+                {/* Prerequisites popup - Updated with box layout and external link support */}
                 {showPrereqPopup && prerequisiteData && (
                   <div
                     className="prereq-popup"
@@ -598,15 +609,48 @@ export default function CourseDrag({
                           style={{
                             textAlign: "center",
                             padding: "16px", // Reduced padding
-                            backgroundColor: "#d4edda",
-                            border: "1px solid #28a745",
+                            backgroundColor: shouldShowExternalLink(
+                              prerequisiteData.displayText
+                            )
+                              ? "#fff3cd"
+                              : "#d4edda",
+                            border: `1px solid ${"#28a745"}`,
                             borderRadius: "6px",
                             color: "#155724",
                             fontSize: "12px",
                           }}
                         >
-                          {prerequisiteData.displayText ||
-                            prerequisiteData.message}
+                          <div
+                            style={{
+                              marginBottom: shouldShowExternalLink(
+                                prerequisiteData.displayText
+                              )
+                                ? "8px"
+                                : "0",
+                            }}
+                          >
+                            {prerequisiteData.displayText ||
+                              prerequisiteData.message}
+                          </div>
+                          {shouldShowExternalLink(
+                            prerequisiteData.displayText
+                          ) && (
+                            <div>
+                              <a
+                                href="https://cab.brown.edu/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  color: "#0066cc",
+                                  textDecoration: "underline",
+                                  fontSize: "12px",
+                                  fontWeight: "500",
+                                }}
+                              >
+                                View course information on Brown CAB →
+                              </a>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
