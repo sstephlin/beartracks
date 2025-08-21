@@ -21,6 +21,7 @@ function App() {
   const [showGuidedTour, setShowGuidedTour] = useState(false);
   const [numCompleted, setNumCompleted] = useState(0);
   const [numRequired, setNumRequired] = useState(0);
+<<<<<<< HEAD
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [draggedSearchCourse, setDraggedSearchCourse] = useState<any | null>(null);
 
@@ -29,6 +30,13 @@ function App() {
     if (!query.trim()) {
       setSearchResults([]);
       return;
+=======
+  const [currentCapstoneCourse, setCurrentCapstoneCourse] = useState<string | null>(null);
+
+  const handleClickOutside = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).classList.contains("disclaimer-overlay")) {
+      setShowDisclaimer(false);
+>>>>>>> 3487c8a47a885fb3e09d6b1e4a2a7b72d47afd33
     }
 
     try {
@@ -66,6 +74,11 @@ function App() {
     setDraggedSearchCourse(null);
   };
 
+  const handleCapstoneChange = (courseCode: string | null) => {
+    console.log('Capstone changed to:', courseCode);
+    setCurrentCapstoneCourse(courseCode);
+  };
+
   // returns the provided constant variables
   return (
     <div className="App">
@@ -80,6 +93,7 @@ function App() {
           numRequired={numRequired}
           setNumCompleted={setNumCompleted}
           setNumRequired={setNumRequired}
+          currentCapstoneCourse={currentCapstoneCourse}
         />
         <div className={`header-and-content ${!expanded ? "collapsed" : ""}`}>
           <header
@@ -165,7 +179,11 @@ function App() {
             <BearTracks
               expanded={expanded}
               setRefreshSidebar={setRefreshSidebar}
+<<<<<<< HEAD
               draggedSearchCourse={draggedSearchCourse}
+=======
+              onCapstoneChange={handleCapstoneChange}
+>>>>>>> 3487c8a47a885fb3e09d6b1e4a2a7b72d47afd33
             />
 
             <div>

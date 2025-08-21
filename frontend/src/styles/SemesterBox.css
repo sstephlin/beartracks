@@ -169,6 +169,13 @@
 }
 
 .capstone-checkbox {
+<<<<<<< HEAD
+=======
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  transform: scale(1.2);
+>>>>>>> 3487c8a47a885fb3e09d6b1e4a2a7b72d47afd33
   cursor: pointer;
   transform: scale(1.1);
 }

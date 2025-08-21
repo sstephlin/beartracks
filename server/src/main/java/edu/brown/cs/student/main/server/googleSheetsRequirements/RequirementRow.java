@@ -13,6 +13,7 @@ public class RequirementRow {
   private final List<String> substitutions;
   private final String alternativeCategory;
   private final String overridesCategory;
+  private final String parentCategory;
 
   public RequirementRow(
       String categoryName,
@@ -23,7 +24,8 @@ public class RequirementRow {
       Integer maxUses,
       List<String> substitutions,
       String alternativeCategory,
-      String overridesCategory) {
+      String overridesCategory,
+      String parentCategory) {
     this.categoryName = categoryName;
     this.displayName = displayName;
     this.ruleType = ruleType;
@@ -33,6 +35,7 @@ public class RequirementRow {
     this.substitutions = substitutions;
     this.alternativeCategory = alternativeCategory;
     this.overridesCategory = overridesCategory;
+    this.parentCategory = parentCategory;
   }
 
   public String getCategoryName() {
@@ -69,5 +72,9 @@ public class RequirementRow {
 
   public String getOverridesCategory() {
     return overridesCategory;
+  }
+
+  public String getParentCategory() {
+    return this.parentCategory;
   }
 }
