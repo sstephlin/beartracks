@@ -112,7 +112,7 @@ export default function Sidebar(props: SidebarProps) {
           categoryName: key,
           displayName: displayName,
           acceptedCourses: courses,
-          parentCategory: isElectiveSubcategory ? "Electives (Total)" : ""
+          parentCategory: isElectiveSubcategory ? "Electives" : ""
         };
       });
       setDegreeInfo(transformedRequirements);
@@ -168,7 +168,7 @@ export default function Sidebar(props: SidebarProps) {
                                subcategory === "Non-technical (1)" ? ["Any non-CS course"] :
                                subcategory === "Software Engineering (1)" ? ["CSCI 0320", "CSCI 1320"] :
                                subcategory === "Linear Algebra (1)" ? ["MATH 0520", "MATH 0540", "CSCI 0530"] : [],
-              parentCategory: "Electives (Total)"
+              parentCategory: "Electives"
             };
           } else if (Array.isArray(data.requirements_options[subcategory])) {
             // If it's an array, transform it to object format
@@ -176,15 +176,16 @@ export default function Sidebar(props: SidebarProps) {
               categoryName: subcategory,
               displayName: subcategory,
               acceptedCourses: data.requirements_options[subcategory],
-              parentCategory: "Electives (Total)"
+              parentCategory: "Electives"
             };
           } else if (data.requirements_options[subcategory] && typeof data.requirements_options[subcategory] === 'object') {
             // Ensure it has the parent category set
-            data.requirements_options[subcategory].parentCategory = "Electives (Total)";
+            data.requirements_options[subcategory].parentCategory = "Electives";
           }
         });
       }
       
+      console.log("Final requirements with electives:", data.requirements_options);
       setDegreeInfo(data.requirements_options);
     } catch (err) {
       console.error("Failed to fetch requirements:", err);
@@ -264,6 +265,13 @@ export default function Sidebar(props: SidebarProps) {
       Object.keys(degreeInfo).forEach(key => {
         let item = degreeInfo[key];
         
+        // Skip any Electives category that might come from backend since we'll create our own
+        const isElectivesVariant = key === "Electives" || key === "4 Electives" || key === "2 Electives";
+        if (isElectivesVariant) {
+          console.log(`Skipping Electives category from backend: ${key}`);
+          return;
+        }
+        
         // If item is an array, convert it to the expected object structure
         if (Array.isArray(item)) {
           item = {
@@ -327,9 +335,10 @@ export default function Sidebar(props: SidebarProps) {
         // Override parent category for known elective subcategories
         let parentCategory = item.parentCategory;
         if (electiveSubcategories.includes(key) || electiveSubcategories.includes(item.categoryName)) {
-          parentCategory = "Electives (Total)";
+          parentCategory = "Electives";
           item.parentCategory = parentCategory;
         }
+        
         if (parentCategory && parentCategory.length > 0) {
           if (!parentToChildrenMap[parentCategory]) {
             parentToChildrenMap[parentCategory] = [];
@@ -341,55 +350,75 @@ export default function Sidebar(props: SidebarProps) {
       });
       
       // Check if we have electives subcategories
-      const electivesChildren = parentToChildrenMap["Electives (Total)"] || [];
+      const electivesChildren = parentToChildrenMap["Electives"] || [];
       console.log('Electives children found:', electivesChildren);
       console.log('Parent to children map:', parentToChildrenMap);
-      
-      // If we have electives subcategories, create an Electives parent
+
+      // Only create an Electives parent if we have electives subcategories
       if (electivesChildren.length > 0) {
-        // Create or find the Electives parent category
-        let electivesParent = topLevelCategories.find(cat => cat.categoryName === "Electives" || cat.categoryName === "Electives (Total)");
+        console.log('Creating Electives parent category with children:', electivesChildren.map(c => c.categoryName));
         
-        if (!electivesParent) {
-          // Determine the display name based on degree type
-          const isScB = selectedDegree && selectedDegree.includes("Sc.B");
-          const electivesDisplayName = isScB ? "4 Electives" : "2 Electives";
-          
-          // Create a new Electives parent if it doesn't exist
-          electivesParent = {
-            categoryName: "Electives",
-            displayName: electivesDisplayName,
-            acceptedCourses: [], // Parent won't have direct courses
-            parentCategory: "",
-            children: electivesChildren
-          };
-          topLevelCategories.push(electivesParent);
-        } else {
-          // Update display name and add children to existing Electives category
-          const isScB = selectedDegree && selectedDegree.includes("Sc.B");
-          electivesParent.displayName = isScB ? "4 Electives" : "2 Electives";
-          electivesParent.children = electivesChildren;
-        }
+        // Remove any existing Electives categories that might have come from backend
+        topLevelCategories = topLevelCategories.filter(cat => 
+          cat.categoryName !== "Electives" && 
+          cat.categoryName !== "4 Electives" && 
+          cat.categoryName !== "2 Electives"
+        );
         
-        // Remove the Electives (Total) from top level if it exists
-        topLevelCategories = topLevelCategories.filter(cat => cat.categoryName !== "Electives (Total)");
+        // Determine the display name based on degree type
+        const isScB = selectedDegree && selectedDegree.includes("Sc.B");
+        const electivesDisplayName = isScB ? "4 Electives" : "2 Electives";
+        console.log(`Creating Electives parent: ${electivesDisplayName}`);
+
+        // Create a single Electives parent with children
+        const electivesParent = {
+          categoryName: "Electives",
+          displayName: electivesDisplayName,
+          acceptedCourses: [], // Parent category doesn't have direct courses
+          parentCategory: "",
+          children: electivesChildren
+        };
+        topLevelCategories.push(electivesParent);
+      } else {
+        console.log('No electives children found - not creating Electives category');
       }
       
       // Second pass: build the nested structure
       const newNestedRequirements: any[] = [];
+      
+      // Keep track of which categories we've already added
+      const addedCategories = new Set<string>();
+      
       topLevelCategories.forEach(item => {
+        // Skip if we've already added this category
+        if (addedCategories.has(item.categoryName)) {
+          return;
+        }
+        
         const children = item.children || parentToChildrenMap[item.categoryName];
         if (children && children.length > 0) {
           newNestedRequirements.push({
             ...item,
             children: children
           });
-        } else if (item.categoryName !== "Electives" || item.acceptedCourses?.length > 0) {
-          // Only add non-Electives items or Electives with courses
-          newNestedRequirements.push(item);
+          addedCategories.add(item.categoryName);
+        } else if (item.categoryName !== "Electives") {
+          // Only add non-Electives items without children
+          // Don't add items that have a parent category - they'll be included as children
+          if (!item.parentCategory || item.parentCategory === "") {
+            newNestedRequirements.push(item);
+            addedCategories.add(item.categoryName);
+          }
+        } else if (item.categoryName === "Electives" && (!children || children.length === 0)) {
+          // Only add Electives without children if it has courses
+          if (item.acceptedCourses?.length > 0) {
+            newNestedRequirements.push(item);
+            addedCategories.add(item.categoryName);
+          }
         }
       });
-      console.log('Nested requirements structure:', newNestedRequirements);
+
+      console.log('Final nested requirements structure:', newNestedRequirements);
       setNestedRequirements(newNestedRequirements);
     }
   }, [degreeInfo, selectedDegree]);
@@ -532,7 +561,7 @@ export default function Sidebar(props: SidebarProps) {
               {/* MAIN CONCENTRATION REQUIREMENTS CONTAINER */}
               <div className="concentration-req-container">
                 {shouldShowRequirements() &&
-                  nestedRequirements.filter(category => category.categoryName !== "Capstone").map((category) => {
+                  nestedRequirements.filter(category => category.categoryName !== "Capstone" && !category.parentCategory).map((category) => {
                     const isExpanded = expandedKeys[category.categoryName];
                     
                     if (category.children) {
