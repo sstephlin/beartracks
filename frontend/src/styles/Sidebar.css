@@ -139,3 +139,78 @@
 .cannot-list {
   color: #ac5a5ad2;
 }
+
+
+/* Capstone-specific styles */
+.capstone-active {
+  background-color: #d4edda !important; /* Light green background */
+  border-left: 3px solid #28a745 !important; /* Green left border */
+  font-weight: 600 !important;
+  color: #155724 !important; /* Dark green text */
+}
+
+.capstone-indicator {
+  color: #28a745;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+/* Optional: Add a subtle animation when capstone status changes */
+.capstone-active {
+  transition: all 0.3s ease;
+}
+
+/* Ensure capstone section appears at the bottom */
+.concentration-req-container .concentration-category:last-child {
+  margin-bottom: 0;
+}
+/* Subcategory styles for nested Electives */
+.concentration-subcategory {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+  border-left: 2px solid #213333;
+  padding-left: 0.75rem;
+}
+
+.subcategory-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  color: #213333;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.subcategory-expand {
+  background: #213333;
+  border: none;
+  border-radius: 4px;
+  padding: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  width: 20px;
+  height: 20px;
+}
+
+.subcategory-expand:hover {
+  background: #2a4444;
+}
+
+.subcategory-expand .button-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.subcategory-courses {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.subcategory-list {
+  margin-top: 0.5rem;
+}
+

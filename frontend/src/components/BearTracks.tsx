@@ -9,6 +9,7 @@ interface BearTracksProps {
   expanded: boolean;
   setRefreshSidebar: React.Dispatch<React.SetStateAction<boolean>>;
   draggedSearchCourse: any | null;
+  onCapstoneChange?: (courseCode: string | null) => void;
 }
 
 // constant variables
@@ -20,6 +21,13 @@ export default function BearTracks(props: BearTracksProps) {
     string | null
   >(null);
   const carouselRef = useRef<any>(null);
+
+  // Handler to pass capstone changes up to parent
+  const handleCapstoneChange = (courseCode: string | null) => {
+    if (props.onCapstoneChange) {
+      props.onCapstoneChange(courseCode);
+    }
+  };
 
   async function handleViewCount(value: string) {
     setViewCount(value);
@@ -75,6 +83,7 @@ export default function BearTracks(props: BearTracksProps) {
         expanded={props.expanded}
         setRefreshSidebar={props.setRefreshSidebar}
         ref={carouselRef}
+        onCapstoneChange={handleCapstoneChange}
       />
 
       <div className="view-and-sort-container">

@@ -178,19 +178,23 @@
   }
 }
 
-.display-view {
-  /* position: fixed; */
+.view-and-sort-container {
   display: flex;
-  border: 2px solid #1e3a8a;
+  gap: 20px;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.display-view {
+  display: flex;
+  border: 2px solid #213333;
   border-radius: 9999px;
   overflow: hidden;
   width: 120px;
   height: 40px;
   background-color: white;
   align-items: center;
-  right: 0;
-  margin-top: 20px;
-  margin-bottom: 20px;
 }
 
 .display-view-button {
@@ -201,6 +205,7 @@
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
+  height: 100%;
 }
 .display-view-button:focus {
   outline: none;
@@ -210,11 +215,64 @@
 .display-view-button.selected {
   background-color: #213333;
   color: white;
-  height: 120%;
+  height: 100%;
   align-items: center;
 }
 
 .display-view-button.unselected {
   background-color: white;
   color: #213333;
+}
+
+.sort-semesters-button {
+  padding: 0 20px;
+  height: 40px;
+  border: 2px solid #213333;
+  border-radius: 9999px;
+  background-color: white;
+  color: #213333;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.sort-semesters-button:hover {
+  background-color: #213333;
+  color: white;
+}
+
+.sort-semesters-button:focus {
+  outline: none;
+  /* box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2); */
+}
+
+.sort-notification {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+  font-weight: 500;
+}
+
+.sort-notification.already-sorted {
+  background-color: #424242;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }

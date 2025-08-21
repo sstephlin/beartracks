@@ -3,6 +3,8 @@ import Sidebar from "./Sidebar";
 import BearTracks from "./BearTracks";
 import SearchBar from "./SearchBar";
 import { HelpCircle, FileText } from "lucide-react";
+import GuidedTour from "./GuidedTour";
+// import { HelpCircle } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -17,6 +19,7 @@ function App() {
   const [expanded, setExpanded] = useState<boolean>(true);
   const [degree, setDegree] = useState<string>("");
   const [refreshSidebar, setRefreshSidebar] = useState(false);
+  const [showGuidedTour, setShowGuidedTour] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [showFormPopup, setShowFormPopup] = useState(false);
   const [numCompleted, setNumCompleted] = useState(0);
@@ -25,13 +28,9 @@ function App() {
   const [draggedSearchCourse, setDraggedSearchCourse] = useState<any | null>(
     null
   );
-
   const handleClickOutside = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).classList.contains("disclaimer-overlay")) {
       setShowDisclaimer(false);
-    }
-    if ((e.target as HTMLElement).classList.contains("form-popup-overlay")) {
-      setShowFormPopup(false);
     }
   };
 
@@ -77,6 +76,11 @@ function App() {
     setDraggedSearchCourse(null);
   };
 
+  const handleCapstoneChange = (courseCode: string | null) => {
+    console.log("Capstone changed to:", courseCode);
+    setCurrentCapstoneCourse(courseCode ?? undefined);
+  };
+
   // returns the provided constant variables
   return (
     <div className="App">
@@ -91,6 +95,7 @@ function App() {
           numRequired={numRequired}
           setNumCompleted={setNumCompleted}
           setNumRequired={setNumRequired}
+          currentCapstoneCourse={currentCapstoneCourse}
         />
         <div className={`header-and-content ${!expanded ? "collapsed" : ""}`}>
           <header
@@ -143,7 +148,6 @@ function App() {
               </SignedOut>
               <SignedIn>
                 <div className="signed-in-buttons">
-                  <h3>Welcome</h3>
                   <UserButton />
                 </div>
               </SignedIn>
@@ -180,6 +184,7 @@ function App() {
               expanded={expanded}
               setRefreshSidebar={setRefreshSidebar}
               draggedSearchCourse={draggedSearchCourse}
+              onCapstoneChange={handleCapstoneChange}
             />
 
             <div className="floating-buttons-container">
@@ -191,31 +196,16 @@ function App() {
               </button>
               <button
                 className="floating-icon help-icon"
-                onClick={() => setShowDisclaimer(true)}
+                onClick={() => setShowGuidedTour(true)}
+                title="Start Guided Tour"
               >
                 <HelpCircle />
               </button>
             </div>
 
-            {/* handles the disclaimer functionality */}
-            {showDisclaimer && (
-              <div className="disclaimer-overlay" onClick={handleClickOutside}>
-                <div className="disclaimer-box">
-                  <button
-                    className="close-disclaimer"
-                    onClick={() => setShowDisclaimer(false)}
-                  >
-                    ×
-                  </button>
-                  {/* handles the disclaimer for the user */}
-                  <h2>How to Use BearTracks</h2>
-                  <p>
-                    Search for courses and drag and drop them into semesters.
-                    Use the trash icon to remove courses. Click "+ New Course"
-                    to add a new course.
-                  </p>
-                </div>
-              </div>
+            {/* Guided Tour */}
+            {showGuidedTour && (
+              <GuidedTour onClose={() => setShowGuidedTour(false)} />
             )}
 
             {/* handles the form popup functionality */}

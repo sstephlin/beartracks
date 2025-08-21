@@ -318,6 +318,10 @@
 }
 
 .capstone-checkbox {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  transform: scale(1.2);
   cursor: pointer;
   transform: scale(1.1);
   accent-color: #5a6268;

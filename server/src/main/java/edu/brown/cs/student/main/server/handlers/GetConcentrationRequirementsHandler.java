@@ -5,7 +5,6 @@ import edu.brown.cs.student.main.server.googleSheetsRequirements.RequirementRow;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
@@ -86,16 +85,9 @@ public class GetConcentrationRequirementsHandler implements Route {
                 + ". Check sheet ID and GID.");
       }
 
-      // Step 5: Map internal category names to display names with their accepted courses
-      Map<String, List<String>> requirementOptions = new LinkedHashMap<>();
-      for (Map.Entry<String, RequirementRow> entry : requirements.entrySet()) {
-        RequirementRow row = entry.getValue();
-        // The display name is now the key, and the accepted courses are the value
-        requirementOptions.put(row.getDisplayName(), row.getAcceptedCourses());
-      }
-
+      // Step 5: Directly return the map of RequirementRow objects
       responseMap.put("response_type", "success");
-      responseMap.put("requirements_options", requirementOptions);
+      responseMap.put("requirements_options", requirements);
 
     } catch (IllegalArgumentException e) {
       response.status(400); // Bad Request
