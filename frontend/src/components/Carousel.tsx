@@ -187,14 +187,14 @@ export default function Carousel({
     }
   }, [courses, onCapstoneChange]);
 
-  useEffect(() => {
-    if (!user?.id) {
-      const sessionData = sessionStorageUtils.getSessionData();
-      if (sessionData?.currentCapstoneCourse && onCapstoneChange) {
-        onCapstoneChange(sessionData.currentCapstoneCourse);
-      }
-    }
-  }, [user?.id, onCapstoneChange]);
+  // useEffect(() => {
+  //   if (!user?.id) {
+  //     const sessionData = sessionStorageUtils.getSessionData();
+  //     if (sessionData?.currentCapstoneCourse && onCapstoneChange) {
+  //       onCapstoneChange(sessionData.currentCapstoneCourse);
+  //     }
+  //   }
+  // }, [user?.id, onCapstoneChange]);
 
   // NEW: Handle deletion of manual courses (frontend only)
   const handleDeleteManualCourse = (courseId: string) => {

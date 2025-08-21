@@ -287,6 +287,14 @@ export default function Sidebar(props: SidebarProps) {
     }
   }
 
+  // Helper function to check if we should show any requirements
+  const shouldShowRequirements = () => {
+    return props.degree !== "Undeclared" && 
+           !loading && 
+           nestedRequirements && 
+           nestedRequirements.length > 0;
+  };
+
   return (
     <aside
       className={`sidebar ${
@@ -336,9 +344,10 @@ export default function Sidebar(props: SidebarProps) {
                   completed!
                 </h3>
               </div>
+              
+              {/* MAIN CONCENTRATION REQUIREMENTS CONTAINER */}
               <div className="concentration-req-container">
-                {props.degree !== "Undeclared" &&
-                  !loading && nestedRequirements &&
+                {shouldShowRequirements() &&
                   nestedRequirements.map((category) => {
                     const isExpanded = expandedKeys[category.categoryName];
                     
@@ -460,60 +469,60 @@ export default function Sidebar(props: SidebarProps) {
                     }
                     return null;
                   })}
-              </div>
-            </div>
-          )}
-          
-          {/* DEDICATED CAPSTONE SECTION */}
-          {!loading && (
-            <div className="concentration-category">
-              <div className="concentration-row">
-                <button
-                  onClick={() => handleExpand("Capstone")}
-                  className="expand-button"
-                >
-                  <svg
-                    className={`button-icon ${expandedKeys["Capstone"] ? "rotated" : ""}`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="white"
-                    width="24"
-                    height="24"
-                    style={{ display: "block" }}
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 14a1 1 0 01-.707-.293l-5-5a1 1 0 011.414-1.414L10 11.586l4.293-4.293a1 1 0 011.414 1.414l-5 5A1 1 0 0110 14z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-                Capstone
-              </div>
 
-              <div className="requirement-list-container">
-                {expandedKeys["Capstone"] && (
-                  <div>
-                    <ul className="requirement-list">
-                      {capstoneEligibleCourses.length === 0 ? (
-                        <p className="cannot-list">
-                          Sorry! Cannot list courses at the moment
-                        </p>
-                      ) : (
-                        capstoneEligibleCourses.map((course) => (
-                          <li
-                            key={course}
-                            className={`${
-                              props.currentCapstoneCourse === course
-                                ? "requirement_completed"
-                                : "requirement_not_completed"
-                            }`}
-                          >
-                            {course}
-                          </li>
-                        ))
+                {/* CAPSTONE SECTION - Only show if other requirements are also showing */}
+                {shouldShowRequirements() && (
+                  <div className="concentration-category">
+                    <div className="concentration-row">
+                      <button
+                        onClick={() => handleExpand("Capstone")}
+                        className="expand-button"
+                      >
+                        <svg
+                          className={`button-icon ${expandedKeys["Capstone"] ? "rotated" : ""}`}
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="white"
+                          width="24"
+                          height="24"
+                          style={{ display: "block" }}
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 14a1 1 0 01-.707-.293l-5-5a1 1 0 011.414-1.414L10 11.586l4.293-4.293a1 1 0 011.414 1.414l-5 5A1 1 0 0110 14z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                      Capstone
+                    </div>
+
+                    <div className="requirement-list-container">
+                      {expandedKeys["Capstone"] && (
+                        <div>
+                          <ul className="requirement-list">
+                            {capstoneEligibleCourses.length === 0 ? (
+                              <p className="cannot-list">
+                                Sorry! Cannot list courses at the moment
+                              </p>
+                            ) : (
+                              capstoneEligibleCourses.map((course) => (
+                                <li
+                                  key={course}
+                                  className={`${
+                                    props.currentCapstoneCourse === course
+                                      ? "requirement_completed"
+                                      : "requirement_not_completed"
+                                  }`}
+                                >
+                                  {course}
+                                </li>
+                              ))
+                            )}
+                          </ul>
+                        </div>
                       )}
-                    </ul>
+                    </div>
                   </div>
                 )}
               </div>
