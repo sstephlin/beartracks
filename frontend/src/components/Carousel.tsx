@@ -51,12 +51,8 @@ const Carousel = forwardRef(({
   setViewCount,
   expanded,
   setRefreshSidebar,
-<<<<<<< HEAD
-}: CarouselProps, ref) => {
-=======
   onCapstoneChange,
-}: CarouselProps) {
->>>>>>> 3487c8a47a885fb3e09d6b1e4a2a7b72d47afd33
+}: CarouselProps, ref) => {
   const [boxIds, setBoxIds] = useState<string[]>(["1"]);
   const [usedSemesters, setUsedSemesters] = useState<string[]>([]);
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);

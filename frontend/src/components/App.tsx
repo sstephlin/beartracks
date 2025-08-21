@@ -21,22 +21,15 @@ function App() {
   const [showGuidedTour, setShowGuidedTour] = useState(false);
   const [numCompleted, setNumCompleted] = useState(0);
   const [numRequired, setNumRequired] = useState(0);
-<<<<<<< HEAD
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [draggedSearchCourse, setDraggedSearchCourse] = useState<any | null>(null);
+  const [currentCapstoneCourse, setCurrentCapstoneCourse] = useState<string | undefined>(undefined);
 
   // Handle search functionality
   const handleSearch = async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
       return;
-=======
-  const [currentCapstoneCourse, setCurrentCapstoneCourse] = useState<string | null>(null);
-
-  const handleClickOutside = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).classList.contains("disclaimer-overlay")) {
-      setShowDisclaimer(false);
->>>>>>> 3487c8a47a885fb3e09d6b1e4a2a7b72d47afd33
     }
 
     try {
@@ -76,7 +69,7 @@ function App() {
 
   const handleCapstoneChange = (courseCode: string | null) => {
     console.log('Capstone changed to:', courseCode);
-    setCurrentCapstoneCourse(courseCode);
+    setCurrentCapstoneCourse(courseCode ?? undefined);
   };
 
   // returns the provided constant variables
@@ -179,11 +172,8 @@ function App() {
             <BearTracks
               expanded={expanded}
               setRefreshSidebar={setRefreshSidebar}
-<<<<<<< HEAD
               draggedSearchCourse={draggedSearchCourse}
-=======
               onCapstoneChange={handleCapstoneChange}
->>>>>>> 3487c8a47a885fb3e09d6b1e4a2a7b72d47afd33
             />
 
             <div>

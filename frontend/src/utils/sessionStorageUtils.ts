@@ -6,6 +6,7 @@ export interface SessionData {
   courses: CourseItem[];
   semesters: { [boxId: string]: string };
   capstoneId?: string;
+  currentCapstoneCourse?: string;
   concentration?: string;
   expandedSidebar?: boolean;
   viewCount?: string;
