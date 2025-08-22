@@ -179,6 +179,7 @@ export default function Sidebar(props: SidebarProps) {
       props.setNumRequired(data.total_required)
       
       console.log("Breakdown for", user.id, data.user_requirements_breakdown);
+      console.log("CourseInfo keys for signed-in user:", Object.keys(data.user_requirements_breakdown));
     } catch (err) {
       console.error("Failed to fetch requirements:", err);
     } finally {
@@ -591,18 +592,29 @@ export default function Sidebar(props: SidebarProps) {
                                             No courses for {child.categoryName}
                                           </li>
                                         ) : (
-                                          (child.acceptedCourses || []).map((course: string) => (
-                                            <li
-                                              key={course}
-                                              className={`${
-                                                (courseInfo[child.categoryName] || []).includes(course)
-                                                  ? "requirement_completed"
-                                                  : "requirement_not_completed"
-                                              }`}
-                                            >
-                                              {course}
-                                            </li>
-                                          ))
+                                          (child.acceptedCourses || []).map((course: string) => {
+                                            // Check both the child's category name and parent category for course completion
+                                            // This handles cases where backend might group electives differently
+                                            const isCompleted = 
+                                              (courseInfo[child.categoryName] || []).includes(course) ||
+                                              (courseInfo["Electives"] || []).includes(course) ||
+                                              (courseInfo["Electives (Total)"] || []).includes(course) ||
+                                              (courseInfo["4 Electives"] || []).includes(course) ||
+                                              (courseInfo["2 Electives"] || []).includes(course);
+                                            
+                                            return (
+                                              <li
+                                                key={course}
+                                                className={`${
+                                                  isCompleted
+                                                    ? "requirement_completed"
+                                                    : "requirement_not_completed"
+                                                }`}
+                                              >
+                                                {course}
+                                              </li>
+                                            );
+                                          })
                                         )}
                                       </ul>
                                     )}
