@@ -102,7 +102,8 @@ public class Server {
       Spark.get("get-user-courses-detailed", new GetUserCoursesWithTitleHandler(firebaseUtils));
       Spark.get(
           "check-concentration-requirements",
-          new CheckUserRequirementsHandler(firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid, csAb27TabGid, csScb27TabGid));
+          new CheckUserRequirementsHandler(
+              firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid, csAb27TabGid, csScb27TabGid));
       Spark.get(
           "get-concen-reqs",
           new GetConcentrationRequirementsHandler(
