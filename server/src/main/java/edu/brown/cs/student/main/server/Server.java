@@ -45,6 +45,8 @@ public class Server {
     String masterSheetId = dotenv.get("MASTER_GOOGLE_SHEET_ID");
     String csAbTabGid = dotenv.get("CS_AB_TAB_GID");
     String csScbTabGid = dotenv.get("CS_SCB_TAB_GID");
+    String csAb27TabGid = dotenv.get("CS_AB_TAB_27_GID");
+    String csScb27TabGid = dotenv.get("CS_SCB_TAB_27_GID");
     String apmaCSTabGid = dotenv.get("APMA_CS_TAB_GID");
     String mathCSTabGid = dotenv.get("MATH_CS_TAB_GID");
     String csEconScBTabGid = dotenv.get("CS_ECON_ScB_TAB_GID");
@@ -100,11 +102,11 @@ public class Server {
       Spark.get("get-user-courses-detailed", new GetUserCoursesWithTitleHandler(firebaseUtils));
       Spark.get(
           "check-concentration-requirements",
-          new CheckUserRequirementsHandler(firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid));
+          new CheckUserRequirementsHandler(firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid, csAb27TabGid, csScb27TabGid));
       Spark.get(
           "get-concen-reqs",
           new GetConcentrationRequirementsHandler(
-              firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid));
+              firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid, csAb27TabGid, csScb27TabGid));
       Spark.get("check-prereqs", new CheckPrereqsHandler(firebaseUtils, catalog));
       Spark.get("get-prereqs", new GetPrereqHandler(firebaseUtils, catalog));
       Spark.post("update-capstone", new UpdateCapstoneHandler(firebaseUtils));
@@ -115,6 +117,8 @@ public class Server {
               masterSheetId,
               csAbTabGid,
               csScbTabGid,
+              csAb27TabGid,
+              csScb27TabGid,
               apmaCSTabGid,
               mathCSTabGid,
               csEconScBTabGid,

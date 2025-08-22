@@ -512,10 +512,10 @@ export default function Sidebar(props: SidebarProps) {
                 className="concentration-dropdown"
               >
                 <option value="">Select a Concentration</option>
-                <option value="Computer Science Sc.B.">
-                  Computer Science Sc.B.
-                </option>
-                <option value="Computer Science A.B.">Computer Science A.B.</option>
+                <option value="Computer Science Sc.B. 2028~">Computer Science Sc.B.</option>
+                <option value="Computer Science A.B. 2028~">Computer Science A.B.</option>
+                <option value="Computer Science Sc.B. 2027">Computer Science Sc.B. 2027</option>
+                <option value="Computer Science A.B. 2027">Computer Science A.B. 2027</option>
               </select>
               <div className="progress-check">
                 <h3>

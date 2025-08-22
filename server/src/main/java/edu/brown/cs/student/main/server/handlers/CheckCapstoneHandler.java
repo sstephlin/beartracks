@@ -28,6 +28,8 @@ public class CheckCapstoneHandler implements Route {
       String masterSheetId,
       String csAbTabGid,
       String csScbTabGid,
+      String csAb27TabGid,
+      String csScb27TabGid,
       String apmaCSTabGid,
       String mathCSTabGid,
       String csEconScBTabGid,
@@ -36,8 +38,10 @@ public class CheckCapstoneHandler implements Route {
     this.masterSheetId = masterSheetId;
 
     this.concentrationGids = new HashMap<>();
-    this.concentrationGids.put("Computer Science A.B.", csAbTabGid);
-    this.concentrationGids.put("Computer Science Sc.B.", csScbTabGid);
+    this.concentrationGids.put("Computer Science A.B. 2028~", csAbTabGid);
+    this.concentrationGids.put("Computer Science Sc.B. 2028~", csScbTabGid);
+    this.concentrationGids.put("Computer Science A.B. 2027", csAb27TabGid);
+    this.concentrationGids.put("Computer Science Sc.B. 2027", csScb27TabGid);
     this.concentrationGids.put("Applied Mathematics-Computer Science A.B.", apmaCSTabGid);
     this.concentrationGids.put("Mathematics-Computer Science A.B.", mathCSTabGid);
     this.concentrationGids.put("Computer Science-Economics Sc.B.", csEconScBTabGid);
