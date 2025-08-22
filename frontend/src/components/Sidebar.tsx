@@ -87,14 +87,16 @@ export default function Sidebar(props: SidebarProps) {
       // Transform the simple object structure into the expected format
       const transformedRequirements: Record<string, any> = {};
       
-      // Define which categories are elective subcategories
+      // Define which categories are elective subcategories (updated to match Google Sheets)
       const electiveSubcategories = [
         "Linear Algebra (1)",
         "Software Engineering (1)",
+        "Extra Systems (1)",
         "CSCI 1xxx/2xxx (2)",
+        "External Course (1)",
         "External Course (3)",
         "Non-technical (1)",
-        "CSCI 1970 (2)"
+        "Independent Study CSCI 1970 (2)"
       ];
       
       Object.entries(requirements.requirements_options).forEach(([key, courses]) => {
@@ -145,42 +147,15 @@ export default function Sidebar(props: SidebarProps) {
           console.log(`Sample item for key ${firstKey}:`, data.requirements_options[firstKey]);
         }
         
-        // Add elective subcategories if they don't exist (for signed-in users)
-        const electiveSubcategories = [
-          "Linear Algebra (1)",
-          "Software Engineering (1)",
-          "CSCI 1xxx/2xxx (2)",
-          "External Course (3)",
-          "Non-technical (1)",
-          "CSCI 1970 (2)"
-        ];
-        
-        // Check if we have these subcategories, if not, add them
-        electiveSubcategories.forEach(subcategory => {
-          if (!data.requirements_options[subcategory]) {
-            // Create placeholder for elective subcategories
-            data.requirements_options[subcategory] = {
-              categoryName: subcategory,
-              displayName: subcategory,
-              acceptedCourses: subcategory === "CSCI 1xxx/2xxx (2)" ? ["CSCI 1xxx", "CSCI 2xxx"] :
-                               subcategory === "CSCI 1970 (2)" ? ["CSCI 1970"] :
-                               subcategory === "External Course (3)" ? ["External courses approved by concentration advisor"] :
-                               subcategory === "Non-technical (1)" ? ["Any non-CS course"] :
-                               subcategory === "Software Engineering (1)" ? ["CSCI 0320", "CSCI 1320"] :
-                               subcategory === "Linear Algebra (1)" ? ["MATH 0520", "MATH 0540", "CSCI 0530"] : [],
-              parentCategory: "Electives"
-            };
-          } else if (Array.isArray(data.requirements_options[subcategory])) {
-            // If it's an array, transform it to object format
-            data.requirements_options[subcategory] = {
-              categoryName: subcategory,
-              displayName: subcategory,
-              acceptedCourses: data.requirements_options[subcategory],
-              parentCategory: "Electives"
-            };
-          } else if (data.requirements_options[subcategory] && typeof data.requirements_options[subcategory] === 'object') {
-            // Ensure it has the parent category set
-            data.requirements_options[subcategory].parentCategory = "Electives";
+        // Transform the backend data to normalize parent categories
+        Object.keys(data.requirements_options).forEach(key => {
+          const item = data.requirements_options[key];
+          
+          // If the parentCategory is "Electives (Total)", change it to "Electives"
+          // This normalizes the parent category name for display purposes
+          if (item && typeof item === 'object' && item.parentCategory === "Electives (Total)") {
+            item.parentCategory = "Electives";
+            console.log(`Updated parent category for ${key} from "Electives (Total)" to "Electives"`);
           }
         });
       }
@@ -266,7 +241,9 @@ export default function Sidebar(props: SidebarProps) {
         let item = degreeInfo[key];
         
         // Skip any Electives category that might come from backend since we'll create our own
-        const isElectivesVariant = key === "Electives" || key === "4 Electives" || key === "2 Electives";
+        // This includes "Electives (Total)" from Google Sheets
+        const isElectivesVariant = key === "Electives" || key === "4 Electives" || key === "2 Electives" || 
+                                   key === "Electives (Total)" || key.toLowerCase().includes("electives") && key.toLowerCase().includes("total");
         if (isElectivesVariant) {
           console.log(`Skipping Electives category from backend: ${key}`);
           return;
@@ -322,22 +299,8 @@ export default function Sidebar(props: SidebarProps) {
         }
         console.log(`Processing category ${key}:`, item);
         
-        // Check if this should be an elective subcategory based on its name
-        const electiveSubcategories = [
-          "Linear Algebra (1)",
-          "Software Engineering (1)",
-          "CSCI 1xxx/2xxx (2)",
-          "External Course (3)",
-          "Non-technical (1)",
-          "CSCI 1970 (2)"
-        ];
-        
-        // Override parent category for known elective subcategories
-        let parentCategory = item.parentCategory;
-        if (electiveSubcategories.includes(key) || electiveSubcategories.includes(item.categoryName)) {
-          parentCategory = "Electives";
-          item.parentCategory = parentCategory;
-        }
+        // Use the parent category from the backend data (already normalized)
+        const parentCategory = item.parentCategory;
         
         if (parentCategory && parentCategory.length > 0) {
           if (!parentToChildrenMap[parentCategory]) {
@@ -362,7 +325,9 @@ export default function Sidebar(props: SidebarProps) {
         topLevelCategories = topLevelCategories.filter(cat => 
           cat.categoryName !== "Electives" && 
           cat.categoryName !== "4 Electives" && 
-          cat.categoryName !== "2 Electives"
+          cat.categoryName !== "2 Electives" &&
+          cat.categoryName !== "Electives (Total)" &&
+          !(cat.categoryName.toLowerCase().includes("electives") && cat.categoryName.toLowerCase().includes("total"))
         );
         
         // Determine the display name based on degree type
