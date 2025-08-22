@@ -14,8 +14,8 @@ import spark.Route;
 /**
  * Returns a list of all capstone-eligible courses for a user's concentration
  *
- * NOTE: This has been modified to return all eligible courses, not just those
- * the user has taken. The front-end is responsible for handling the display.
+ * <p>NOTE: This has been modified to return all eligible courses, not just those the user has
+ * taken. The front-end is responsible for handling the display.
  */
 public class CheckCapstoneHandler implements Route {
 
@@ -112,12 +112,15 @@ public class CheckCapstoneHandler implements Route {
 
     try {
       // Load requirements from Google Sheet
-      Map<String, RequirementRow> requirements = RequirementLoader.loadRequirementRows(masterSheetId, gid);
+      Map<String, RequirementRow> requirements =
+          RequirementLoader.loadRequirementRows(masterSheetId, gid);
 
       // Find the Capstone row
       RequirementRow capstoneRow = requirements.get("Capstone");
       if (capstoneRow == null) {
-        System.err.println("Warning: No 'Capstone' category found in requirements for concentration: " + concentration);
+        System.err.println(
+            "Warning: No 'Capstone' category found in requirements for concentration: "
+                + concentration);
         return new ArrayList<>();
       }
 

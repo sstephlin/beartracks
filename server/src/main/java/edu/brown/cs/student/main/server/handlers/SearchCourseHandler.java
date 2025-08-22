@@ -53,7 +53,8 @@ public class SearchCourseHandler implements Route {
   }
 
   /**
-   * searches for a course in the course catalog, given the query parameter of the course code
+   * searches for a course in the course catalog, given the query parameter of the course code or
+   * title
    *
    * @param catalog
    * @param query
@@ -68,8 +69,11 @@ public class SearchCourseHandler implements Route {
       CourseInfo info = entry.getValue();
 
       String normalizedCode = courseCode.toLowerCase().replaceAll("\\s+", "");
+      String normalizedTitle =
+          info.courseName != null ? info.courseName.toLowerCase().replaceAll("\\s+", "") : "";
 
-      if (normalizedCode.contains(normalizedQuery)) {
+      // Check if query matches course code OR course title
+      if (normalizedCode.contains(normalizedQuery) || normalizedTitle.contains(normalizedQuery)) {
         Map<String, String> courseData = new HashMap<>();
         courseData.put("courseCode", courseCode);
         courseData.put("courseName", info.courseName);

@@ -101,20 +101,24 @@ public class Server {
       Spark.get(
           "check-concentration-requirements",
           new CheckUserRequirementsHandler(firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid));
-      Spark.get("get-concen-reqs", new GetConcentrationRequirementsHandler(firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid));
+      Spark.get(
+          "get-concen-reqs",
+          new GetConcentrationRequirementsHandler(
+              firebaseUtils, masterSheetId, csAbTabGid, csScbTabGid));
       Spark.get("check-prereqs", new CheckPrereqsHandler(firebaseUtils, catalog));
       Spark.get("get-prereqs", new GetPrereqHandler(firebaseUtils, catalog));
       Spark.post("update-capstone", new UpdateCapstoneHandler(firebaseUtils));
-      Spark.get("check-capstones", new CheckCapstoneHandler(
-          firebaseUtils,
-          masterSheetId,
-          csAbTabGid,
-          csScbTabGid,
-          apmaCSTabGid,
-          mathCSTabGid,
-          csEconScBTabGid,
-          csEconABTabGid
-      ));
+      Spark.get(
+          "check-capstones",
+          new CheckCapstoneHandler(
+              firebaseUtils,
+              masterSheetId,
+              csAbTabGid,
+              csScbTabGid,
+              apmaCSTabGid,
+              mathCSTabGid,
+              csEconScBTabGid,
+              csEconABTabGid));
 
       Spark.notFound(
           (request, response) -> {

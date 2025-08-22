@@ -1,9 +1,9 @@
-//package edu.brown.cs.student.main.server.concentrationRequirements;
+// package edu.brown.cs.student.main.server.concentrationRequirements;
 //
-//import java.util.List;
+// import java.util.List;
 //
 //// RequirementRule is an object that represents info about each category of requirements
-//public class RequirementRule {
+// public class RequirementRule {
 //  private List<String> acceptableCourses; // List of acceptable course groups
 //  private int howManyNeeded; // how many courses  of groups the user must satisfy
 //  private List<String> substitutions; // Substitution courses allowed (optional)
@@ -48,4 +48,4 @@
 //  public List<String> getSubstitutions() {
 //    return substitutions;
 //  }
-//}
+// }

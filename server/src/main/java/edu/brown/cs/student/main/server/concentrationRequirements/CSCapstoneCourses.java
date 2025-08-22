@@ -1,12 +1,12 @@
-//package edu.brown.cs.student.main.server.concentrationRequirements;
+// package edu.brown.cs.student.main.server.concentrationRequirements;
 //
-//import java.util.List;
+// import java.util.List;
 //
-///**
+/// **
 // * Static class that stores all the courses that can be capstoned. This is only run once, when the
 // * server starts.
 // */
-//public class CSCapstoneCourses {
+// public class CSCapstoneCourses {
 //  // courses that CAN be capstoned but need to be indicated that user wants to capstone it
 //  public static final List<String> ALL =
 //      List.of(
@@ -59,4 +59,4 @@
 //
 //  // courses that are SPECIFICALLY separate capstone courses from the regular version of the class
 //  public static final List<String> AUTO_ACCEPTED = List.of("CSCI 1234", "CSCI 1620", "CSCI 1690");
-//}
+// }

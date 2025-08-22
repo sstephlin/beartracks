@@ -45,20 +45,23 @@ public class RequirementLoader {
 
     // Ensure all expected headers exist, now including "Parent Category"
     String[] expectedHeaders = {
-        "Category Name",
-        "Display Name",
-        "Rule Type",
-        "Accepted Courses",
-        "Min Courses Required",
-        "Max Uses",
-        "Substitutions",
-        "Alternative Category",
-        "Overrides Category",
-        "Parent Category" // Added the new header
+      "Category Name",
+      "Display Name",
+      "Rule Type",
+      "Accepted Courses",
+      "Min Courses Required",
+      "Max Uses",
+      "Substitutions",
+      "Alternative Category",
+      "Overrides Category",
+      "Parent Category" // Added the new header
     };
     for (String header : expectedHeaders) {
       if (!headerMap.containsKey(header)) {
-        System.err.println("Warning: Missing expected header in Google Sheet: " + header + ". Proceeding with a null value.");
+        System.err.println(
+            "Warning: Missing expected header in Google Sheet: "
+                + header
+                + ". Proceeding with a null value.");
       }
     }
 

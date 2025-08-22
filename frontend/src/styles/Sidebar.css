@@ -1,12 +1,16 @@
 .sidebar {
-  min-height: 100vh;
-  height: 140vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
   background-color: #213333;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   border-right: 5px solid rgba(0, 0, 0, 0.1);
   align-items: center;
   transition: width 0.3s ease;
+  overflow-y: auto;
   overflow-x: hidden;
+  z-index: 10;
 }
 
 .sidebar-expanded {
@@ -76,6 +80,7 @@
 
 .concentration-req-container {
   margin-top: 1rem;
+  padding-bottom: 2rem;
 }
 
 .concentration-category {
@@ -158,3 +163,53 @@
 .concentration-req-container .concentration-category:last-child {
   margin-bottom: 0;
 }
+/* Subcategory styles for nested Electives */
+.concentration-subcategory {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+  border-left: 2px solid #213333;
+  padding-left: 0.75rem;
+}
+
+.subcategory-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  color: #213333;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.subcategory-expand {
+  background: #213333;
+  border: none;
+  border-radius: 4px;
+  padding: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  width: 20px;
+  height: 20px;
+}
+
+.subcategory-expand:hover {
+  background: #2a4444;
+}
+
+.subcategory-expand .button-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.subcategory-courses {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.subcategory-list {
+  margin-top: 0.5rem;
+}
+

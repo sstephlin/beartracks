@@ -1,6 +1,8 @@
 import "../styles/App.css";
 import Sidebar from "./Sidebar";
 import BearTracks from "./BearTracks";
+import SearchBar from "./SearchBar";
+import GuidedTour from "./GuidedTour";
 import { HelpCircle } from "lucide-react";
 import { useState } from "react";
 
@@ -16,20 +18,58 @@ function App() {
   const [expanded, setExpanded] = useState<boolean>(true);
   const [degree, setDegree] = useState<string>("");
   const [refreshSidebar, setRefreshSidebar] = useState(false);
-  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [showGuidedTour, setShowGuidedTour] = useState(false);
   const [numCompleted, setNumCompleted] = useState(0);
   const [numRequired, setNumRequired] = useState(0);
-  const [currentCapstoneCourse, setCurrentCapstoneCourse] = useState<string | null>(null);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [draggedSearchCourse, setDraggedSearchCourse] = useState<any | null>(null);
+  const [currentCapstoneCourse, setCurrentCapstoneCourse] = useState<string | undefined>(undefined);
 
-  const handleClickOutside = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).classList.contains("disclaimer-overlay")) {
-      setShowDisclaimer(false);
+  // Handle search functionality
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
     }
+
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/search-course?query=${encodeURIComponent(query)}`
+      );
+      const data = await response.json();
+
+      if (data.result === "success") {
+        setSearchResults(data.courses);
+      } else {
+        console.error(data.message);
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error("Error during search:", error);
+      setSearchResults([]);
+    }
+  };
+
+  // Handle dragging course from search results
+  const handleDragStartSearchCourse = (e: React.DragEvent, course: any) => {
+    e.dataTransfer.setData("searchCourse", JSON.stringify(course));
+    setDraggedSearchCourse(course);
+    window.dispatchEvent(
+      new CustomEvent("searchCourseDragStart", {
+        detail: { course },
+      })
+    );
+  };
+
+  const handleDragEndSearchCourse = (e: React.DragEvent) => {
+    setDraggedSearchCourse(null);
   };
 
   const handleCapstoneChange = (courseCode: string | null) => {
     console.log('Capstone changed to:', courseCode);
-    setCurrentCapstoneCourse(courseCode);
+    setCurrentCapstoneCourse(courseCode ?? undefined);
   };
 
   // returns the provided constant variables
@@ -48,7 +88,7 @@ function App() {
           setNumRequired={setNumRequired}
           currentCapstoneCourse={currentCapstoneCourse}
         />
-        <div className="header-and-content">
+        <div className={`header-and-content ${!expanded ? "collapsed" : ""}`}>
           <header
             className={`App-header ${
               expanded ? "header-sidebar-expanded" : "header-sidebar-collapsed"
@@ -58,10 +98,11 @@ function App() {
             <div className="logo">
               <div className="logo-title">
                 <a href="index.html" className="logo-link">
+                  <span className="logo-text">BearTracks</span>
                   <img
-                    src="/beartracks_logo4.png"
-                    alt="Bear Logo"
-                    className="logo-image"
+                    src="/beartracks_logo.png"
+                    alt="Bear Icon"
+                    className="logo-icon"
                   />
                 </a>
               </div>
@@ -85,6 +126,12 @@ function App() {
                 </p>
               </div>
             </div>
+            
+            {/* Search bar in header */}
+            <div className="header-search-container">
+              <SearchBar onSearch={handleSearch} />
+            </div>
+            
             {/* handles the sign in button */}
             <div className="Sign-in-out-container">
               <SignedOut>
@@ -92,46 +139,56 @@ function App() {
               </SignedOut>
               <SignedIn>
                 <div className="signed-in-buttons">
-                  <h3>Welcome</h3>
                   <UserButton />
                 </div>
               </SignedIn>
             </div>
           </header>
+          
+          {/* Search results section */}
+          {searchResults.length > 0 && (
+            <div className={`search-results-container ${
+              expanded ? "expanded" : "collapsed"
+            }`}>
+              {searchResults.map((course, index) => (
+                <div
+                  key={index}
+                  className="search-course-block"
+                  draggable
+                  onDragStart={(e) => handleDragStartSearchCourse(e, course)}
+                  onDragEnd={handleDragEndSearchCourse}
+                  aria-label={`Course ${course.courseCode}: ${course.courseName}`}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <div className="course-code">{course.courseCode}</div>
+                  <div className="course-title">{course.courseName}</div>
+                </div>
+              ))}
+            </div>
+          )}
+          
           <main className="main-content">
             <BearTracks
               expanded={expanded}
               setRefreshSidebar={setRefreshSidebar}
+              draggedSearchCourse={draggedSearchCourse}
               onCapstoneChange={handleCapstoneChange}
             />
 
             <div>
               <button
                 className="floating-icon help-icon"
-                onClick={() => setShowDisclaimer(true)}
+                onClick={() => setShowGuidedTour(true)}
+                title="Start Guided Tour"
               >
                 <HelpCircle />
               </button>
             </div>
-            {/* handles the disclaimer functionality */}
-            {showDisclaimer && (
-              <div className="disclaimer-overlay" onClick={handleClickOutside}>
-                <div className="disclaimer-box">
-                  <button
-                    className="close-disclaimer"
-                    onClick={() => setShowDisclaimer(false)}
-                  >
-                    ×
-                  </button>
-                  {/* handles the disclaimer for the user */}
-                  <h2>How to Use BearTracks</h2>
-                  <p>
-                    Search for courses and drag and drop them into semesters.
-                    Use the trash icon to remove courses. Click "+ New Course"
-                    to add a new course.
-                  </p>
-                </div>
-              </div>
+            
+            {/* Guided Tour */}
+            {showGuidedTour && (
+              <GuidedTour onClose={() => setShowGuidedTour(false)} />
             )}
           </main>
         </div>

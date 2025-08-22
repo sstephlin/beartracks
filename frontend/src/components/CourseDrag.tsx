@@ -102,9 +102,11 @@ export default function CourseDrag({
       });
     }
 
+    e.dataTransfer.setData("courseId", id);
     e.dataTransfer.setData("courseCode", courseCode);
     e.dataTransfer.setData("title", title || "");
     e.dataTransfer.setData("semesterId", semesterId);
+    e.dataTransfer.setData("isManual", isManual.toString());
   };
 
   // Updated handlePrereqClick function with positioning logic
@@ -443,28 +445,10 @@ export default function CourseDrag({
           {isManual && onDeleteManualCourse ? (
             // X button for manual courses (immediate deletion)
             <button
-              className="delete-manual-course-btn"
+              className="delete-course-btn"
               onClick={handleManualDeleteClick}
               aria-label={`Delete manual course ${courseCode}`}
               title={`Delete ${courseCode} (manual course)`}
-              style={{
-                position: "absolute",
-                top: "4px",
-                right: "4px",
-                background: "#ff4444",
-                color: "white",
-                border: "none",
-                borderRadius: "50%",
-                width: "18px",
-                height: "18px",
-                fontSize: "12px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 10,
-                lineHeight: 1,
-              }}
             >
               ×
             </button>
@@ -485,53 +469,56 @@ export default function CourseDrag({
       )}
 
       {!isEmpty && isEditing ? (
-        <div className="course-edit-fields">
-          <input
-            type="text"
-            placeholder="Course Code"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            onKeyDown={handleKeyDown}
-            autoFocus
-          />
-          <input
-            type="text"
-            placeholder="Course Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-        </div>
+        <>
+          {/* Delete button for editing state */}
+          {isManual && onDeleteManualCourse && (
+            <button
+              className="delete-course-btn"
+              onClick={handleManualDeleteClick}
+              aria-label={`Delete manual course`}
+              title={`Delete course`}
+            >
+              ×
+            </button>
+          )}
+          <div className="course-edit-fields">
+            <input
+              type="text"
+              placeholder="Course Code"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoFocus
+            />
+            <input
+              type="text"
+              placeholder="Course Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+          </div>
+        </>
       ) : (
         // this is the standard display mode
         <div className="course-filled">
           <div className="course-header">
             <div className="course-code">{courseCode}</div>
-            {showCapstoneCheckbox && (
-              <input
-                type="checkbox"
-                className="capstone-checkbox"
-                title="Capstone Course"
-                checked={isChecked}
-                onChange={(e) => {
-                  setIsChecked(e.target.checked);
-                  onToggleCapstone?.(id, e.target.checked);
-                }}
-              />
-            )}
           </div>
           {title && <div className="course-title">{title}</div>}
 
-          {/* Prerequisites link - show for non-manual courses (works for both signed-in and non-signed-in users) */}
-          {!isManual && !isEditing && (
-            <div className="prereq-section">
-              <button
-                className="prereq-link"
-                onClick={handlePrereqClick}
-                disabled={loading}
-              >
-                {loading ? "Loading..." : "Prerequisites"}
-              </button>
+          {/* Prerequisites and Capstone section */}
+          <div className="course-footer">
+            {/* Prerequisites link - show for non-manual courses (works for both signed-in and non-signed-in users) */}
+            {!isManual && !isEditing && (
+              <div className="prereq-section">
+                <button
+                  className="prereq-link"
+                  onClick={handlePrereqClick}
+                  disabled={loading}
+                >
+                  {loading ? "Loading..." : "Prerequisites"}
+                </button>
 
               {/* Prerequisites popup - Updated with box layout */}
               {showPrereqPopup && prerequisiteData && (
@@ -616,8 +603,27 @@ export default function CourseDrag({
                   </div>
                 </div>
               )}
-            </div>
-          )}
+              </div>
+            )}
+            
+            {/* Capstone checkbox - aligned to the right */}
+            {showCapstoneCheckbox && (
+              <div className="capstone-section">
+                <label className="capstone-label">
+                  <span>Mark as Capstone</span>
+                  <input
+                    type="checkbox"
+                    className="capstone-checkbox"
+                    checked={isChecked}
+                    onChange={(e) => {
+                      setIsChecked(e.target.checked);
+                      onToggleCapstone?.(id, e.target.checked);
+                    }}
+                  />
+                </label>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -1,11 +1,10 @@
 package edu.brown.cs.student.main.server.handlers;
 
-import edu.brown.cs.student.main.server.googleSheetsRequirements.RequirementRow;
 import edu.brown.cs.student.main.server.googleSheetsRequirements.RequirementLoader;
+import edu.brown.cs.student.main.server.googleSheetsRequirements.RequirementRow;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
