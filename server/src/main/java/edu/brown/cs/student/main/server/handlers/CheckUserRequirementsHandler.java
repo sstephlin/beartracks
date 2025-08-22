@@ -20,6 +20,8 @@ public class CheckUserRequirementsHandler implements Route {
   private final String masterSheetId;
   private final String csAbTabGid;
   private final String csScbTabGid;
+  private final String csAb27TabGid;
+  private final String csScb27TabGid;
 
   /**
    * constructor for CheckUserRequirementsHandler
@@ -30,11 +32,15 @@ public class CheckUserRequirementsHandler implements Route {
       StorageInterface storageHandler,
       String masterSheetId,
       String csAbTabGid,
-      String csScbTabGid) {
+      String csScbTabGid,
+      String csAb27TabGid,
+      String csScb27TabGid) {
     this.storageHandler = storageHandler;
     this.masterSheetId = masterSheetId;
     this.csAbTabGid = csAbTabGid;
     this.csScbTabGid = csScbTabGid;
+    this.csAb27TabGid = csAb27TabGid;
+    this.csScb27TabGid = csScb27TabGid;
   }
 
   /**
@@ -81,11 +87,17 @@ public class CheckUserRequirementsHandler implements Route {
       // 4. Determine the GID based on the fetched concentration
       String tabGid;
       switch (concentration.trim().toUpperCase()) {
-        case "COMPUTER SCIENCE A.B.":
+        case "COMPUTER SCIENCE A.B. 2028~":
           tabGid = this.csAbTabGid;
           break;
-        case "COMPUTER SCIENCE SC.B.":
+        case "COMPUTER SCIENCE SC.B. 2028~":
           tabGid = this.csScbTabGid;
+          break;
+        case "COMPUTER SCIENCE A.B. 2027":
+          tabGid = this.csAb27TabGid;
+          break;
+        case "COMPUTER SCIENCE SC.B. 2027":
+          tabGid = this.csScb27TabGid;
           break;
         default:
           throw new IllegalArgumentException(
