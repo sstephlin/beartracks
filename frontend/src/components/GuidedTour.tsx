@@ -243,7 +243,8 @@ export default function GuidedTour({ onClose }: GuidedTourProps) {
 
   const getTooltipPosition = () => {
     const step = tourSteps[currentStep];
-    const position = step.position || "bottom";
+    const position: "top" | "bottom" | "left" | "right" | "center" =
+      step.position || "bottom";
 
     // For center position or no target, immediately center the tooltip
     if (position === "center" || !step.target || !targetRect) {
@@ -277,15 +278,6 @@ export default function GuidedTour({ onClose }: GuidedTourProps) {
         top = targetRect.top + targetRect.height / 2 - tooltipRect.height / 2;
         left = targetRect.right + 20;
         break;
-      case "center":
-        top = window.innerHeight / 2 - tooltipRect.height / 2;
-        left = window.innerWidth / 2 - tooltipRect.width / 2;
-        break;
-      default:
-        // Fallback to center if position is unrecognized
-        top = window.innerHeight / 2 - tooltipRect.height / 2;
-        left = window.innerWidth / 2 - tooltipRect.width / 2;
-        break;
     }
 
     // Apply offset
@@ -295,8 +287,7 @@ export default function GuidedTour({ onClose }: GuidedTourProps) {
     // Keep tooltip within viewport with extra margin for sidebar
     const sidebar = document.querySelector(".sidebar");
     const sidebarWidth = sidebar ? sidebar.getBoundingClientRect().width : 0;
-    const minLeft =
-      position === "right" || position === "center" ? sidebarWidth + 20 : 20;
+    const minLeft = position === "right" ? sidebarWidth + 20 : 20;
 
     top = Math.max(
       20,
