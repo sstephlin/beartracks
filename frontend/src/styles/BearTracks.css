@@ -38,34 +38,6 @@
   position: relative;
 }
 
-.trash-area {
-  position: relative;
-  width: 50px;
-  height: 50px;
-  background-color: #f8f8f8;
-  border: 2px solid #aaa;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 8px;
-}
-
-.trash-area:hover {
-  background-color: #f0f0f0;
-  border-color: #888;
-  transform: scale(1.05);
-}
-
-.trash-hovered {
-  background-color: #ffe0e0;
-  border: 2px solid red;
-  animation: wiggle 0.5s ease-in-out infinite;
-  box-shadow: 0 4px 8px rgba(225, 0, 0, 0.2);
-}
-
 @keyframes wiggle {
   0% {
     transform: rotate(0deg) scale(1.1);
@@ -244,15 +216,13 @@
 
 .sort-semesters-button:focus {
   outline: none;
-  /* box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2); */
 }
 
 .sort-notification {
   position: fixed;
   top: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #4CAF50;
+  left: 45%;
+  background-color: #4caf50;
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
