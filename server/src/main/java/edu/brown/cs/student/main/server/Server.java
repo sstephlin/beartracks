@@ -28,29 +28,26 @@ import edu.brown.cs.student.main.server.parser.CourseCSVParser;
 import edu.brown.cs.student.main.server.parser.CourseCatalog;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
-import io.github.cdimascio.dotenv.Dotenv;
 import java.io.IOException;
 import spark.Spark;
 
 public class Server {
 
   public static void setUpServer() {
+    // Render injects PORT, default to 3232 locally
     int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "3232"));
     Spark.port(port);
 
-    // Load environment variables from .env file
-    Dotenv dotenv = Dotenv.load();
-
-    // Fetch all required environment variables once
-    String masterSheetId = dotenv.get("MASTER_GOOGLE_SHEET_ID");
-    String csAbTabGid = dotenv.get("CS_AB_TAB_GID");
-    String csScbTabGid = dotenv.get("CS_SCB_TAB_GID");
-    String csAb27TabGid = dotenv.get("CS_AB_TAB_27_GID");
-    String csScb27TabGid = dotenv.get("CS_SCB_TAB_27_GID");
-    String apmaCSTabGid = dotenv.get("APMA_CS_TAB_GID");
-    String mathCSTabGid = dotenv.get("MATH_CS_TAB_GID");
-    String csEconScBTabGid = dotenv.get("CS_ECON_ScB_TAB_GID");
-    String csEconABTabGid = dotenv.get("CS_ECON_AB_TAB_GID");
+    // Fetch all required environment variables using Env helper
+    String masterSheetId = Env.get("MASTER_GOOGLE_SHEET_ID");
+    String csAbTabGid = Env.get("CS_AB_TAB_GID");
+    String csScbTabGid = Env.get("CS_SCB_TAB_GID");
+    String csAb27TabGid = Env.get("CS_AB_TAB_27_GID");
+    String csScb27TabGid = Env.get("CS_SCB_TAB_27_GID");
+    String apmaCSTabGid = Env.get("APMA_CS_TAB_GID");
+    String mathCSTabGid = Env.get("MATH_CS_TAB_GID");
+    String csEconScBTabGid = Env.get("CS_ECON_ScB_TAB_GID");
+    String csEconABTabGid = Env.get("CS_ECON_AB_TAB_GID");
 
     // Enable CORS
     options(
@@ -71,8 +68,7 @@ public class Server {
 
     before(
         (request, response) -> {
-          response.header(
-              "Access-Control-Allow-Origin", "*"); // or restrict to "http://localhost:8000"
+          response.header("Access-Control-Allow-Origin", "*");
           response.header("Access-Control-Allow-Headers", "*");
           response.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
         });
@@ -127,7 +123,7 @@ public class Server {
 
       Spark.notFound(
           (request, response) -> {
-            response.status(404); // Not Found
+            response.status(404);
             System.out.println("ERROR");
             return "404 Not Found - The requested endpoint does not exist.";
           });
@@ -148,11 +144,6 @@ public class Server {
     }
   }
 
-  /**
-   * Runs Server.
-   *
-   * @param args none
-   */
   public static void main(String[] args) {
     setUpServer();
   }
