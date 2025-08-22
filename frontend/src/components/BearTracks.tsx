@@ -9,6 +9,7 @@ import { sessionStorageUtils } from "../utils/sessionStorageUtils";
 interface BearTracksProps {
   expanded: boolean;
   setRefreshSidebar: React.Dispatch<React.SetStateAction<boolean>>;
+  draggedSearchCourse: any;
   // NEW: Add callback to notify parent about capstone changes
   onCapstoneChange?: (courseCode: string | null) => void;
 }
@@ -97,7 +98,7 @@ export default function BearTracks(props: BearTracksProps) {
       <Carousel
         viewCount={viewCount}
         setViewCount={setViewCount}
-        draggedSearchCourse={null}
+        draggedSearchCourse={props.draggedSearchCourse}
         expanded={props.expanded}
         setRefreshSidebar={props.setRefreshSidebar}
         onCapstoneChange={handleCapstoneChange} // NEW: Pass capstone change handler
