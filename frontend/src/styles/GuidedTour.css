@@ -30,8 +30,9 @@
 }
 
 .tour-highlight {
+  /* background-color: cornflowerblue; */
   position: fixed;
-  border: 3px solid #4CAF50;
+  border: 3px solid #4caf50;
   border-radius: 8px;
   pointer-events: none;
   animation: pulse 2s infinite;
@@ -52,7 +53,9 @@
   }
 }
 
-.tour-tooltip::before { content: none !important; }
+.tour-tooltip::before {
+  content: none !important;
+}
 
 .tour-tooltip {
   position: fixed;
@@ -187,7 +190,7 @@
 }
 
 .tour-btn-next {
-  background-color: #4CAF50;
+  background-color: #337335;
   color: white;
 }
 
@@ -243,15 +246,15 @@
     max-width: calc(100vw - 40px);
     margin: 20px;
   }
-  
+
   .tour-content h3 {
     font-size: 18px;
   }
-  
+
   .tour-content p {
     font-size: 14px;
   }
-  
+
   .tour-buttons {
     flex-wrap: wrap;
   }

@@ -28,6 +28,9 @@ function App() {
   const [draggedSearchCourse, setDraggedSearchCourse] = useState<any | null>(
     null
   );
+  const [currentCapstoneCourse, setCurrentCapstoneCourse] = useState<
+    string | undefined
+  >(undefined);
   const handleClickOutside = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).classList.contains("disclaimer-overlay")) {
       setShowDisclaimer(false);

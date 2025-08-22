@@ -315,12 +315,14 @@
 
 .capstone-label span {
   font-weight: 500;
+  padding-right: 16px;
 }
 
 .capstone-checkbox {
   position: absolute;
-  top: 6px;
-  left: 6px;
+  /* top: 6px; */
+  /* left: 6px; */
+  right: 5px;
   transform: scale(1.2);
   cursor: pointer;
   transform: scale(1.1);
