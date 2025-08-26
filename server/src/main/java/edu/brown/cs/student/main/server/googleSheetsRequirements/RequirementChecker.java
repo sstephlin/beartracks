@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class RequirementChecker {
   private final Map<String, RequirementRow> requirements;
@@ -44,7 +45,7 @@ public class RequirementChecker {
    * Checks all defined concentration requirements against the user's courses.
    *
    * @return A map where keys are requirement category names and values are lists of courses that
-   *     satisfy that requirement.
+   * satisfy that requirement.
    */
   public Map<String, List<String>> checkAllRequirements() {
 
@@ -147,7 +148,7 @@ public class RequirementChecker {
           case "pattern_match":
             matchedAlt = matchPattern(altRow);
             break;
-            // Add other rule types if your alternative categories can be of those types
+          // Add other rule types if your alternative categories can be of those types
           default:
             System.err.println(
                 "Warning: Unhandled rule type for alternative category: "
@@ -219,7 +220,9 @@ public class RequirementChecker {
    * @param row The RequirementRow containing the course list and min courses required.
    * @return A list of courses that matched.
    */
-  /** Debug version of matchCourseList with detailed logging */
+  /**
+   * Debug version of matchCourseList with detailed logging
+   */
   private List<String> matchCourseList(RequirementRow row) {
     List<String> matches = new ArrayList<>();
     String categoryName = row.getCategoryName();
@@ -266,7 +269,7 @@ public class RequirementChecker {
     for (String course : userCourses) {
       if ((isCapstone || !usedCourses.contains(course))
           && row.getAcceptedCourses().stream()
-              .anyMatch(pattern -> course.matches(convertPatternToRegex(pattern)))) {
+          .anyMatch(pattern -> course.matches(convertPatternToRegex(pattern)))) {
         matches.add(course);
         if (!isCapstone) {
           usedCourses.add(course);
@@ -346,23 +349,81 @@ public class RequirementChecker {
   }
 
   /**
-   * Counts the total number of unique courses completed across all requirements.
+   * Counts the total number of unique courses completed across requirements that contribute to the total.
+   * Only counts courses from categories where minCoursesRequired > 0 and excludes conditional_path rules.
    *
    * @param requirementResults The map of requirement categories to matched courses.
-   * @return The total count of unique completed courses.
+   * @return The total count of unique completed courses that count toward the concentration.
    */
   public int countCoursesCompleted(Map<String, List<String>> requirementResults) {
     Set<String> allCompletedCourses = new HashSet<>();
-    for (List<String> courses : requirementResults.values()) {
-      allCompletedCourses.addAll(courses);
+
+    for (Map.Entry<String, List<String>> entry : requirementResults.entrySet()) {
+      String categoryName = entry.getKey();
+      List<String> courses = entry.getValue();
+
+      // Get the requirement row for this category
+      RequirementRow row = requirements.get(categoryName);
+      if (row == null) {
+        continue; // Skip if we can't find the requirement
+      }
+
+      // Only count courses from categories that contribute to the total
+      if (shouldCountTowardTotal(row, categoryName)) {
+        allCompletedCourses.addAll(courses);
+      }
     }
+
     return allCompletedCourses.size();
+  }
+
+  /**
+   * Helper method to determine if a requirement category should count toward the total.
+   * Uses the same logic as getTotalCoursesRequired() to ensure consistency.
+   */
+  private boolean shouldCountTowardTotal(RequirementRow row, String categoryName) {
+    String ruleType = row.getRuleType();
+    int minRequired = row.getMinCoursesRequired();
+
+    // Skip conditional_path rules
+    if ("conditional_path".equals(ruleType)) {
+      return false;
+    }
+
+    // Skip requirements with 0 or negative min courses (like Calculus, Capstone)
+    if (minRequired <= 0) {
+      return false;
+    }
+
+    // Skip categories that are overridden by active conditional paths
+    if (categoriesToSkip.contains(categoryName)) {
+      return false;
+    }
+
+    // Skip inactive alternative categories
+    if (isAlternativeCategory(categoryName) && !activeCategoryAlternatives.containsValue(categoryName)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Helper method to determine if a category name represents an alternative category.
+   * This can be customized based on your naming conventions.
+   */
+  private boolean isAlternativeCategory(String categoryName) {
+    // Based on your spreadsheet, alternative categories seem to have "Alternative" or "Alt" in the name
+    return categoryName != null &&
+        (categoryName.toLowerCase().contains("alternative") ||
+            categoryName.toLowerCase().contains(" - alt"));
   }
 
   /**
    * Calculates the total number of courses required for the concentration. This sums up
    * `minCoursesRequired` for all requirements, dynamically adjusting for conditional overrides.
    * Only counts categories where minCoursesRequired > 0.
+   * Excludes conditional_path rules and alternative categories that aren't active.
    *
    * @return The total number of courses required.
    */
@@ -379,61 +440,49 @@ public class RequirementChecker {
       String ruleType = row.getRuleType();
       int minRequired = row.getMinCoursesRequired();
 
-      System.out.println(
-          "- Category: "
-              + categoryName
-              + ", RuleType: "
-              + ruleType
-              + ", MinRequired: "
-              + minRequired
-              + ", DisplayName: '"
-              + row.getDisplayName()
-              + "'");
+      System.out.println("- Category: " + categoryName +
+          ", RuleType: " + ruleType +
+          ", MinRequired: " + minRequired +
+          ", DisplayName: '" + row.getDisplayName() + "'");
 
-      // Skip rules that don't directly contribute to the total
-      // Only skip conditional_path, but include elective_total as it represents required courses
+      // SKIP: conditional_path rules (they don't contribute to total, they just activate alternatives)
       if ("conditional_path".equals(ruleType)) {
-        System.out.println("  → SKIPPED (conditional_path)");
+        System.out.println("  → SKIPPED (conditional_path rule)");
         continue;
       }
 
-      // CRITICAL FIX: Only count categories where minCoursesRequired > 0
+      // SKIP: Requirements with 0 or negative min courses (like Calculus, Capstone with 0)
       if (minRequired <= 0) {
-        System.out.println("  → SKIPPED (minRequired <= 0)");
+        System.out.println("  → SKIPPED (minRequired <= 0: " + minRequired + ")");
         continue;
       }
 
-      // If this category is overridden by an active conditional path, skip it
+      // SKIP: Categories that are overridden by active conditional paths
       if (categoriesToSkip.contains(categoryName)) {
-        System.out.println("  → SKIPPED (overridden by conditional)");
+        System.out.println("  → SKIPPED (overridden by active conditional path)");
         continue;
       }
 
-      // If this category is an alternative that was activated, handle it separately
-      if (activeCategoryAlternatives.containsValue(categoryName)) {
-        boolean skipThisInMainLoop = false;
-        for (Map.Entry<String, String> entry : activeCategoryAlternatives.entrySet()) {
-          if (entry.getValue().equals(categoryName) && categoriesToSkip.contains(entry.getKey())) {
-            skipThisInMainLoop = true;
-            break;
-          }
-        }
-        if (skipThisInMainLoop) {
-          System.out.println("  → SKIPPED (alternative category in main loop)");
-          continue;
-        }
+      // SKIP: Alternative categories that are NOT currently active
+      // (We'll add active alternatives in the next loop)
+      if (isAlternativeCategory(categoryName) && !activeCategoryAlternatives.containsValue(
+          categoryName)) {
+        System.out.println("  → SKIPPED (inactive alternative category)");
+        continue;
       }
 
-      // Add to total only if it hasn't been explicitly excluded
+      // SKIP: Alternative categories in this main loop (we handle them separately below)
+      if (activeCategoryAlternatives.containsValue(categoryName)) {
+        System.out.println("  → SKIPPED (active alternative - will be processed separately)");
+        continue;
+      }
+
+      // Add to total if it passes all checks and hasn't been counted yet
       if (!categoriesConsideredForTotal.contains(categoryName)) {
         total += minRequired;
         categoriesConsideredForTotal.add(categoryName);
         System.out.println(
-            "  → ADDED: "
-                + categoryName
-                + " ("
-                + minRequired
-                + " courses) - Running total: "
+            "  → ADDED: " + categoryName + " (" + minRequired + " courses) - Running total: "
                 + total);
       } else {
         System.out.println("  → SKIPPED (already considered)");
@@ -446,16 +495,14 @@ public class RequirementChecker {
       RequirementRow altRow = requirements.get(altCategoryName);
       if (altRow != null && !categoriesConsideredForTotal.contains(altCategoryName)) {
         int altMinRequired = altRow.getMinCoursesRequired();
-        if (altMinRequired > 0) {
+        if (altMinRequired > 0) {  // Only add if > 0
           total += altMinRequired;
           categoriesConsideredForTotal.add(altCategoryName);
-          System.out.println(
-              "  → ADDED ALTERNATIVE: "
-                  + altCategoryName
-                  + " ("
-                  + altMinRequired
-                  + " courses) - Running total: "
-                  + total);
+          System.out.println("  → ADDED ALTERNATIVE: " + altCategoryName + " (" + altMinRequired
+              + " courses) - Running total: " + total);
+        } else {
+          System.out.println("  → SKIPPED ALTERNATIVE: " + altCategoryName + " (minRequired <= 0: "
+              + altMinRequired + ")");
         }
       }
     }
