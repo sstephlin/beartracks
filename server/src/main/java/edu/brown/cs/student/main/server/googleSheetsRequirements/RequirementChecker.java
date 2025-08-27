@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +38,22 @@ public class RequirementChecker {
       StorageInterface storageHandler,
       String uid) {
     this.requirements = requirements;
-    this.userCourses = userCourses;
+
+    // Sort user courses by priority - lower course numbers get higher priority
+    // This ensures courses like CSCI 0410 get matched before CSCI 1951A
+    this.userCourses = userCourses.stream()
+        .sorted((c1, c2) -> {
+          // Extract course numbers for comparison
+          String num1 = c1.replaceAll(".*?(\\d+).*", "$1");
+          String num2 = c2.replaceAll(".*?(\\d+).*", "$1");
+          try {
+            return Integer.compare(Integer.parseInt(num1), Integer.parseInt(num2));
+          } catch (NumberFormatException e) {
+            return c1.compareTo(c2); // fallback to alphabetical
+          }
+        })
+        .collect(Collectors.toCollection(LinkedHashSet::new));
+
     this.storageHandler = storageHandler;
     this.uid = uid;
     this.userDesignatedCapstone = storageHandler.getCapstoneCourse(uid);
@@ -220,12 +236,6 @@ public class RequirementChecker {
    * @param row The RequirementRow containing the course list and min courses required.
    * @return A list of courses that matched.
    */
-  /**
-   * Matches user courses against a list of accepted courses.
-   *
-   * @param row The RequirementRow containing the course list and min courses required.
-   * @return A list of courses that matched.
-   */
   private List<String> matchCourseList(RequirementRow row) {
     List<String> matches = new ArrayList<>();
     String categoryName = row.getCategoryName();
@@ -259,7 +269,12 @@ public class RequirementChecker {
             usedCourses.add(course);
             categoryUsageCounts.put(categoryName, currentUsage + 1);
 
-            if (matches.size() >= row.getMinCoursesRequired()) {
+            // For elective subcategories, don't break - collect all available matches
+            // This allows the elective total to count all matching courses
+            boolean isElectiveSubcategory = categoryName.startsWith("Elective:");
+
+            // Only break for non-elective categories that have actually met their requirement
+            if (!isElectiveSubcategory && row.getMinCoursesRequired() > 0 && matches.size() >= row.getMinCoursesRequired()) {
               break;
             }
           }
@@ -499,10 +514,8 @@ public class RequirementChecker {
   private List<String> matchPattern(RequirementRow row) {
     List<String> matches = new ArrayList<>();
     System.out.println("Processing pattern for category: " + row.getCategoryName());
-    System.out.println("MinCoursesRequired: " + row.getMinCoursesRequired());
     System.out.println("Pattern: " + row.getAcceptedCourses());
-    System.out.println("All userCourses: " + userCourses);
-    System.out.println("UsedCourses at start: " + usedCourses);
+    System.out.println("All userCourses in this iteration: " + userCourses);
 
     boolean isCapstone = "Capstone".equalsIgnoreCase(row.getCategoryName());
 
@@ -538,7 +551,8 @@ public class RequirementChecker {
       }
     }
 
-    System.out.println("Final matches for " + row.getCategoryName() + ": " + matches);
+    System.out.println("Converted regex: " + convertPatternToRegex(row.getAcceptedCourses().get(0)));
+    System.out.println("Does CSCI 1430 match: " + "CSCI 1430".matches(convertPatternToRegex(row.getAcceptedCourses().get(0))));
 
     return matches;
   }
