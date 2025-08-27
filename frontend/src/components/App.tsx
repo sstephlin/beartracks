@@ -112,7 +112,7 @@ function App() {
                 <a href="index.html" className="logo-link">
                   <span className="logo-text">BearTracks</span>
                   <img
-                    src="/beartracks_logo.png"
+                    src="/Beartracks-logo.png"
                     alt="Bear Icon"
                     className="logo-icon"
                   />

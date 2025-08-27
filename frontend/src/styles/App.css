@@ -85,7 +85,7 @@ body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: 350px;
+  width: 425px;
   max-width: 35%;
   display: flex;
   justify-content: center;
