@@ -2,7 +2,9 @@ package edu.brown.cs.student.main.server.googleSheetsRequirements;
 
 import java.util.List;
 
-// Represents each row of the spreadsheet, for the new requirement checker implementation
+/**
+ * Represents each row of the spreadsheet, for the new requirement checker implementation
+ */
 public class RequirementRow {
   private final String categoryName;
   private final String displayName;
@@ -75,6 +77,6 @@ public class RequirementRow {
   }
 
   public String getParentCategory() {
-    return this.parentCategory;
+    return parentCategory;
   }
 }
