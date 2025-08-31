@@ -110,12 +110,12 @@ function App() {
             <div className="logo">
               <div className="logo-title">
                 <a href="index.html" className="logo-link">
-                  <span className="logo-text">BearTracks</span>
                   <img
                     src="/Beartracks-logo.png"
                     alt="Bear Icon"
                     className="logo-icon"
                   />
+                  <span className="logo-text">BearTracks</span>
                 </a>
               </div>
               {/* handles the progress bar */}

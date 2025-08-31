@@ -115,7 +115,7 @@ body {
   text-decoration: none;
   color: black;
   font-weight: 600;
-  gap: 8px;
+  gap: -4px;
 }
 
 .logo-link:hover,
@@ -127,7 +127,7 @@ body {
   font-size: 1.8rem;
   font-weight: 700;
   color: #333;
-  margin: 12px 0px -10px 15px;
+  margin: 12px 0px -10px 8px;
   font-family: "Gaegu", cursive;
 }
 
@@ -135,9 +135,8 @@ body {
   width: 40px;
   height: 40px;
   object-fit: contain;
-  border-radius: 8px;
   margin-top: 17px;
-  margin-left: -8px;
+  margin-left: 8px;
 }
 
 /* Progress Bar */

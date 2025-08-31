@@ -13,7 +13,10 @@
   z-index: 10;
   scrollbar-color: rgb(154, 154, 154) transparent;
 }
-
+select {
+  padding-right: 1rem;
+  min-inline-size: 6px;
+}
 .sidebar-expanded {
   width: 20vw;
 }
@@ -69,14 +72,20 @@
 }
 
 .concentration-dropdown {
-  padding: 8px 12px;
+  padding: 12px 12px 10px 12px;
   font-size: 16px;
   border-radius: 50px;
   border: 1px solid #213333;
-  width: 15vw;
+  width: 18vw;
   background-color: #d6dadd;
   color: black;
   font-family: "khula", sans-serif;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23213333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-left: 24px;
 }
 
 .concentration-req-container {
@@ -102,25 +111,54 @@
 }
 .expand-button {
   width: 30px;
-  height: 30px;
-  background: none;
-  border: none;
+  height: 25px;
+  background-color: #d6dadd !important;
+  border: none solid 2px !important;
+  border-radius: 4px;
   padding: 0;
   margin: 0;
   display: flex;
+  justify-content: flex-start;
+  align-items: center;
   cursor: pointer;
+  color: #213333 !important;
+}
+.expand-button::selection {
+  outline: none;
+  box-shadow: none;
+  border: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.expand-button:active {
+  outline: none;
+  box-shadow: none;
+  border: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.expand-button:focus {
+  outline: none;
+  box-shadow: none;
+  border: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 .button-icon {
-  fill: white;
-  width: 24px;
-  height: 24px;
+  fill: #213333;
+  width: 30px;
+  height: 30px;
   display: block;
+  stroke-width: 8px;
 }
 
 .requirement-list {
   border-radius: 4px;
-  font-weight: bold;
+  font-weight: normal;
   line-height: 1.8;
 }
 .requirement-list-container {
@@ -139,7 +177,6 @@
 .cannot-list {
   color: #ac5a5ad2;
 }
-
 
 /* Capstone-specific styles */
 .capstone-active {
@@ -185,15 +222,15 @@
 .subcategory-expand {
   background: #213333;
   border: none;
-  border-radius: 4px;
-  padding: 2px;
+  border-radius: 8px;
+  padding: 0px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   transition: background-color 0.2s;
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
 }
 
 .subcategory-expand:hover {
@@ -208,9 +245,17 @@
 .subcategory-courses {
   margin-left: 1.5rem;
   margin-top: 0.5rem;
+  padding-left: 0;
+}
+
+.subcategory-courses li {
+  padding-left: 0;
+  margin-left: 0;
+  text-indent: 0;
+  list-style-position: inside;
+  padding-inline-start: 0;
 }
 
 .subcategory-list {
   margin-top: 0.5rem;
 }
-
