@@ -38,7 +38,7 @@ public class SearchCourseHandler implements Route {
 
     List<Map<String, String>> matchedCourses = searchCourses(catalog, query);
 
-    System.out.println("Returning " + matchedCourses.size() + " matched courses.");
+//    System.out.println("Returning " + matchedCourses.size() + " matched courses.");
 
     if (matchedCourses.isEmpty()) {
       responseMap.put("result", "error");

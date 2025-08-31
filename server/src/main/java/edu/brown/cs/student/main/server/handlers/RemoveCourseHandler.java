@@ -49,7 +49,7 @@ public class RemoveCourseHandler implements Route {
 
       // 2) Re-fetch the full map of semesters → course-codes
       Map<String, List<String>> allSemesters = storageHandler.getAllSemestersAndCourses(uid);
-      System.out.println("all courses: " + storageHandler.getAllSemestersAndCourses(uid));
+//      System.out.println("all courses: " + storageHandler.getAllSemestersAndCourses(uid));
       // 3) For each remaining course, recompute prereqsMet and update it
       for (Map.Entry<String, List<String>> semEntry : allSemesters.entrySet()) {
         String sem = semEntry.getKey();

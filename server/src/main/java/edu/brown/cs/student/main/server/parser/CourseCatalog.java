@@ -23,7 +23,6 @@ public class CourseCatalog {
 
     String treeId = courseInfo.semesterToTreeId.get(semesterKey);
     if (treeId == null) return null;
-    System.out.println(treeMap);
     return treeMap.get(treeId);
   }
 
