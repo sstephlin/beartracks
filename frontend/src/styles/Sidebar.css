@@ -108,7 +108,7 @@ select {
   padding: 0.25rem 0;
   padding-left: 0.5rem;
   flex-wrap: initial;
-  font-weight: bold;
+  font-weight: 500;
 }
 .expand-button {
   width: 30px;
