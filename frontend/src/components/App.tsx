@@ -227,7 +227,7 @@ function App() {
                     feedback form to help us improve BearTracks.
                   </p>
                   <a
-                    href="https://forms.google.com/your-form-id"
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSeQqDay_PF5DbF79F9AU8gwYIvLhmN4lpzspysyhhBmkSu0mQ/viewform?usp=dialog"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="form-link-button"

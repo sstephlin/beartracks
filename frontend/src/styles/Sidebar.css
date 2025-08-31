@@ -108,6 +108,7 @@ select {
   padding: 0.25rem 0;
   padding-left: 0.5rem;
   flex-wrap: initial;
+  font-weight: bold;
 }
 .expand-button {
   width: 30px;
@@ -216,7 +217,7 @@ select {
   padding: 0.25rem 0;
   color: #213333;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: bold;
 }
 
 .subcategory-expand {
@@ -243,7 +244,7 @@ select {
 }
 
 .subcategory-courses {
-  margin-left: 1.5rem;
+  margin-left: 0.5rem;
   margin-top: 0.5rem;
   padding-left: 0;
 }
